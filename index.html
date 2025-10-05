@@ -154,6 +154,13 @@
       width: 200px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
+    .inicio-content img {
+      max-width: 100%;
+      width: 100%; /* Ensure image does not exceed header width */
+      max-width: 1200px; /* Approximate max width of header */
+      height: auto;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -220,39 +227,48 @@
         <div class="benefit-box">Descubrí las mejores opciones para invertir tu nuevo capital</div>
       </div>
     </div>
+    <div class="content-area" id="inicio-content">
+      <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
+    </div>
   </div>
   <script>
     const sidebar = document.getElementById('sidebar');
     const vendeContent = document.getElementById('vende-content');
+    const inicioContent = document.getElementById('inicio-content');
     
     document.getElementById('compra-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.add('active');
       vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
     });
     
     document.getElementById('alquila-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.add('active');
       vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
     });
     
     document.getElementById('vende-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.remove('active');
       vendeContent.classList.add('active');
+      inicioContent.classList.remove('active');
     });
     
     document.getElementById('inicio-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
+      inicioContent.classList.add('active');
     });
     
     document.getElementById('inverti-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
     });
   </script>
 </body>
