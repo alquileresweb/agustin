@@ -18,7 +18,7 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .logo img {
-      height: 80px; /* Increased logo size */
+      height: 80px;
     }
     .menu {
       display: flex;
@@ -26,7 +26,7 @@
     }
     .menu a {
       text-decoration: none;
-      color: #fff; /* White text for menu items */
+      color: #fff;
       font-weight: bold;
     }
     .dropdown {
@@ -67,12 +67,17 @@
     }
     .main-container {
       display: flex;
-      height: calc(100vh - 90px); /* Adjust height to fit below header */
+      height: calc(100vh - 90px);
     }
     .sidebar {
-      width: 300px; /* Small panel on the left */
+      width: 300px;
       background-color: #f0f0f0;
       border-right: 1px solid #ccc;
+      position: relative;
+      display: none;
+    }
+    .sidebar.active {
+      display: block;
     }
     .sidebar iframe {
       width: 100%;
@@ -86,6 +91,69 @@
       top: 50%;
       left: 50px;
     }
+    .content-area {
+      flex: 1;
+      padding: 20px;
+      background-color: #fff;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    .content-area.active {
+      display: flex;
+    }
+    .pre-tasacion-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+    .pre-tasacion-btn:hover {
+      background-color: #218838;
+    }
+    .section-text {
+      font-size: 1.5em;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .boxes {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .box {
+      background-color: #f8f8f8;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      width: 200px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .benefits-text {
+      font-size: 1.3em;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .benefits-boxes {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .benefit-box {
+      background-color: #f8f8f8;
+      padding: 15px;
+      border-radius: 5px;
+      text-align: center;
+      width: 200px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 <body>
@@ -94,9 +162,9 @@
       <img src="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Alqui Ya">
     </div>
     <div class="menu">
-      <a href="#">Inicio</a>
+      <a href="#" class="menu-link" id="inicio-link">Inicio</a>
       <div class="dropdown">
-        <a href="#">Vendé</a>
+        <a href="#" class="menu-link" id="vende-link">Vendé</a>
         <div class="dropdown-content">
           <a href="#">Terreno</a>
           <a href="#">Departamento</a>
@@ -106,7 +174,7 @@
         </div>
       </div>
       <div class="dropdown">
-        <a href="#">Comprá</a>
+        <a href="#" class="menu-link" id="compra-link">Comprá</a>
         <div class="dropdown-content">
           <a href="#">Terreno</a>
           <a href="#">Departamento</a>
@@ -117,7 +185,7 @@
         </div>
       </div>
       <div class="dropdown">
-        <a href="#">Alquilá</a>
+        <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
         <div class="dropdown-content">
           <a href="#">Monoambiente</a>
           <a href="#">2 Ambientes</a>
@@ -126,15 +194,66 @@
           <a href="#">Ver Todos</a>
         </div>
       </div>
-      <a href="#">Invertí</a>
+      <a href="#" class="menu-link" id="inverti-link">Invertí</a>
     </div>
     <button class="contact-btn">Contactar</button>
   </div>
   <div class="main-container">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <span class="loading-message">Cargando propiedades...</span>
       <iframe src="https://www.alquiya.com.ar/inmobiliarias.html?axel.martinezz665@gmail.com" onload="document.querySelector('.loading-message').style.display='none';"></iframe>
     </div>
+    <div class="content-area" id="vende-content">
+      <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
+      <div class="section-text">No solo lo vendemos, sino que también...</div>
+      <div class="boxes">
+        <div class="box">Lo Promocionamos</div>
+        <div class="box">Tasamos tu Propiedad</div>
+      </div>
+      <div class="benefits-text">Y además tenés BENEFICIOS para vos</div>
+      <div class="benefits-boxes">
+        <div class="benefit-box">Descubrí el valor de tu propiedad</div>
+        <div class="benefit-box">Aumentá el valor de tu propiedad</div>
+        <div class="benefit-box">Vendela rápido</div>
+        <div class="benefit-box">Conseguí asesoría profesional</div>
+        <div class="benefit-box">No vas a tener que encargarte de nada</div>
+        <div class="benefit-box">Descubrí las mejores opciones para invertir tu nuevo capital</div>
+      </div>
+    </div>
   </div>
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const vendeContent = document.getElementById('vende-content');
+    
+    document.getElementById('compra-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      sidebar.classList.add('active');
+      vendeContent.classList.remove('active');
+    });
+    
+    document.getElementById('alquila-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      sidebar.classList.add('active');
+      vendeContent.classList.remove('active');
+    });
+    
+    document.getElementById('vende-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      sidebar.classList.remove('active');
+      vendeContent.classList.add('active');
+    });
+    
+    document.getElementById('inicio-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      sidebar.classList.remove('active');
+      vendeContent.classList.remove('active');
+    });
+    
+    document.getElementById('inverti-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      sidebar.classList.remove('active');
+      vendeContent.classList.remove('active');
+    });
+  </script>
 </body>
 </html>
