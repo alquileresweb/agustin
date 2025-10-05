@@ -70,7 +70,7 @@
       height: calc(100vh - 90px);
     }
     .sidebar {
-      width: 300px;
+      width: 33.33%;
       background-color: #f0f0f0;
       border-right: 1px solid #ccc;
       position: relative;
@@ -160,6 +160,34 @@
       height: auto;
       border-radius: 5px;
     }
+    .compra-content {
+      display: flex;
+      flex: 2;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      max-width: 600px;
+      margin-top: 20px;
+    }
+    .image-item {
+      text-align: center;
+    }
+    .image-item img {
+      width: 100%;
+      max-width: 250px;
+      height: auto;
+      border-radius: 5px;
+    }
+    .image-item p {
+      margin: 10px 0 0;
+      font-size: 1.1em;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -200,6 +228,9 @@
       <span class="loading-message">Cargando propiedades...</span>
       <iframe src="https://www.alquiya.com.ar/inmobiliarias.html?axel.martinezz665@gmail.com" onload="document.querySelector('.loading-message').style.display='none';"></iframe>
     </div>
+    <div class="content-area active" id="inicio-content">
+      <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
+    </div>
     <div class="content-area" id="vende-content">
       <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
       <div class="section-text">No solo lo vendemos, sino que también...</div>
@@ -217,20 +248,39 @@
         <div class="benefit-box"><img src="https://i.postimg.cc/d3z31q8L/6.png" alt="Beneficio 6"></div>
       </div>
     </div>
-    <div class="content-area active" id="inicio-content">
-      <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
+    <div class="content-area" id="compra-content">
+      <div class="image-grid">
+        <div class="image-item">
+          <img src="https://i.postimg.cc/Vky6jL2K/7.png" alt="Terrenos">
+          <p>Terrenos</p>
+        </div>
+        <div class="image-item">
+          <img src="https://i.postimg.cc/xdn14pfZ/8.png" alt="Departamentos">
+          <p>Departamentos</p>
+        </div>
+        <div class="image-item">
+          <img src="https://i.postimg.cc/vBS8DQWS/9.png" alt="Casas">
+          <p>Casas</p>
+        </div>
+        <div class="image-item">
+          <img src="https://i.postimg.cc/3NsKCnfZ/10.png" alt="Locales Comerciales">
+          <p>Locales Comerciales</p>
+        </div>
+      </div>
     </div>
   </div>
   <script>
     const sidebar = document.getElementById('sidebar');
     const vendeContent = document.getElementById('vende-content');
     const inicioContent = document.getElementById('inicio-content');
+    const compraContent = document.getElementById('compra-content');
     
     document.getElementById('compra-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.add('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
+      compraContent.classList.add('active');
     });
     
     document.getElementById('alquila-link').addEventListener('click', function(e) {
@@ -238,6 +288,7 @@
       sidebar.classList.add('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
     });
     
     document.getElementById('vende-link').addEventListener('click', function(e) {
@@ -245,6 +296,7 @@
       sidebar.classList.remove('active');
       vendeContent.classList.add('active');
       inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
     });
     
     document.getElementById('inicio-link').addEventListener('click', function(e) {
@@ -252,6 +304,7 @@
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.add('active');
+      compraContent.classList.remove('active');
     });
     
     document.getElementById('inverti-link').addEventListener('click', function(e) {
@@ -259,6 +312,7 @@
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
     });
   </script>
 </body>
