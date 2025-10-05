@@ -141,23 +141,22 @@
       text-align: center;
     }
     .benefits-boxes {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
+      justify-items: center;
+      max-width: 1200px;
     }
-    .benefit-box {
-      background-color: #f8f8f8;
-      padding: 15px;
+    .benefit-box img {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
       border-radius: 5px;
-      text-align: center;
-      width: 200px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     .inicio-content img {
       max-width: 100%;
-      width: 100%; /* Ensure image does not exceed header width */
-      max-width: 1200px; /* Approximate max width of header */
+      width: 100%;
+      max-width: 1200px;
       height: auto;
       border-radius: 5px;
     }
@@ -170,16 +169,7 @@
     </div>
     <div class="menu">
       <a href="#" class="menu-link" id="inicio-link">Inicio</a>
-      <div class="dropdown">
-        <a href="#" class="menu-link" id="vende-link">Vendé</a>
-        <div class="dropdown-content">
-          <a href="#">Terreno</a>
-          <a href="#">Departamento</a>
-          <a href="#">Casa</a>
-          <a href="#">Local Comercial</a>
-          <a href="#">Otro</a>
-        </div>
-      </div>
+      <a href="#" class="menu-link" id="vende-link">Vendé</a>
       <div class="dropdown">
         <a href="#" class="menu-link" id="compra-link">Comprá</a>
         <div class="dropdown-content">
@@ -219,15 +209,15 @@
       </div>
       <div class="benefits-text">Y además tenés BENEFICIOS para vos</div>
       <div class="benefits-boxes">
-        <div class="benefit-box">Descubrí el valor de tu propiedad</div>
-        <div class="benefit-box">Aumentá el valor de tu propiedad</div>
-        <div class="benefit-box">Vendela rápido</div>
-        <div class="benefit-box">Conseguí asesoría profesional</div>
-        <div class="benefit-box">No vas a tener que encargarte de nada</div>
-        <div class="benefit-box">Descubrí las mejores opciones para invertir tu nuevo capital</div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/5NTLYJ4b/1.png" alt="Beneficio 1"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/0NdwBJp1/2.png" alt="Beneficio 2"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/pry5rG43/3.png" alt="Beneficio 3"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/VLx0sFgw/4.png" alt="Beneficio 4"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/LX8nQQ9Z/5.png" alt="Beneficio 5"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/d3z31q8L/6.png" alt="Beneficio 6"></div>
       </div>
     </div>
-    <div class="content-area" id="inicio-content">
+    <div class="content-area active" id="inicio-content">
       <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
     </div>
   </div>
