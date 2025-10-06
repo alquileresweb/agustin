@@ -208,7 +208,7 @@
   <div class="main-container">
     <div class="sidebar" id="sidebar">
       <span class="loading-message">Cargando propiedades...</span>
-      <iframe src="https://www.alquiya.com.ar/inmobiliarias.html?axel.martinezz665@gmail.com" onload="document.querySelector('.loading-message').style.display='none';"></iframe>
+      <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com" onload="document.querySelector('.loading-message').style.display='none';"></iframe>
     </div>
     <div class="content-area active" id="inicio-content">
       <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
@@ -263,8 +263,7 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
-      // Update iframe src to select "Comprar"
-      sidebar.querySelector('iframe').src = 'https://www.alquiya.com.ar/inmobiliarias.html?axel.martinezz665@gmail.com&tipo=comprar';
+      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
     });
     
     document.getElementById('alquila-link').addEventListener('click', function(e) {
@@ -273,8 +272,7 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
-      // Update iframe src to select "Alquilar"
-      sidebar.querySelector('iframe').src = 'https://www.alquiya.com.ar/inmobiliarias.html?axel.martinezz665@gmail.com&tipo=alquilar';
+      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
     });
     
     document.getElementById('vende-link').addEventListener('click', function(e) {
