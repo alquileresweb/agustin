@@ -199,17 +199,7 @@
     <div class="menu">
       <a href="#" class="menu-link" id="inicio-link">Inicio</a>
       <a href="#" class="menu-link" id="vende-link">Vendé</a>
-      <div class="dropdown">
-        <a href="#" class="menu-link" id="compra-link">Comprá</a>
-        <div class="dropdown-content">
-          <a href="#">Terreno</a>
-          <a href="#">Departamento</a>
-          <a href="#">Casa</a>
-          <a href="#">Local Comercial</a>
-          <a href="#">Otro</a>
-          <a href="#">Ver Todos</a>
-        </div>
-      </div>
+      <a href="#" class="menu-link" id="compra-link">Comprá</a>
       <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
       <a href="#" class="menu-link" id="inverti-link">Invertí</a>
     </div>
@@ -273,6 +263,8 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
+      // Update iframe src to select "Comprar"
+      sidebar.querySelector('iframe').src = 'https://www.alquiya.com.ar/inmobiliarias.html?axel.martinezz665@gmail.com&tipo=comprar';
     });
     
     document.getElementById('alquila-link').addEventListener('click', function(e) {
@@ -281,6 +273,8 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
+      // Update iframe src to select "Alquilar"
+      sidebar.querySelector('iframe').src = 'https://www.alquiya.com.ar/inmobiliarias.html?axel.martinezz665@gmail.com&tipo=alquilar';
     });
     
     document.getElementById('vende-link').addEventListener('click', function(e) {
