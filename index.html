@@ -83,7 +83,7 @@
       border-bottom: 1px solid #ccc;
       position: relative;
       display: none;
-      height: 500px; /* Increased height for mobile */
+      height: 500px;
     }
     .sidebar.active {
       display: block;
@@ -166,11 +166,11 @@
     }
     .inicio-content img {
       width: 100%;
-      max-width: 800px;
+      max-width: 600px; /* Reduced for mobile */
       height: auto;
       border-radius: 5px;
-      object-fit: cover; /* Ensure image scales properly */
-      max-height: 50vh; /* Limit height for better mobile view */
+      object-fit: cover;
+      max-height: 40vh; /* Further reduced for better mobile view */
     }
     .compra-content {
       display: flex;
@@ -184,7 +184,7 @@
       gap: 15px;
       max-width: 100%;
       margin-top: 15px;
-      order: 1; /* Ensure image-grid appears first on mobile */
+      order: 1;
     }
     .image-item {
       text-align: center;
@@ -222,11 +222,11 @@
         height: 600px;
         border-bottom: none;
         border-right: 1px solid #ccc;
-        order: 1; /* Sidebar remains on the left */
+        order: 1;
       }
       .content-area {
         padding: 20px;
-        order: 2; /* Content area on the right */
+        order: 2;
       }
       .pre-tasacion-btn {
         padding: 15px 30px;
@@ -253,12 +253,12 @@
       }
       .inicio-content img {
         max-width: 1200px;
-        max-height: none; /* Remove height restriction for desktop */
+        max-height: none;
       }
       .image-grid {
         grid-template-columns: repeat(2, 1fr);
         max-width: 600px;
-        order: 1; /* Image grid first */
+        order: 1;
       }
       .image-item img {
         max-width: 250px;
