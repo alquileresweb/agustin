@@ -215,7 +215,7 @@
       color: #333;
       margin-bottom: 15px;
     }
-    .ver-mas-btn {
+    .ver-mas-btn, .whatsapp-btn {
       background-color: #007bff;
       color: white;
       padding: 12px 25px;
@@ -226,12 +226,19 @@
       font-weight: bold;
       text-decoration: none;
       display: inline-block;
+      margin: 5px;
       transition: background-color 0.3s;
     }
-    .ver-mas-btn:hover {
+    .whatsapp-btn {
+      background-color: #25D366;
+    }
+    .ver-mas-btn:hover, .whatsapp-btn:hover {
       background-color: #0056b3;
       color: white;
       text-decoration: none;
+    }
+    .whatsapp-btn:hover {
+      background-color: #1ebe52;
     }
     .image-grid {
       display: grid;
@@ -410,6 +417,19 @@
         <img src="https://i.postimg.cc/1X6tLNfs/Imagem-do-Whats-App-de-2025-09-19-s-10-38-49-c0328dd0.jpg" alt="Golden Tower 1102">
         <div class="brasil-property-title">Golden Tower 1102</div>
         <a href="https://drive.google.com/drive/folders/1Ovl_qyNY5ioAEOB3KKadP3qsagXBF40Y?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+        <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Golden%20Tower%201102" target="_blank" class="whatsapp-btn">Contactar</a>
+      </div>
+      <div class="brasil-property-card">
+        <img src="https://i.postimg.cc/76YD3tvr/Whats-App-Image-2022-12-15-at-13-36-44.jpg" alt="STUDIOS MAMPITUBA">
+        <div class="brasil-property-title">STUDIOS MAMPITUBA</div>
+        <a href="https://drive.google.com/drive/folders/10jYrDKR7x22tUFKsGZTTvto6orHWGono?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+        <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20STUDIOS%20MAMPITUBA" target="_blank" class="whatsapp-btn">Contactar</a>
+      </div>
+      <div class="brasil-property-card">
+        <img src="https://i.postimg.cc/Bv3J6QMc/VISTA-02-EXT-FACHADA-ESQUINA-01-FINAL.jpg" alt="Edificio Cortille">
+        <div class="brasil-property-title">Edificio Cortille</div>
+        <a href="https://drive.google.com/drive/folders/1BWZWwKmkKt7K8xJCHIM-a4mMua8n0xTf?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+        <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Edificio%20Cortille" target="_blank" class="whatsapp-btn">Contactar</a>
       </div>
     </div>
   </div>
@@ -419,6 +439,7 @@
     const inicioContent = document.getElementById('inicio-content');
     const compraContent = document.getElementById('compra-content');
     const brasilContent = document.getElementById('brasil-content');
+    const imageGrid = compraContent.querySelector('.image-grid');
     
     // Función para mostrar contenido de compra Argentina
     function showCompraContent() {
@@ -426,7 +447,8 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
-      brasilContent.classList.remove('active'); // OCULTA Golden Tower
+      brasilContent.classList.remove('active');
+      imageGrid.style.display = 'grid';
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
     }
     
@@ -435,14 +457,14 @@
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
-      compraContent.classList.remove('active'); // OCULTA image-grid de Argentina
-      brasilContent.classList.add('active'); // MUESTRA Golden Tower
+      compraContent.classList.remove('active');
+      brasilContent.classList.add('active');
+      imageGrid.style.display = 'none';
     }
     
     // Event listeners
     document.getElementById('compra-link').addEventListener('click', function(e) {
       e.preventDefault();
-      // El dropdown se muestra al hacer hover, no hace nada al click
     });
     
     document.getElementById('argentina-link').addEventListener('click', function(e) {
@@ -463,7 +485,8 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.remove('active'); // OCULTA Golden Tower en Alquilá
+      brasilContent.classList.remove('active');
+      imageGrid.style.display = 'none';
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
     });
     
@@ -473,7 +496,8 @@
       vendeContent.classList.add('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.remove('active'); // OCULTA Golden Tower
+      brasilContent.classList.remove('active');
+      imageGrid.style.display = 'none';
     });
     
     document.getElementById('inicio-link').addEventListener('click', function(e) {
@@ -482,7 +506,8 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.add('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.remove('active'); // OCULTA Golden Tower
+      brasilContent.classList.remove('active');
+      imageGrid.style.display = 'none';
     });
     
     document.getElementById('inverti-link').addEventListener('click', function(e) {
@@ -491,7 +516,8 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.remove('active'); // OCULTA Golden Tower
+      brasilContent.classList.remove('active');
+      imageGrid.style.display = 'none';
     });
   </script>
 </body>
