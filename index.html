@@ -255,6 +255,11 @@
       font-size: 0.9em;
       font-weight: bold;
     }
+    /* Ocultar image-grid cuando brasil-content está activo */
+    .brasil-content.active ~ .compra-content .image-grid,
+    .compra-content.brasil-mode .image-grid {
+      display: none !important;
+    }
     @media (min-width: 768px) {
       .header {
         padding: 20px 40px;
@@ -414,6 +419,7 @@
     const inicioContent = document.getElementById('inicio-content');
     const compraContent = document.getElementById('compra-content');
     const brasilContent = document.getElementById('brasil-content');
+    const imageGrid = compraContent.querySelector('.image-grid');
     
     // Función para mostrar contenido de compra Argentina
     function showCompraContent() {
@@ -422,6 +428,8 @@
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
       brasilContent.classList.remove('active');
+      imageGrid.style.display = 'grid'; // Mostrar image-grid para Argentina
+      compraContent.classList.remove('brasil-mode');
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
     }
     
@@ -432,6 +440,9 @@
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
       brasilContent.classList.add('active');
+      // Ocultar específicamente el image-grid cuando se muestra Brasil
+      imageGrid.style.display = 'none';
+      compraContent.classList.add('brasil-mode');
     }
     
     // Event listeners
@@ -459,6 +470,9 @@
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
       brasilContent.classList.remove('active');
+      // Asegurar que image-grid se muestre en Alquilá
+      imageGrid.style.display = 'grid';
+      compraContent.classList.remove('brasil-mode');
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
     });
     
@@ -469,6 +483,8 @@
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
       brasilContent.classList.remove('active');
+      imageGrid.style.display = 'grid';
+      compraContent.classList.remove('brasil-mode');
     });
     
     document.getElementById('inicio-link').addEventListener('click', function(e) {
@@ -478,6 +494,8 @@
       inicioContent.classList.add('active');
       compraContent.classList.remove('active');
       brasilContent.classList.remove('active');
+      imageGrid.style.display = 'grid';
+      compraContent.classList.remove('brasil-mode');
     });
     
     document.getElementById('inverti-link').addEventListener('click', function(e) {
@@ -487,6 +505,8 @@
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
       brasilContent.classList.remove('active');
+      imageGrid.style.display = 'grid';
+      compraContent.classList.remove('brasil-mode');
     });
   </script>
 </body>
