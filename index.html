@@ -478,6 +478,76 @@
         padding: 30px;
       }
     }
+    /* Estilos para el modal de pre-tasación */
+    .pre-tasacion-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .pre-tasacion-modal.active {
+      display: flex;
+    }
+    .pre-tasacion-form {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: left;
+      position: relative;
+    }
+    .pre-tasacion-form h2 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .pre-tasacion-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .pre-tasacion-form input,
+    .pre-tasacion-form textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .pre-tasacion-form button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+    }
+    .pre-tasacion-form button:hover {
+      background-color: #218838;
+    }
+    .pre-tasacion-form .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    .pre-tasacion-form .close-btn:hover {
+      color: #000;
+    }
   </style>
 </head>
 <body>
@@ -629,6 +699,24 @@
         <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar" onload="document.querySelector('#alquila-sidebar .loading-message').style.display='none';"></iframe>
       </div>
     </div>
+    <!-- Modal para Pre Tasación -->
+    <div class="pre-tasacion-modal" id="pre-tasacion-modal">
+      <div class="pre-tasacion-form">
+        <button class="close-btn" id="close-pre-tasacion-modal">&times;</button>
+        <h2>Pre Tasación Gratuita</h2>
+        <form id="pre-tasacion-form">
+          <label for="nombre">Nombre y Apellido:</label>
+          <input type="text" id="nombre" name="nombre" required>
+          <label for="telefono">Teléfono:</label>
+          <input type="tel" id="telefono" name="telefono" required>
+          <label for="direccion">Dirección de la Propiedad:</label>
+          <textarea id="direccion" name="direccion" rows="3" required></textarea>
+          <label for="metros">Metros Cuadrados:</label>
+          <input type="number" id="metros" name="metros" required>
+          <button type="submit">Enviar</button>
+        </form>
+      </div>
+    </div>
   </div>
   <script>
     const sidebar = document.getElementById('sidebar');
@@ -642,6 +730,11 @@
     // Elementos del modal de Casa
     const casaDetail = document.getElementById('casa-detail');
     const closeCasaDetail = document.getElementById('close-casa-detail');
+    
+    // Elementos del modal de Pre Tasación
+    const preTasacionModal = document.getElementById('pre-tasacion-modal');
+    const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
+    const preTasacionForm = document.getElementById('pre-tasacion-form');
     
     // Función para mostrar contenido de compra Argentina
     function showCompraContent() {
@@ -686,6 +779,29 @@
     function hideCasaDetail() {
       casaDetail.classList.remove('active');
     }
+    
+    // Funcionalidad para el modal de Pre Tasación
+    function showPreTasacionModal() {
+      preTasacionModal.classList.add('active');
+    }
+    
+    function hidePreTasacionModal() {
+      preTasacionModal.classList.remove('active');
+    }
+    
+    // Enviar formulario de Pre Tasación a WhatsApp
+    preTasacionForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const telefono = document.getElementById('telefono').value;
+      const direccion = document.getElementById('direccion').value;
+      const metros = document.getElementById('metros').value;
+      const mensaje = `Solicitud de Pre Tasación\nNombre: ${nombre}\nTeléfono: ${telefono}\nDirección: ${direccion}\nMetros Cuadrados: ${metros}\nFecha: ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`;
+      const whatsappURL = `https://wa.me/5493756505202?text=${encodeURIComponent(mensaje)}`;
+      window.open(whatsappURL, '_blank');
+      preTasacionForm.reset();
+      hidePreTasacionModal();
+    });
     
     // Event listeners principales
     document.getElementById('compra-link').addEventListener('click', function(e) {
@@ -761,10 +877,23 @@
       }
     });
     
+    // Event listeners para cerrar el modal de Pre Tasación
+    closePreTasacionModal.addEventListener('click', hidePreTasacionModal);
+    preTasacionModal.addEventListener('click', function(e) {
+      if (e.target === preTasacionModal) {
+        hidePreTasacionModal();
+      }
+    });
+    
+    // Event listener para el botón Pre Tasación GRATUITA
+    document.querySelector('.pre-tasacion-btn').addEventListener('click', showPreTasacionModal);
+    
     // Cerrar modal con tecla Escape
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape' && casaDetail.classList.contains('active')) {
         hideCasaDetail();
+      } else if (e.key === 'Escape' && preTasacionModal.classList.contains('active')) {
+        hidePreTasacionModal();
       }
     });
   </script>
