@@ -191,19 +191,27 @@
       align-items: center;
       padding: 15px;
       text-align: center;
+      width: 100%;
+    }
+    .brasil-property-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      width: 100%;
+      justify-items: center;
+      box-sizing: border-box;
     }
     .brasil-property-card {
       background-color: #f8f8f8;
       border-radius: 10px;
       padding: 20px;
-      margin: 20px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 400px;
       width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
     }
     .brasil-property-card img {
       width: 100%;
-      max-width: 350px;
       height: 250px;
       object-fit: cover;
       border-radius: 8px;
@@ -333,9 +341,21 @@
       .image-item p {
         font-size: 1.1em;
       }
+      .brasil-property-grid {
+        grid-template-columns: repeat(2, minmax(400px, 1fr));
+        width: 100%;
+        column-gap: 20px;
+        row-gap: 20px;
+        box-sizing: border-box;
+      }
+      .brasil-property-card {
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+      }
       .brasil-property-card img {
         height: 300px;
-        max-width: 400px;
+        max-width: 100%;
       }
       .brasil-property-title {
         font-size: 2em;
@@ -413,23 +433,49 @@
       </div>
     </div>
     <div class="content-area brasil-content" id="brasil-content">
-      <div class="brasil-property-card">
-        <img src="https://i.postimg.cc/1X6tLNfs/Imagem-do-Whats-App-de-2025-09-19-s-10-38-49-c0328dd0.jpg" alt="Golden Tower 1102">
-        <div class="brasil-property-title">Golden Tower 1102</div>
-        <a href="https://drive.google.com/drive/folders/1Ovl_qyNY5ioAEOB3KKadP3qsagXBF40Y?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-        <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Golden%20Tower%201102" target="_blank" class="whatsapp-btn">Contactar</a>
-      </div>
-      <div class="brasil-property-card">
-        <img src="https://i.postimg.cc/76YD3tvr/Whats-App-Image-2022-12-15-at-13-36-44.jpg" alt="STUDIOS MAMPITUBA">
-        <div class="brasil-property-title">STUDIOS MAMPITUBA</div>
-        <a href="https://drive.google.com/drive/folders/10jYrDKR7x22tUFKsGZTTvto6orHWGono?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-        <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20STUDIOS%20MAMPITUBA" target="_blank" class="whatsapp-btn">Contactar</a>
-      </div>
-      <div class="brasil-property-card">
-        <img src="https://i.postimg.cc/Bv3J6QMc/VISTA-02-EXT-FACHADA-ESQUINA-01-FINAL.jpg" alt="Edificio Cortille">
-        <div class="brasil-property-title">Edificio Cortille</div>
-        <a href="https://drive.google.com/drive/folders/1BWZWwKmkKt7K8xJCHIM-a4mMua8n0xTf?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-        <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Edificio%20Cortille" target="_blank" class="whatsapp-btn">Contactar</a>
+      <div class="brasil-property-grid">
+        <div class="brasil-property-card">
+          <img src="https://i.postimg.cc/1X6tLNfs/Imagem-do-Whats-App-de-2025-09-19-s-10-38-49-c0328dd0.jpg" alt="Golden Tower 1102">
+          <div class="brasil-property-title">Golden Tower 1102</div>
+          <a href="https://drive.google.com/drive/folders/1Ovl_qyNY5ioAEOB3KKadP3qsagXBF40Y?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Golden%20Tower%201102" target="_blank" class="whatsapp-btn">Contactar</a>
+        </div>
+        <div class="brasil-property-card">
+          <img src="https://i.postimg.cc/76YD3tvr/Whats-App-Image-2022-12-15-at-13-36-44.jpg" alt="STUDIOS MAMPITUBA">
+          <div class="brasil-property-title">STUDIOS MAMPITUBA</div>
+          <a href="https://drive.google.com/drive/folders/10jYrDKR7x22tUFKsGZTTvto6orHWGono?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20STUDIOS%20MAMPITUBA" target="_blank" class="whatsapp-btn">Contactar</a>
+        </div>
+        <div class="brasil-property-card">
+          <img src="https://i.postimg.cc/Bv3J6QMc/VISTA-02-EXT-FACHADA-ESQUINA-01-FINAL.jpg" alt="Edificio Cortille">
+          <div class="brasil-property-title">Edificio Cortille</div>
+          <a href="https://drive.google.com/drive/folders/1BWZWwKmkKt7K8xJCHIM-a4mMua8n0xTf?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Edificio%20Cortille" target="_blank" class="whatsapp-btn">Contactar</a>
+        </div>
+        <div class="brasil-property-card">
+          <img src="https://i.postimg.cc/jqBHFGMm/PHOTO-2022-08-18-10-55-02.jpg" alt="Grand Copacabana">
+          <div class="brasil-property-title">Grand Copacabana</div>
+          <a href="https://drive.google.com/drive/folders/1PXRJ8HF4KDRI20LExmyM5ec9LgKGsQHc?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Grand%20Copacabana" target="_blank" class="whatsapp-btn">Contactar</a>
+        </div>
+        <div class="brasil-property-card">
+          <img src="https://i.postimg.cc/d0SkTyXR/9.jpg" alt="Punta del Sole">
+          <div class="brasil-property-title">Punta del Sole</div>
+          <a href="https://drive.google.com/drive/folders/1Jgu-oU7Bwnd7ZAjF8nNBAVKbtTdHCAIW?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Punta%20del%20Sole" target="_blank" class="whatsapp-btn">Contactar</a>
+        </div>
+        <div class="brasil-property-card">
+          <img src="https://i.postimg.cc/qB2qpSJT/IMG-01-EXT-DIURNA.jpg" alt="Bella Vita">
+          <div class="brasil-property-title">Bella Vita</div>
+          <a href="https://drive.google.com/drive/folders/1Ob9XRrQ5DVeOxsxA6Q3vEGz2EW28idqE?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Bella%20Vita" target="_blank" class="whatsapp-btn">Contactar</a>
+        </div>
+        <div class="brasil-property-card">
+          <img src="https://i.postimg.cc/J0KWGbYb/IMG-6001.jpg" alt="Ibiza 1301">
+          <div class="brasil-property-title">Ibiza 1301</div>
+          <a href="https://drive.google.com/drive/folders/1Hdi98PB71PqACAFwxtiRxDclGujKtGAl?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
+          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Ibiza%201301" target="_blank" class="whatsapp-btn">Contactar</a>
+        </div>
       </div>
     </div>
   </div>
