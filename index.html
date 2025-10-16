@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inmobiliaria - Alqui Ya</title>
+  <title>Inmobiliaria Agustin Santos</title>
+  <link rel="icon" type="image/jpg" href="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg">
   <style>
     body {
       margin: 0;
@@ -296,6 +297,11 @@
     }
     .image-item {
       text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .image-item:hover {
+      transform: scale(1.05);
     }
     .image-item img {
       width: 100%;
@@ -307,6 +313,53 @@
       margin: 8px 0 0;
       font-size: 0.9em;
       font-weight: bold;
+    }
+    .casa-detail {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .casa-detail.active {
+      display: flex;
+    }
+    .casa-detail-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 90%;
+      max-height: 90%;
+      text-align: center;
+      position: relative;
+    }
+    .casa-detail img {
+      max-width: 100%;
+      max-height: 60vh;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    .casa-detail h3 {
+      margin: 10px 0;
+      color: #333;
+    }
+    .casa-detail .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    .casa-detail .close-btn:hover {
+      color: #000;
     }
     /* Ocultar image-grid, brasil-content y alquila-content cuando no están activos */
     .compra-content:not(.active) .image-grid,
@@ -418,13 +471,17 @@
       .alquila-property-title {
         font-size: 2em;
       }
+      .casa-detail-content {
+        max-width: 70%;
+        padding: 30px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="header">
     <div class="logo">
-      <img src="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Alqui Ya">
+      <img src="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Inmobiliaria Agustin Santos">
     </div>
     <div class="menu">
       <a href="#" class="menu-link" id="inicio-link">Inicio</a>
@@ -468,19 +525,19 @@
     </div>
     <div class="content-area compra-content" id="compra-content">
       <div class="image-grid">
-        <div class="image-item">
+        <div class="image-item" data-type="terrenos">
           <img src="https://i.postimg.cc/Vky6jL2K/7.png" alt="Terrenos">
           <p>Terrenos</p>
         </div>
-        <div class="image-item">
+        <div class="image-item" data-type="departamentos">
           <img src="https://i.postimg.cc/xdn14pfZ/8.png" alt="Departamentos">
           <p>Departamentos</p>
         </div>
-        <div class="image-item">
+        <div class="image-item" data-type="casas">
           <img src="https://i.postimg.cc/vBS8DQWS/9.png" alt="Casas">
           <p>Casas</p>
         </div>
-        <div class="image-item">
+        <div class="image-item" data-type="locales">
           <img src="https://i.postimg.cc/3NsKCnfZ/10.png" alt="Locales Comerciales">
           <p>Locales Comerciales</p>
         </div>
@@ -490,6 +547,17 @@
         <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar" onload="document.querySelector('#compra-sidebar .loading-message').style.display='none';"></iframe>
       </div>
     </div>
+    
+    <!-- Modal para detalle de Casa -->
+    <div class="casa-detail" id="casa-detail">
+      <div class="casa-detail-content">
+        <button class="close-btn" id="close-casa-detail">&times;</button>
+        <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img">
+        <h3 id="casa-detail-title">Casa en Venta</h3>
+        <a href="http://www.alquiya.com.ar/alquiler.html?id=2f8c4b16-a218-4f04-ab82-282d890a99eb" target="_blank" class="ver-mas-btn">Ver más</a>
+      </div>
+    </div>
+    
     <div class="content-area brasil-content" id="brasil-content">
       <div class="brasil-property-grid">
         <div class="brasil-property-card">
@@ -569,6 +637,10 @@
     const alquilaContent = document.getElementById('alquila-content');
     const imageGrid = compraContent.querySelector('.image-grid');
     
+    // Elementos del modal de Casa
+    const casaDetail = document.getElementById('casa-detail');
+    const closeCasaDetail = document.getElementById('close-casa-detail');
+    
     // Función para mostrar contenido de compra Argentina
     function showCompraContent() {
       sidebar.classList.add('active');
@@ -604,7 +676,16 @@
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
     }
     
-    // Event listeners
+    // Funcionalidad para el modal de Casa
+    function showCasaDetail() {
+      casaDetail.classList.add('active');
+    }
+    
+    function hideCasaDetail() {
+      casaDetail.classList.remove('active');
+    }
+    
+    // Event listeners principales
     document.getElementById('compra-link').addEventListener('click', function(e) {
       e.preventDefault();
     });
@@ -657,6 +738,32 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
       imageGrid.style.display = 'none';
+    });
+    
+    // Event listeners para las imágenes de propiedades
+    document.querySelectorAll('.image-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const type = this.dataset.type;
+        if (type === 'casas') {
+          showCasaDetail();
+        }
+        // Para otros tipos se podría agregar funcionalidad similar
+      });
+    });
+    
+    // Event listeners para cerrar el modal de Casa
+    closeCasaDetail.addEventListener('click', hideCasaDetail);
+    casaDetail.addEventListener('click', function(e) {
+      if (e.target === casaDetail) {
+        hideCasaDetail();
+      }
+    });
+    
+    // Cerrar modal con tecla Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && casaDetail.classList.contains('active')) {
+        hideCasaDetail();
+      }
     });
   </script>
 </body>
