@@ -446,17 +446,6 @@
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
     }
     
-    // Función para mostrar contenido de alquiler
-    function showAlquilaContent() {
-      sidebar.classList.add('active');
-      vendeContent.classList.remove('active');
-      inicioContent.classList.remove('active');
-      compraContent.classList.remove('active');
-      alquilaContent.classList.add('active');
-      brasilContent.classList.remove('active');
-      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
-    }
-    
     // Event listeners
     document.getElementById('compra-link').addEventListener('click', function(e) {
       e.preventDefault();
@@ -483,7 +472,13 @@
     
     document.getElementById('alquila-link').addEventListener('click', function(e) {
       e.preventDefault();
-      showAlquilaContent();
+      sidebar.classList.add('active');
+      vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
+      alquilaContent.classList.add('active');
+      brasilContent.classList.remove('active');
+      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
     });
     
     document.getElementById('vende-link').addEventListener('click', function(e) {
