@@ -255,8 +255,7 @@
       font-size: 0.9em;
       font-weight: bold;
     }
-    /* Ocultar image-grid cuando brasil-content está activo */
-    .brasil-content.active ~ .compra-content .image-grid,
+    /* Ocultar image-grid en modo Brasil */
     .compra-content.brasil-mode .image-grid {
       display: none !important;
     }
@@ -423,26 +422,32 @@
     
     // Función para mostrar contenido de compra Argentina
     function showCompraContent() {
+      // Ocultar Brasil explícitamente
+      brasilContent.classList.remove('active');
+      
       sidebar.classList.add('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
-      brasilContent.classList.remove('active');
       imageGrid.style.display = 'grid'; // Mostrar image-grid para Argentina
       compraContent.classList.remove('brasil-mode');
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
     }
     
-    // Función para mostrar contenido de Brasil
+    // Función para mostrar contenido de Brasil (SOLO Golden Tower)
     function showBrasilContent() {
+      // Ocultar todas las demás secciones explícitamente
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.add('active');
-      // Ocultar específicamente el image-grid cuando se muestra Brasil
+      
+      // Ocultar image-grid de Argentina
       imageGrid.style.display = 'none';
       compraContent.classList.add('brasil-mode');
+      
+      // Mostrar SOLO Brasil
+      brasilContent.classList.add('active');
     }
     
     // Event listeners
@@ -465,12 +470,13 @@
     
     document.getElementById('alquila-link').addEventListener('click', function(e) {
       e.preventDefault();
+      // Ocultar Brasil explícitamente en Alquilá
+      brasilContent.classList.remove('active');
+      
       sidebar.classList.add('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.remove('active');
-      // Asegurar que image-grid se muestre en Alquilá
       imageGrid.style.display = 'grid';
       compraContent.classList.remove('brasil-mode');
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
@@ -478,33 +484,39 @@
     
     document.getElementById('vende-link').addEventListener('click', function(e) {
       e.preventDefault();
+      // Ocultar Brasil
+      brasilContent.classList.remove('active');
+      
       sidebar.classList.remove('active');
       vendeContent.classList.add('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.remove('active');
       imageGrid.style.display = 'grid';
       compraContent.classList.remove('brasil-mode');
     });
     
     document.getElementById('inicio-link').addEventListener('click', function(e) {
       e.preventDefault();
+      // Ocultar Brasil
+      brasilContent.classList.remove('active');
+      
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.add('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.remove('active');
       imageGrid.style.display = 'grid';
       compraContent.classList.remove('brasil-mode');
     });
     
     document.getElementById('inverti-link').addEventListener('click', function(e) {
       e.preventDefault();
+      // Ocultar Brasil
+      brasilContent.classList.remove('active');
+      
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
-      brasilContent.classList.remove('active');
       imageGrid.style.display = 'grid';
       compraContent.classList.remove('brasil-mode');
     });
