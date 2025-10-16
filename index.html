@@ -42,16 +42,23 @@
       display: none;
       position: absolute;
       background-color: #fff;
-      min-width: 160px;
+      min-width: 200px;
       box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-      z-index: 1;
+      z-index: 1000;
+      border-radius: 5px;
+      top: 100%;
+      left: 0;
     }
     .dropdown-content a {
       color: #333;
-      padding: 10px 14px;
+      padding: 12px 16px;
       display: block;
       text-decoration: none;
       font-size: 0.9em;
+      border-bottom: 1px solid #eee;
+    }
+    .dropdown-content a:last-child {
+      border-bottom: none;
     }
     .dropdown-content a:hover {
       background-color: #f1f1f1;
@@ -277,7 +284,13 @@
     <div class="menu">
       <a href="#" class="menu-link" id="inicio-link">Inicio</a>
       <a href="#" class="menu-link" id="vende-link">Vendé</a>
-      <a href="#" class="menu-link" id="compra-link">Comprá</a>
+      <div class="dropdown">
+        <a href="#" class="menu-link" id="compra-link">Comprá</a>
+        <div class="dropdown-content">
+          <a href="#" id="argentina-link">Propiedades en Argentina</a>
+          <a href="#" id="brasil-link">Propiedades en Brasil</a>
+        </div>
+      </div>
       <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
       <a href="#" class="menu-link" id="inverti-link">Invertí</a>
     </div>
@@ -339,13 +352,38 @@
     const inicioContent = document.getElementById('inicio-content');
     const compraContent = document.getElementById('compra-content');
     
-    document.getElementById('compra-link').addEventListener('click', function(e) {
-      e.preventDefault();
+    // Función para mostrar contenido de compra (Argentina)
+    function showCompraContent() {
       sidebar.classList.add('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
+    }
+    
+    // Event listeners
+    document.getElementById('compra-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      // El dropdown se muestra al hacer hover, no hace nada al click
+    });
+    
+    document.getElementById('argentina-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      showCompraContent();
+    });
+    
+    document.getElementById('brasil-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      // Para Brasil, puedes cambiar la URL del iframe o redirigir a otra página
+      // Por ahora muestra el contenido actual pero con URL de Brasil (ajustar según tu backend)
+      sidebar.classList.add('active');
+      vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
+      compraContent.classList.add('active');
+      // Cambiar esta URL según tu implementación para propiedades en Brasil
+      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar&country=brasil';
     });
     
     document.getElementById('alquila-link').addEventListener('click', function(e) {
