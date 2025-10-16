@@ -514,7 +514,8 @@
       font-weight: bold;
     }
     .pre-tasacion-form input,
-    .pre-tasacion-form textarea {
+    .pre-tasacion-form textarea,
+    .pre-tasacion-form select {
       width: 100%;
       padding: 8px;
       margin-bottom: 10px;
@@ -713,6 +714,15 @@
           <textarea id="direccion" name="direccion" rows="3" required></textarea>
           <label for="metros">Metros Cuadrados:</label>
           <input type="number" id="metros" name="metros" required>
+          <label for="tipo-propiedad">Tipo de Propiedad:</label>
+          <select id="tipo-propiedad" name="tipo-propiedad" required>
+            <option value="">Seleccione una opción</option>
+            <option value="Casa">Casa</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Terreno">Terreno</option>
+            <option value="Local Comercial">Local Comercial</option>
+            <option value="Otro">Otro</option>
+          </select>
           <button type="submit">Enviar</button>
         </form>
       </div>
@@ -796,7 +806,8 @@
       const telefono = document.getElementById('telefono').value;
       const direccion = document.getElementById('direccion').value;
       const metros = document.getElementById('metros').value;
-      const mensaje = `Solicitud de Pre Tasación\nNombre: ${nombre}\nTeléfono: ${telefono}\nDirección: ${direccion}\nMetros Cuadrados: ${metros}\nFecha: ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`;
+      const tipoPropiedad = document.getElementById('tipo-propiedad').value;
+      const mensaje = `Solicitud de Pre Tasación\nNombre: ${nombre}\nTeléfono: ${telefono}\nDirección: ${direccion}\nMetros Cuadrados: ${metros}\nTipo de Propiedad: ${tipoPropiedad}\nFecha: ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`;
       const whatsappURL = `https://wa.me/5493756505202?text=${encodeURIComponent(mensaje)}`;
       window.open(whatsappURL, '_blank');
       preTasacionForm.reset();
