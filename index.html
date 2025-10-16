@@ -179,7 +179,7 @@
       object-fit: cover;
       max-height: 40vh;
     }
-    .compra-content {
+    .compra-content, .alquila-content {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -233,8 +233,7 @@
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 15px;
       max-width: 100%;
-      margin-top: 15px;
-      order: 1;
+      margin-bottom: 15px;
     }
     .image-item {
       text-align: center;
@@ -308,7 +307,6 @@
       .image-grid {
         grid-template-columns: repeat(2, 1fr);
         max-width: 600px;
-        order: 1;
       }
       .image-item img {
         max-width: 250px;
@@ -397,6 +395,30 @@
         <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar" onload="document.querySelector('#compra-sidebar .loading-message').style.display='none';"></iframe>
       </div>
     </div>
+    <div class="content-area alquila-content" id="alquila-content">
+      <div class="image-grid">
+        <div class="image-item">
+          <img src="https://i.postimg.cc/Vky6jL2K/7.png" alt="Terrenos">
+          <p>Terrenos</p>
+        </div>
+        <div class="image-item">
+          <img src="https://i.postimg.cc/xdn14pfZ/8.png" alt="Departamentos">
+          <p>Departamentos</p>
+        </div>
+        <div class="image-item">
+          <img src="https://i.postimg.cc/vBS8DQWS/9.png" alt="Casas">
+          <p>Casas</p>
+        </div>
+        <div class="image-item">
+          <img src="https://i.postimg.cc/3NsKCnfZ/10.png" alt="Locales Comerciales">
+          <p>Locales Comerciales</p>
+        </div>
+      </div>
+      <div class="sidebar" id="alquila-sidebar">
+        <span class="loading-message">Cargando propiedades...</span>
+        <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar" onload="document.querySelector('#alquila-sidebar .loading-message').style.display='none';"></iframe>
+      </div>
+    </div>
     <div class="content-area brasil-content" id="brasil-content">
       <div class="brasil-property">
         <img src="https://i.postimg.cc/1X6tLNfs/Imagem-do-Whats-App-de-2025-09-19-s-10-38-49-c0328dd0.jpg" alt="Golden Tower 1102">
@@ -410,6 +432,7 @@
     const vendeContent = document.getElementById('vende-content');
     const inicioContent = document.getElementById('inicio-content');
     const compraContent = document.getElementById('compra-content');
+    const alquilaContent = document.getElementById('alquila-content');
     const brasilContent = document.getElementById('brasil-content');
     
     // Función para mostrar contenido de compra (Argentina)
@@ -418,8 +441,20 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
+      alquilaContent.classList.remove('active');
       brasilContent.classList.remove('active');
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
+    }
+    
+    // Función para mostrar contenido de alquiler
+    function showAlquilaContent() {
+      sidebar.classList.add('active');
+      vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
+      alquilaContent.classList.add('active');
+      brasilContent.classList.remove('active');
+      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
     }
     
     // Event listeners
@@ -442,17 +477,13 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
       brasilContent.classList.add('active');
     });
     
     document.getElementById('alquila-link').addEventListener('click', function(e) {
       e.preventDefault();
-      sidebar.classList.add('active');
-      vendeContent.classList.remove('active');
-      inicioContent.classList.remove('active');
-      compraContent.classList.remove('active');
-      brasilContent.classList.remove('active');
-      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
+      showAlquilaContent();
     });
     
     document.getElementById('vende-link').addEventListener('click', function(e) {
@@ -461,6 +492,7 @@
       vendeContent.classList.add('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
       brasilContent.classList.remove('active');
     });
     
@@ -470,6 +502,7 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.add('active');
       compraContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
       brasilContent.classList.remove('active');
     });
     
@@ -479,6 +512,7 @@
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
       brasilContent.classList.remove('active');
     });
   </script>
