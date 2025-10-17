@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Publicar Anuncio - Inmobiliaria</title>
     <style>
-        /* ... mismo CSS sin cambios ... */
+        /* ... MISMO CSS SIN CAMBIOS ... */
         * {
             margin: 0;
             padding: 0;
@@ -581,7 +581,63 @@
             };
         }
 
-        // === ENVIAR A GOOGLE APPS SCRIPT CON NO-CORS ===
+        // ⭐ NUEVA FUNCIÓN: ENVÍO COMPLETO A GOOGLE APPS SCRIPT ⭐
+        async function enviarPublicacionCompleta(datosPublicacion) {
+            try {
+                console.log('🚀 ENVIANDO PUBLICACIÓN COMPLETA A GOOGLE SHEETS...');
+                
+                const formDataCompleto = {
+                    action: 'procesarPublicacionCompleta', // ⭐ NUEVA ACCIÓN
+                    titulo: datosPublicacion.titulo,
+                    tipo: datosPublicacion.tipo,
+                    subtipo: datosPublicacion.subtipo,
+                    precio: datosPublicacion.precio,
+                    pais: datosPublicacion.pais,
+                    descripcion: datosPublicacion.descripcion,
+                    images: uploadedImageUrls, // ⭐ ARRAY DE BASE64/IMÁGENES DIRECTO
+                    timestamp: new Date().toISOString(),
+                    origin: ORIGIN
+                };
+
+                console.log('📤 Datos completos enviados:', {
+                    action: formDataCompleto.action,
+                    titulo: formDataCompleto.titulo,
+                    imagenes: formDataCompleto.images.length,
+                    filaEsperada: 'Automática'
+                });
+
+                // ✅ MÉTODO CORS HABILITADO (FUNCIONA CON LA NUEVA FUNCIÓN)
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'cors', // ⭐ CAMBIADO A CORS (funciona con nueva función)
+                    cache: 'no-cache',
+                    credentials: 'omit',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formDataCompleto)
+                });
+
+                console.log('📥 Respuesta completa:', response.status, response.type);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ RESPUESTA COMPLETA:', result);
+                
+                return result;
+
+            } catch (error) {
+                console.error('❌ Error envío completo:', error);
+                
+                // 🔄 FALLBACK A MÉTODOS ORIGINALES (sin cambios)
+                return await enviarAGoogleAppsScript(datosPublicacion);
+            }
+        }
+
+        // === FUNCIÓN ORIGINAL (INTACTA - SIN CAMBIOS) ===
         async function enviarAGoogleAppsScript(publicationData) {
             try {
                 const imagenesParaBackend = Array.isArray(publicationData.imagenes) 
@@ -640,7 +696,7 @@
             }
         }
 
-        // === WORKAROUND CON GET PARAMETERS ===
+        // === WORKAROUND CON GET PARAMETERS (INTACTA) ===
         async function enviarConGetFallback(publicationData) {
             try {
                 console.log('🛠️ Usando fallback GET con parámetros URL...');
@@ -690,7 +746,7 @@
             }
         }
 
-        // === MÉTODO FINAL: FORM POST TRADICIONAL ===
+        // === MÉTODO FINAL: FORM POST TRADICIONAL (INTACTA) ===
         async function enviarConFormPost(publicationData) {
             console.log('📋 Usando form post tradicional como último recurso...');
             
@@ -730,7 +786,7 @@
             });
         }
 
-        // === FUNCIÓN DE PRUEBA DIRECTA ===
+        // === FUNCIÓN DE PRUEBA DIRECTA (INTACTA) ===
         async function probarConexionAppsScript() {
             try {
                 const response = await fetch(`${WEB_APP_URL}?test=1&mode=no-cors`, {
@@ -745,7 +801,7 @@
             }
         }
 
-        // Previsualización y subida automática de imágenes
+        // Previsualización y subida automática de imágenes (INTACTA)
         imagenesInput.addEventListener('change', async function(e) {
             const files = Array.from(e.target.files);
             imagePreview.innerHTML = '';
@@ -800,7 +856,7 @@
             }
         });
 
-        // Validación y envío del formulario
+        // ⭐ FORM SUBMIT ACTUALIZADO CON NUEVA LÓGICA ⭐
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -818,43 +874,38 @@
             showLoading();
             
             try {
+                // ⭐ NUEVA ESTRUCTURA DE DATOS
                 const publicationData = {
-                    action: 'addPublicacionToPublicar', // Nueva acción para la hoja "Publicar"
                     titulo: document.getElementById('titulo').value.trim(),
                     tipo: document.getElementById('tipo').value,
                     subtipo: document.getElementById('subtipo').value,
                     precio: parseFloat(document.getElementById('precio').value),
                     pais: document.getElementById('pais').value,
-                    imagenes: uploadedImageUrls,
                     descripcion: document.getElementById('descripcion').value.trim(),
-                    timestamp: new Date().toISOString(),
-                    hoja: 'Publicar' // Especificar la hoja explícitamente
+                    timestamp: new Date().toISOString()
                 };
 
-                console.log('📤 Enviando datos con imágenes de Cloudinary a la hoja Publicar:', publicationData);
+                console.log('🚀 PUBLICACIÓN COMPLETA - Enviando a Google Sheets:', publicationData);
 
-                // Probar conexión primero
-                const conexionOk = await probarConexionAppsScript();
-                console.log('🔗 Conexión Apps Script:', conexionOk ? 'OK' : 'Usando fallback');
-
-                const result = await enviarAGoogleAppsScript(publicationData);
+                // ⭐ LLAMADA ÚNICA: Publicar + Imágenes
+                const result = await enviarPublicacionCompleta(publicationData);
 
                 if (result.success) {
-                    showSuccess(result);
+                    showSuccess(result); // ⭐ FUNCIÓN ACTUALIZADA
                     resetForm();
                 } else {
-                    showError(result.message || 'Error desconocido al publicar en la hoja Publicar');
+                    showError(result.error || 'Error desconocido al publicar');
                 }
                 
             } catch (error) {
                 console.error('❌ Error completo:', error);
-                showError(`Error de conexión: ${error.message}. Los datos se enviaron con fallback a la hoja Publicar.`);
+                showError(`Error de conexión: ${error.message}`);
             } finally {
                 hideLoading();
             }
         });
 
-        // === FUNCIONES DE VALIDACIÓN Y UI ===
+        // === FUNCIONES DE VALIDACIÓN Y UI (ACTUALIZADAS) ===
         function validateForm() {
             let isValid = true;
             const errors = document.querySelectorAll('.error');
@@ -893,13 +944,16 @@
             return isValid;
         }
 
+        // ⭐ FUNCIÓN showSuccess ACTUALIZADA PARA RESPUESTA COMPLETA ⭐
         function showSuccess(result) {
             const titulo = document.getElementById('titulo').value;
             successMessage.innerHTML = `
-                ✅ ¡Anuncio "${titulo}" publicado exitosamente en la hoja Publicar!<br>
-                📸 ${uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
-                🆔 ID: ${result.id || 'N/A'}<br>
-                <small>✅ Datos enviados a Google Sheets (hoja: Publicar, método: ${result.method || 'no-cors'})</small>
+                ✅ ¡Anuncio "${titulo}" publicado COMPLETAMENTE!<br>
+                📸 ${result.imagenes.exitosas} imágenes subidas a Cloudinary<br>
+                📊 Guardado en <strong>Fila ${result.publicacion.fila}</strong> de Google Sheets<br>
+                🆔 ID: ${result.publicacion.id}<br>
+                🔗 <a href="${result.url_verificacion}" target="_blank">Ver en Google Sheets</a><br>
+                <small>✅ ${result.message}</small>
             `;
             successMessage.style.display = 'block';
             successMessage.scrollIntoView({ behavior: 'smooth' });
@@ -907,7 +961,7 @@
 
         function showError(message) {
             errorMessage.innerHTML = `
-                ❌ Error al publicar el anuncio en la hoja Publicar:<br>
+                ❌ Error al publicar el anuncio:<br>
                 <strong>${message}</strong>
             `;
             errorMessage.style.display = 'block';
@@ -915,10 +969,10 @@
         }
 
         function showLoading() {
-            loadingMessage.innerHTML = '⏳ Enviando a la hoja Publicar en Google Sheets...';
+            loadingMessage.innerHTML = '⏳ Publicando + Subiendo Imágenes a Google Sheets...';
             loadingMessage.style.display = 'block';
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '⏳ Enviando...';
+            submitBtn.innerHTML = '⏳ Procesando...';
         }
 
         function hideLoading() {
@@ -946,7 +1000,7 @@
             }, 3000);
         }
 
-        // Validaciones en tiempo real
+        // Validaciones en tiempo real (INTACTAS)
         ['titulo', 'precio', 'descripcion'].forEach(field => {
             document.getElementById(field).addEventListener('blur', function() {
                 if (this.value.trim()) {
@@ -984,7 +1038,8 @@
         });
 
         // Inicialización
-        console.log('✅ Formulario inicializado con Cloudinary OK + Google Apps Script NO-CORS');
+        console.log('✅ Formulario inicializado con NUEVA LÓGICA COMPLETA');
+        console.log('🚀 UNA SOLA LLAMADA: Publicar + Imágenes → Google Sheets');
         console.log('📡 Web App URL:', WEB_APP_URL);
         console.log('☁️ Cloudinary funcionando correctamente');
     </script>
