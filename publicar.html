@@ -114,6 +114,7 @@
             cursor: pointer;
             transition: transform 0.2s;
             width: 100%;
+            margin-bottom: 10px;
         }
 
         .btn:hover {
@@ -122,6 +123,12 @@
 
         .btn-secondary {
             background: #6c757d;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .error {
@@ -138,6 +145,40 @@
             border-radius: 5px;
             margin-bottom: 20px;
             display: none;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
@@ -163,16 +204,19 @@
         </div>
 
         <div class="form-container">
+            <div class="error-message" id="errorMessage"></div>
             <div class="success" id="successMessage">
                 ✅ ¡Anuncio publicado exitosamente!
             </div>
+            <div class="loading" id="loadingMessage">⏳ Publicando tu anuncio...</div>
 
             <form id="publicationForm">
                 <div class="form-group">
                     <label for="titulo">Título de la Publicación *</label>
                     <input type="text" id="titulo" name="titulo" required 
-                           placeholder="Ej: Hermoso departamento 3 ambientes en Palermo">
-                    <div class="error" id="tituloError">El título es obligatorio</div>
+                           placeholder="Ej: Hermoso departamento 3 ambientes en Palermo"
+                           maxlength="100">
+                    <div class="error" id="tituloError">El título es obligatorio (máx 100 caracteres)</div>
                 </div>
 
                 <div class="form-row">
@@ -204,16 +248,16 @@
                     <div class="form-group">
                         <label for="precio">Precio *</label>
                         <input type="number" id="precio" name="precio" required 
-                               placeholder="Ej: 250000" step="1000">
-                        <div class="error" id="precioError">Ingresa un precio válido</div>
+                               placeholder="Ej: 250000" step="1000" min="0">
+                        <div class="error" id="precioError">Ingresa un precio válido (mínimo $1,000)</div>
                     </div>
 
                     <div class="form-group">
                         <label for="pais">País *</label>
                         <select id="pais" name="pais" required>
                             <option value="">Seleccionar país</option>
-                            <option value="Argentina">Argentina</option>
-                            <option value="Brasil">Brasil</option>
+                            <option value="Argentina">🇦🇷 Argentina</option>
+                            <option value="Brasil">🇧🇷 Brasil</option>
                         </select>
                         <div class="error" id="paisError">Selecciona un país</div>
                     </div>
@@ -222,6 +266,7 @@
                 <div class="form-group">
                     <label for="imagenes">Imágenes * (Máximo 5)</label>
                     <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple required>
+                    <small style="color: #666; font-size: 0.9em;">Formatos aceptados: JPG, PNG, GIF (máx. 5MB por imagen)</small>
                     <div class="image-preview" id="imagePreview"></div>
                     <div class="error" id="imagenesError">Debes seleccionar al menos una imagen</div>
                 </div>
@@ -229,46 +274,141 @@
                 <div class="form-group">
                     <label for="descripcion">Descripción Detallada *</label>
                     <textarea id="descripcion" name="descripcion" required 
-                              placeholder="Describe la propiedad, características, ubicación, amenities, etc..."></textarea>
-                    <div class="error" id="descripcionError">La descripción es obligatoria</div>
+                              placeholder="Describe la propiedad, características, ubicación, amenities, etc..." 
+                              maxlength="1000"></textarea>
+                    <small style="color: #666; font-size: 0.9em;">Máximo 1000 caracteres</small>
+                    <div class="error" id="descripcionError">La descripción es obligatoria (máx 1000 caracteres)</div>
                 </div>
 
-                <button type="submit" class="btn">🚀 Publicar Anuncio</button>
+                <button type="submit" class="btn" id="submitBtn">🚀 Publicar Anuncio</button>
                 <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">← Volver al Inicio</button>
             </form>
         </div>
     </div>
 
     <script>
+        // URL del Web App de Google Apps Script
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
+
+        // Elementos del DOM
+        const form = document.getElementById('publicationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const imagePreview = document.getElementById('imagePreview');
+
         // Previsualización de imágenes
         document.getElementById('imagenes').addEventListener('change', function(e) {
             const files = e.target.files;
-            const preview = document.getElementById('imagePreview');
-            preview.innerHTML = '';
+            imagePreview.innerHTML = '';
             
             if (files.length > 5) {
-                alert('Solo puedes subir un máximo de 5 imágenes');
+                alert('❌ Solo puedes subir un máximo de 5 imágenes');
                 this.value = '';
                 return;
             }
             
+            let totalSize = 0;
             Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        preview.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
+                // Validar tipo de archivo
+                if (!file.type.startsWith('image/')) {
+                    alert(`❌ ${file.name} no es una imagen válida`);
+                    this.value = '';
+                    return;
                 }
+                
+                // Validar tamaño (5MB máximo)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`❌ ${file.name} es muy grande (máx 5MB)`);
+                    this.value = '';
+                    return;
+                }
+                
+                totalSize += file.size;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.title = file.name;
+                    imagePreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
             });
+            
+            if (totalSize > 25 * 1024 * 1024) {
+                alert('❌ El tamaño total de las imágenes no puede exceder 25MB');
+                this.value = '';
+            }
         });
 
-        // Validación del formulario
-        document.getElementById('publicationForm').addEventListener('submit', async function(e) {
+        // Validación y envío del formulario
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Limpiar mensajes anteriores
+            hideMessages();
+            
+            // Validar formulario
+            if (!validateForm()) {
+                return;
+            }
+
+            // Mostrar loading
+            showLoading();
+            
+            try {
+                // Preparar datos
+                const imagenes = Array.from(document.getElementById('imagenes').files).map(f => f.name);
+                const publicationData = {
+                    titulo: document.getElementById('titulo').value.trim(),
+                    tipo: document.getElementById('tipo').value,
+                    subtipo: document.getElementById('subtipo').value,
+                    precio: parseFloat(document.getElementById('precio').value),
+                    pais: document.getElementById('pais').value,
+                    imagenes: imagenes,
+                    descripcion: document.getElementById('descripcion').value.trim()
+                };
+
+                console.log('📤 Enviando datos:', publicationData);
+
+                // Enviar a Google Apps Script
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify(publicationData)
+                });
+
+                // Verificar si la respuesta es exitosa
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log('📥 Respuesta del servidor:', result);
+
+                if (result.success) {
+                    showSuccess(result);
+                    resetForm();
+                } else {
+                    throw new Error(result.message || 'Error desconocido del servidor');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error completo:', error);
+                showError(error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Función de validación del formulario
+        function validateForm() {
             let isValid = true;
             const errors = document.querySelectorAll('.error');
             errors.forEach(error => error.style.display = 'none');
@@ -283,83 +423,96 @@
                 }
             });
 
+            // Validar título
+            const titulo = document.getElementById('titulo').value.trim();
+            if (titulo.length < 5 || titulo.length > 100) {
+                document.getElementById('tituloError').textContent = 'El título debe tener entre 5 y 100 caracteres';
+                document.getElementById('tituloError').style.display = 'block';
+                isValid = false;
+            }
+
             // Validar precio
-            const precio = document.getElementById('precio').value;
-            if (precio <= 0) {
-                document.getElementById('precioError').textContent = 'El precio debe ser mayor a 0';
+            const precio = parseFloat(document.getElementById('precio').value);
+            if (precio < 1000) {
+                document.getElementById('precioError').textContent = 'El precio debe ser mínimo $1,000';
                 document.getElementById('precioError').style.display = 'block';
                 isValid = false;
             }
 
-            if (isValid) {
-                // Mostrar loading
-                const submitBtn = document.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '⏳ Publicando...';
-                submitBtn.disabled = true;
-
-                try {
-                    // Preparar datos
-                    const imagenes = Array.from(document.getElementById('imagenes').files).map(f => f.name);
-                    const publicationData = {
-                        titulo: document.getElementById('titulo').value,
-                        tipo: document.getElementById('tipo').value,
-                        subtipo: document.getElementById('subtipo').value,
-                        precio: parseFloat(precio),
-                        pais: document.getElementById('pais').value,
-                        imagenes: imagenes,
-                        descripcion: document.getElementById('descripcion').value
-                    };
-
-                    // Enviar a Google Apps Script
-                    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
-                    const response = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(publicationData)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.success) {
-                        document.getElementById('successMessage').innerHTML = 
-                            `✅ ¡Anuncio "${publicationData.titulo}" publicado exitosamente! ID: ${result.id}`;
-                        document.getElementById('successMessage').style.display = 'block';
-                        
-                        // Limpiar formulario
-                        this.reset();
-                        document.getElementById('imagePreview').innerHTML = '';
-                        
-                        // Scroll al mensaje
-                        document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
-                        
-                        setTimeout(() => {
-                            if (confirm('¿Deseas ver todas las publicaciones?')) {
-                                window.location.href = 'index.html';
-                            }
-                        }, 3000);
-                    } else {
-                        throw new Error(result.message);
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('Error al publicar: ' + error.message);
-                } finally {
-                    // Restaurar botón
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                }
+            // Validar descripción
+            const descripcion = document.getElementById('descripcion').value.trim();
+            if (descripcion.length < 10 || descripcion.length > 1000) {
+                document.getElementById('descripcionError').textContent = 'La descripción debe tener entre 10 y 1000 caracteres';
+                document.getElementById('descripcionError').style.display = 'block';
+                isValid = false;
             }
-        });
+
+            return isValid;
+        }
+
+        // Mostrar mensaje de éxito
+        function showSuccess(result) {
+            const titulo = document.getElementById('titulo').value;
+            successMessage.innerHTML = `
+                ✅ ¡Anuncio "${titulo}" publicado exitosamente!<br>
+                <small>ID: <strong>${result.id}</strong> | Fila: ${result.row}</small>
+            `;
+            successMessage.style.display = 'block';
+            successMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Mostrar mensaje de error
+        function showError(message) {
+            errorMessage.innerHTML = `
+                ❌ Error al publicar el anuncio:<br>
+                <strong>${message}</strong><br>
+                <small>Por favor, verifica tu conexión e intenta nuevamente</small>
+            `;
+            errorMessage.style.display = 'block';
+            errorMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Mostrar loading
+        function showLoading() {
+            loadingMessage.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Publicando...';
+            loadingMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Ocultar loading
+        function hideLoading() {
+            loadingMessage.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '🚀 Publicar Anuncio';
+        }
+
+        // Ocultar todos los mensajes
+        function hideMessages() {
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+
+        // Resetear formulario
+        function resetForm() {
+            form.reset();
+            imagePreview.innerHTML = '';
+            // Redirigir después de 4 segundos
+            setTimeout(() => {
+                if (confirm('¿Deseas ver todas las publicaciones en el catálogo?')) {
+                    window.location.href = 'index.html';
+                } else {
+                    // Recargar para nuevo anuncio
+                    window.location.reload();
+                }
+            }, 4000);
+        }
 
         // Validación en tiempo real
         ['titulo', 'precio', 'descripcion'].forEach(field => {
             document.getElementById(field).addEventListener('blur', function() {
-                if (!this.value) {
-                    document.getElementById(field + 'Error').style.display = 'block';
+                if (this.value) {
+                    document.getElementById(field + 'Error').style.display = 'none';
                 }
             });
         });
@@ -371,6 +524,34 @@
                 }
             });
         });
+
+        // Validar título en tiempo real
+        document.getElementById('titulo').addEventListener('input', function() {
+            const length = this.value.length;
+            if (length > 0 && length <= 100) {
+                document.getElementById('tituloError').style.display = 'none';
+            }
+        });
+
+        // Validar descripción en tiempo real
+        document.getElementById('descripcion').addEventListener('input', function() {
+            const length = this.value.length;
+            const counter = document.createElement('small');
+            counter.style.color = length > 900 ? '#dc3545' : '#666';
+            counter.style.fontSize = '0.8em';
+            counter.textContent = `${length}/1000 caracteres`;
+            
+            // Remover contador anterior
+            const existingCounter = this.parentNode.querySelector('small:last-of-type');
+            if (existingCounter && existingCounter.textContent.includes('caracteres')) {
+                existingCounter.remove();
+            }
+            
+            this.parentNode.appendChild(counter);
+        });
+
+        console.log('✅ Formulario inicializado correctamente');
+        console.log('📡 Web App URL:', WEB_APP_URL);
     </script>
 </body>
 </html>
