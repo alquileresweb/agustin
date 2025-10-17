@@ -451,8 +451,34 @@
         order: 1;
       }
       .content-area {
+        flex: 1;
         padding: 20px;
         order: 2;
+        width: 60%; /* Sidebar ocupa 40%, content-area ocupa 60% */
+        max-width: 60%;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      /* Centrado específico para secciones Vendé, Comprá y Alquilá */
+      #vende-content.active,
+      .compra-content.active,
+      .alquila-content.active,
+      .brasil-content.active {
+        width: 100%;
+        max-width: 100%;
+        padding: 20px;
+        margin: 0;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      #vende-content.active > *,
+      .compra-content.active > *,
+      .alquila-content.active > *,
+      .brasil-content.active > * {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
       }
       .pre-tasacion-btn {
         padding: 15px 30px;
@@ -473,6 +499,8 @@
         grid-template-columns: repeat(3, 1fr);
         max-width: 1200px;
         padding: 0;
+        width: 100%;
+        margin: 0 auto;
       }
       .benefit-box img {
         max-width: 300px;
@@ -483,8 +511,10 @@
       }
       .image-grid {
         grid-template-columns: repeat(2, 1fr);
-        max-width: 600px;
+        max-width: 800px;
         order: 1;
+        width: 100%;
+        margin: 0 auto;
       }
       .image-item img {
         max-width: 250px;
@@ -495,6 +525,8 @@
       .brasil-property-grid, .alquila-property-grid, .property-grid {
         grid-template-columns: repeat(2, minmax(400px, 1fr));
         width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
         column-gap: 20px;
         row-gap: 20px;
         box-sizing: border-box;
@@ -602,24 +634,6 @@
     #vende-content .benefits-boxes {
       justify-items: center;
       align-items: center;
-    }
-    /* Asegurar centrado completo en Comprá, Vendé y Alquilá */
-    #vende-content > *, .compra-content > *, .alquila-content > *, .brasil-content > * {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .compra-content .image-grid,
-    .compra-content .property-grid,
-    .brasil-content .property-grid,
-    .alquila-content .property-grid {
-      max-width: 100%;
-      width: 100%;
-    }
-    /* Ajustes específicos para Comprá */
-    .compra-content .image-grid {
-      padding: 0 10px;
-      box-sizing: border-box;
     }
   </style>
 </head>
