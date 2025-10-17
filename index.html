@@ -264,6 +264,49 @@
       color: #333;
       margin-bottom: 15px;
     }
+    /* Estilos para tarjetas dinámicas de propiedades */
+    .property-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      width: 100%;
+      justify-items: center;
+      box-sizing: border-box;
+    }
+    .property-card {
+      background-color: #f8f8f8;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .property-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .property-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .property-price {
+      font-size: 1.2em;
+      color: #28a745;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    .property-type {
+      color: #666;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
     .ver-mas-btn, .whatsapp-btn {
       background-color: #007bff;
       color: white;
@@ -435,42 +478,23 @@
       .image-item p {
         font-size: 1.1em;
       }
-      .brasil-property-grid {
+      .brasil-property-grid, .alquila-property-grid, .property-grid {
         grid-template-columns: repeat(2, minmax(400px, 1fr));
         width: 100%;
         column-gap: 20px;
         row-gap: 20px;
         box-sizing: border-box;
       }
-      .brasil-property-card {
+      .brasil-property-card, .alquila-property-card, .property-card {
         width: 100%;
         max-width: 600px;
         box-sizing: border-box;
       }
-      .brasil-property-card img {
+      .brasil-property-card img, .alquila-property-card img, .property-card img {
         height: 300px;
         max-width: 100%;
       }
-      .brasil-property-title {
-        font-size: 2em;
-      }
-      .alquila-property-grid {
-        grid-template-columns: repeat(2, minmax(400px, 1fr));
-        width: 100%;
-        column-gap: 20px;
-        row-gap: 20px;
-        box-sizing: border-box;
-      }
-      .alquila-property-card {
-        width: 100%;
-        max-width: 600px;
-        box-sizing: border-box;
-      }
-      .alquila-property-card img {
-        height: 300px;
-        max-width: 100%;
-      }
-      .alquila-property-title {
+      .brasil-property-title, .alquila-property-title, .property-title {
         font-size: 2em;
       }
       .casa-detail-content {
@@ -549,6 +573,12 @@
     .pre-tasacion-form .close-btn:hover {
       color: #000;
     }
+    .loading-properties {
+      text-align: center;
+      padding: 50px;
+      font-size: 1.2em;
+      color: #666;
+    }
   </style>
 </head>
 <body>
@@ -619,6 +649,8 @@
         <span class="loading-message">Cargando propiedades...</span>
         <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar" onload="document.querySelector('#compra-sidebar .loading-message').style.display='none';"></iframe>
       </div>
+      <!-- Contenedor para propiedades de Argentina dinámicas -->
+      <div id="argentina-properties" class="property-grid" style="display: none;"></div>
     </div>
     
     <!-- Modal para detalle de Casa -->
@@ -632,68 +664,13 @@
     </div>
     
     <div class="content-area brasil-content" id="brasil-content">
-      <div class="brasil-property-grid">
-        <div class="brasil-property-card">
-          <img src="https://i.postimg.cc/1X6tLNfs/Imagem-do-Whats-App-de-2025-09-19-s-10-38-49-c0328dd0.jpg" alt="Golden Tower 1102">
-          <div class="brasil-property-title">Golden Tower 1102</div>
-          <a href="https://drive.google.com/drive/folders/1Ovl_qyNY5ioAEOB3KKadP3qsagXBF40Y?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Golden%20Tower%201102" target="_blank" class="whatsapp-btn">Contactar</a>
-        </div>
-        <div class="brasil-property-card">
-          <img src="https://i.postimg.cc/76YD3tvr/Whats-App-Image-2022-12-15-at-13-36-44.jpg" alt="STUDIOS MAMPITUBA">
-          <div class="brasil-property-title">STUDIOS MAMPITUBA</div>
-          <a href="https://drive.google.com/drive/folders/10jYrDKR7x22tUFKsGZTTvto6orHWGono?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20STUDIOS%20MAMPITUBA" target="_blank" class="whatsapp-btn">Contactar</a>
-        </div>
-        <div class="brasil-property-card">
-          <img src="https://i.postimg.cc/Bv3J6QMc/VISTA-02-EXT-FACHADA-ESQUINA-01-FINAL.jpg" alt="Edificio Cortille">
-          <div class="brasil-property-title">Edificio Cortille</div>
-          <a href="https://drive.google.com/drive/folders/1BWZWwKmkKt7K8xJCHIM-a4mMua8n0xTf?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Edificio%20Cortille" target="_blank" class="whatsapp-btn">Contactar</a>
-        </div>
-        <div class="brasil-property-card">
-          <img src="https://i.postimg.cc/jqBHFGMm/PHOTO-2022-08-18-10-55-02.jpg" alt="Grand Copacabana">
-          <div class="brasil-property-title">Grand Copacabana</div>
-          <a href="https://drive.google.com/drive/folders/1PXRJ8HF4KDRI20LExmyM5ec9LgKGsQHc?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Grand%20Copacabana" target="_blank" class="whatsapp-btn">Contactar</a>
-        </div>
-        <div class="brasil-property-card">
-          <img src="https://i.postimg.cc/d0SkTyXR/9.jpg" alt="Punta del Sole">
-          <div class="brasil-property-title">Punta del Sole</div>
-          <a href="https://drive.google.com/drive/folders/1Jgu-oU7Bwnd7ZAjF8nNBAVKbtTdHCAIW?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Punta%20del%20Sole" target="_blank" class="whatsapp-btn">Contactar</a>
-        </div>
-        <div class="brasil-property-card">
-          <img src="https://i.postimg.cc/qB2qpSJT/IMG-01-EXT-DIURNA.jpg" alt="Bella Vita">
-          <div class="brasil-property-title">Bella Vita</div>
-          <a href="https://drive.google.com/drive/folders/1Ob9XRrQ5DVeOxsxA6Q3vEGz2EW28idqE?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Bella%20Vita" target="_blank" class="whatsapp-btn">Contactar</a>
-        </div>
-        <div class="brasil-property-card">
-          <img src="https://i.postimg.cc/J0KWGbYb/IMG-6001.jpg" alt="Ibiza 1301">
-          <div class="brasil-property-title">Ibiza 1301</div>
-          <a href="https://drive.google.com/drive/folders/1Hdi98PB71PqACAFwxtiRxDclGujKtGAl?hl=es" target="_blank" class="ver-mas-btn">Ver más</a>
-          <a href="https://wa.me/5493756505202?text=Me%20interesa%20comprar%20propiedad%20Ibiza%201301" target="_blank" class="whatsapp-btn">Contactar</a>
-        </div>
+      <div id="brasil-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
     </div>
     <div class="content-area alquila-content" id="alquila-content">
-      <div class="alquila-property-grid">
-        <div class="alquila-property-card">
-          <img src="https://i.postimg.cc/qqgS19MY/lwov4tzv5hoav5h0zd3g.jpg" alt="Departamento 2 Ambientes">
-          <div class="alquila-property-title">Departamento 2 Ambientes</div>
-          <a href="https://alquiya.com.ar/alquiler.html?id=793df0a9-8b49-4533-a189-04a6fdb347db" target="_blank" class="ver-mas-btn">Ver más</a>
-        </div>
-        <div class="alquila-property-card">
-          <img src="https://i.postimg.cc/qM3ZgctG/upmqnzu25i9jrgpfroxc.jpg" alt="Departamento Monoambiente">
-          <div class="alquila-property-title">Departamento Monoambiente</div>
-          <a href="https://alquiya.com.ar/alquiler.html?id=3b404f0a-45bd-4507-b9bd-4f6cf86471c9" target="_blank" class="ver-mas-btn">Ver más</a>
-        </div>
-        <div class="alquila-property-card">
-          <img src="https://i.postimg.cc/B6jRgrvK/Whats-App-Image-2025-10-15-at-10-14-59.jpg" alt="Departamento 2 Ambientes">
-          <div class="alquila-property-title">Departamento 2 Ambientes</div>
-          <a href="https://alquiya.com.ar/alquiler.html?id=dc7984f1-df12-4bc6-9026-0865c8ec067e" target="_blank" class="ver-mas-btn">Ver más</a>
-        </div>
+      <div id="alquila-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades para alquilar...</div>
       </div>
       <div class="sidebar" id="alquila-sidebar">
         <span class="loading-message">Cargando propiedades...</span>
@@ -736,6 +713,9 @@
     const brasilContent = document.getElementById('brasil-content');
     const alquilaContent = document.getElementById('alquila-content');
     const imageGrid = compraContent.querySelector('.image-grid');
+    const argentinaProperties = document.getElementById('argentina-properties');
+    const brasilProperties = document.getElementById('brasil-properties');
+    const alquilaProperties = document.getElementById('alquila-properties');
     
     // Elementos del modal de Casa
     const casaDetail = document.getElementById('casa-detail');
@@ -746,6 +726,175 @@
     const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
     const preTasacionForm = document.getElementById('pre-tasacion-form');
     
+    // Almacén global de propiedades cargadas
+    let allProperties = [];
+    
+    // Función para cargar propiedades desde Google Sheets
+    async function loadPropertiesFromSheet() {
+      try {
+        // URL de tu Google Sheet - IMPORTANTE: Debes publicar la hoja como CSV
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/1xZYDiKh2DMi66_lIrZeYPL4onXgaZsQ6w8Q9d0isZ6E/export?format=csv';
+        const response = await fetch(sheetUrl);
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const csvText = await response.text();
+        
+        // Parsear CSV simple
+        const rows = csvText.split('\n').map(row => {
+          // Manejar comas dentro de campos entre comillas
+          const cells = [];
+          let current = '';
+          let inQuotes = false;
+          for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+              cells.push(current.trim().replace(/"/g, ''));
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+          cells.push(current.trim().replace(/"/g, ''));
+          return cells;
+        });
+        
+        const headers = rows[0].map(h => h.toLowerCase().trim());
+        const data = rows.slice(1).filter(row => row.length > 1 && row[0].trim());
+        
+        allProperties = data.map(row => {
+          const property = {};
+          headers.forEach((header, index) => {
+            property[header] = row[index] || '';
+          });
+          
+          // Procesar imágenes (separadas por |, ; o espacio)
+          if (property.imagenes) {
+            property.imagenes = property.imagenes.split(/[\|;| ]/).filter(img => img.trim());
+          } else {
+            property.imagenes = [];
+          }
+          
+          // Normalizar nombres de campos
+          property['tipo operacion'] = property['tipo operacion'] || property['tipo_operacion'] || '';
+          property['tipo propiedad'] = property['tipo propiedad'] || property['tipo_propiedad'] || '';
+          
+          return property;
+        }).filter(property => property.titulo && property.titulo.trim());
+        
+        console.log('Propiedades cargadas:', allProperties);
+        
+        // Si ya estamos en una sección activa, recargar propiedades
+        if (brasilContent.classList.contains('active')) {
+          showBrasilContent();
+        } else if (alquilaContent.classList.contains('active')) {
+          showAlquilaContent();
+        }
+        
+      } catch (error) {
+        console.error('Error cargando propiedades:', error);
+        showErrorMessage('Error al cargar propiedades. Verifica que la hoja esté publicada como CSV.');
+      }
+    }
+    
+    // Función para filtrar y mostrar propiedades
+    function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
+      const filteredProperties = allProperties.filter(property => {
+        const matchesOperacion = property['tipo operacion']?.toLowerCase() === tipoOperacion.toLowerCase() ||
+                                property['tipo_operacion']?.toLowerCase() === tipoOperacion.toLowerCase();
+        const matchesPais = pais ? 
+          (property.pais?.toLowerCase() === pais.toLowerCase() || 
+           property['país']?.toLowerCase() === pais.toLowerCase()) : true;
+        const matchesTipo = tipoPropiedad ? 
+          (property['tipo propiedad']?.toLowerCase() === tipoPropiedad.toLowerCase() ||
+           property['tipo_propiedad']?.toLowerCase() === tipoPropiedad.toLowerCase()) : true;
+        return matchesOperacion && matchesPais && matchesTipo;
+      });
+      
+      renderProperties(filteredProperties);
+    }
+    
+    // Función para renderizar propiedades en el DOM
+    function renderProperties(properties, container = null) {
+      const targetContainer = container || getActivePropertyContainer();
+      if (!targetContainer) return;
+      
+      // Limpiar contenedor
+      targetContainer.innerHTML = '';
+      
+      if (properties.length === 0) {
+        targetContainer.innerHTML = '<div class="loading-properties">No se encontraron propiedades con estos filtros</div>';
+        return;
+      }
+      
+      properties.forEach(property => {
+        const card = createPropertyCard(property);
+        targetContainer.appendChild(card);
+      });
+    }
+    
+    // Función para crear tarjeta de propiedad
+    function createPropertyCard(property) {
+      const card = document.createElement('div');
+      card.className = 'property-card';
+      
+      const primeraImagen = (property.imagenes && property.imagenes.length > 0) ? 
+        property.imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
+      
+      const precio = property.precio || 'Precio consultar';
+      const tipoOperacion = property['tipo operacion'] || property['tipo_operacion'] || '';
+      const tipoPropiedad = property['tipo propiedad'] || property['tipo_propiedad'] || '';
+      const descripcion = property.descripcion || '';
+      
+      const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
+      
+      // URL para "Ver más" - puedes personalizar según tu sistema
+      const verMasUrl = property.url || property.id ? 
+        `https://alquiya.com.ar/${tipoOperacion.toLowerCase()}.html?id=${property.id}` : '#';
+      
+      card.innerHTML = `
+        <img src="${primeraImagen}" alt="${property.titulo}" 
+             onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'"
+             loading="lazy">
+        <div class="property-title">${property.titulo}</div>
+        <div class="property-price">${precio}</div>
+        <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
+        ${descripcion ? `<p style="color: #555; margin-bottom: 15px;">${descripcion.substring(0, 100)}...</p>` : ''}
+        <a href="${verMasUrl}" target="_blank" class="ver-mas-btn">Ver más</a>
+        <a href="https://wa.me/5493756508620?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
+      `;
+      
+      return card;
+    }
+    
+    // Función para obtener el contenedor activo de propiedades
+    function getActivePropertyContainer() {
+      if (brasilContent.classList.contains('active')) return brasilProperties;
+      if (alquilaContent.classList.contains('active')) return alquilaProperties;
+      if (argentinaProperties.style.display !== 'none') return argentinaProperties;
+      return null;
+    }
+    
+    // Función para mostrar propiedades de Argentina por tipo
+    function showArgentinaPropertiesByType(tipoPropiedad) {
+      // Mapear data-type a nombres de tipo propiedad
+      const tipoMap = {
+        'terrenos': 'Terreno',
+        'departamentos': 'Departamento',
+        'casas': 'Casa',
+        'locales': 'Local Comercial'
+      };
+      const tipoFinal = tipoMap[tipoPropiedad] || tipoPropiedad;
+      
+      showPropertiesByFilters('Venta', 'argentina', tipoFinal);
+      argentinaProperties.style.display = 'grid';
+      imageGrid.style.display = 'none';
+    }
+    
     // Función para mostrar contenido de compra Argentina
     function showCompraContent() {
       sidebar.classList.add('active');
@@ -754,6 +903,7 @@
       compraContent.classList.add('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
+      argentinaProperties.style.display = 'none';
       imageGrid.style.display = 'grid';
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
     }
@@ -767,6 +917,12 @@
       brasilContent.classList.add('active');
       alquilaContent.classList.remove('active');
       imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
+      
+      // Cargar propiedades de Brasil (Venta)
+      if (allProperties.length > 0) {
+        showPropertiesByFilters('Venta', 'brasil');
+      }
     }
     
     // Función para mostrar contenido de Alquilá
@@ -778,6 +934,12 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.add('active');
       imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
+      
+      // Cargar propiedades de Alquiler en Argentina
+      if (allProperties.length > 0) {
+        showPropertiesByFilters('Alquiler', 'argentina');
+      }
       sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
     }
     
@@ -797,6 +959,16 @@
     
     function hidePreTasacionModal() {
       preTasacionModal.classList.remove('active');
+    }
+    
+    // Función para mostrar mensaje de error
+    function showErrorMessage(message) {
+      const containers = [brasilProperties, alquilaProperties, argentinaProperties];
+      containers.forEach(container => {
+        if (container) {
+          container.innerHTML = `<div class="loading-properties">${message}</div>`;
+        }
+      });
     }
     
     // Enviar formulario de Pre Tasación a WhatsApp
@@ -845,6 +1017,7 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
       imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
     });
     
     document.getElementById('inicio-link').addEventListener('click', function(e) {
@@ -856,6 +1029,7 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
       imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
     });
     
     document.getElementById('inverti-link').addEventListener('click', function(e) {
@@ -867,16 +1041,18 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
       imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
     });
     
-    // Event listeners para las imágenes de propiedades
+    // Event listeners para las imágenes de propiedades en Argentina
     document.querySelectorAll('.image-item').forEach(item => {
       item.addEventListener('click', function() {
-        const type = this.dataset.type;
-        if (type === 'casas') {
-          showCasaDetail();
+        const tipoPropiedad = this.dataset.type;
+        showArgentinaPropertiesByType(tipoPropiedad);
+        // Mantener modal para casas si es necesario
+        if (tipoPropiedad === 'casas' && allProperties.length > 0) {
+          // Mostrar propiedades de casas en lugar del modal estático
         }
-        // Para otros tipos se podría agregar funcionalidad similar
       });
     });
     
@@ -906,6 +1082,11 @@
       } else if (e.key === 'Escape' && preTasacionModal.classList.contains('active')) {
         hidePreTasacionModal();
       }
+    });
+    
+    // Cargar propiedades al iniciar la página
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadPropertiesFromSheet();
     });
   </script>
 </body>
