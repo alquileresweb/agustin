@@ -603,8 +603,7 @@
   </div>
   <div class="main-container">
     <div class="sidebar" id="sidebar">
-      <span class="loading-message">Cargando propiedades...</span>
-      <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com" onload="document.querySelector('.loading-message').style.display='none';"></iframe>
+      <span class="loading-message">Sin contenido externo</span>
     </div>
     <div class="content-area active" id="inicio-content">
       <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
@@ -645,10 +644,6 @@
           <p>Locales Comerciales</p>
         </div>
       </div>
-      <div class="sidebar" id="compra-sidebar">
-        <span class="loading-message">Cargando propiedades...</span>
-        <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar" onload="document.querySelector('#compra-sidebar .loading-message').style.display='none';"></iframe>
-      </div>
       <!-- Contenedor para propiedades de Argentina dinámicas -->
       <div id="argentina-properties" class="property-grid" style="display: none;"></div>
     </div>
@@ -659,7 +654,7 @@
         <button class="close-btn" id="close-casa-detail">&times;</button>
         <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img">
         <h3 id="casa-detail-title">Casa en Venta</h3>
-        <a href="http://www.alquiya.com.ar/alquiler.html?id=2f8c4b16-a218-4f04-ab82-282d890a99eb" target="_blank" class="ver-mas-btn">Ver más</a>
+        <a href="#" target="_blank" class="ver-mas-btn">Ver más</a>
       </div>
     </div>
     
@@ -671,10 +666,6 @@
     <div class="content-area alquila-content" id="alquila-content">
       <div id="alquila-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades para alquilar...</div>
-      </div>
-      <div class="sidebar" id="alquila-sidebar">
-        <span class="loading-message">Cargando propiedades...</span>
-        <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar" onload="document.querySelector('#alquila-sidebar .loading-message').style.display='none';"></iframe>
       </div>
     </div>
     <!-- Modal para Pre Tasación -->
@@ -852,9 +843,8 @@
       
       const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
       
-      // URL para "Ver más" - puedes personalizar según tu sistema
-      const verMasUrl = property.url || property.id ? 
-        `https://alquiya.com.ar/${tipoOperacion.toLowerCase()}.html?id=${property.id}` : '#';
+      // URL para "Ver más" - ahora sin referencia a alquiya
+      const verMasUrl = property.url || property.id ? `#propiedad-${property.id}` : '#';
       
       card.innerHTML = `
         <img src="${primeraImagen}" alt="${property.titulo}" 
@@ -864,7 +854,7 @@
         <div class="property-price">${precio}</div>
         <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
         ${descripcion ? `<p style="color: #555; margin-bottom: 15px;">${descripcion.substring(0, 100)}...</p>` : ''}
-        <a href="${verMasUrl}" target="_blank" class="ver-mas-btn">Ver más</a>
+        <a href="${verMasUrl}" class="ver-mas-btn">Ver más</a>
         <a href="https://wa.me/5493756508620?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
       `;
       
@@ -897,7 +887,7 @@
     
     // Función para mostrar contenido de compra Argentina
     function showCompraContent() {
-      sidebar.classList.add('active');
+      sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
@@ -905,7 +895,6 @@
       alquilaContent.classList.remove('active');
       argentinaProperties.style.display = 'none';
       imageGrid.style.display = 'grid';
-      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
     }
     
     // Función para mostrar contenido de Brasil
@@ -927,7 +916,7 @@
     
     // Función para mostrar contenido de Alquilá
     function showAlquilaContent() {
-      sidebar.classList.add('active');
+      sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.remove('active');
@@ -940,7 +929,6 @@
       if (allProperties.length > 0) {
         showPropertiesByFilters('Alquiler', 'argentina');
       }
-      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
     }
     
     // Funcionalidad para el modal de Casa
@@ -980,7 +968,7 @@
       const metros = document.getElementById('metros').value;
       const tipoPropiedad = document.getElementById('tipo-propiedad').value;
       const mensaje = `Solicitud de Pre Tasación\nNombre: ${nombre}\nTeléfono: ${telefono}\nDirección: ${direccion}\nMetros Cuadrados: ${metros}\nTipo de Propiedad: ${tipoPropiedad}\nFecha: ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`;
-      const whatsappURL = `https://wa.me/5493756505202?text=${encodeURIComponent(mensaje)}`;
+      const whatsappURL = `https://wa.me/5493756508620?text=${encodeURIComponent(mensaje)}`;
       window.open(whatsappURL, '_blank');
       preTasacionForm.reset();
       hidePreTasacionModal();
