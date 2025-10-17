@@ -118,6 +118,8 @@
       display: none;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      text-align: center;
     }
     .content-area.active {
       display: flex;
@@ -182,16 +184,26 @@
       object-fit: cover;
       max-height: 40vh;
     }
+    /* Imagen de inicio más pequeña en móviles */
+    @media (max-width: 767px) {
+      .inicio-content img {
+        max-height: 30vh;
+        width: 90%;
+      }
+    }
     .compra-content {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       padding: 15px;
+      text-align: center;
     }
     .brasil-content {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       padding: 15px;
       text-align: center;
       width: 100%;
@@ -230,6 +242,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       padding: 15px;
       text-align: center;
       width: 100%;
@@ -339,6 +352,7 @@
       max-width: 100%;
       margin-top: 15px;
       order: 1;
+      justify-items: center;
     }
     .image-item {
       text-align: center;
@@ -579,6 +593,16 @@
       font-size: 1.2em;
       color: #666;
     }
+    /* Centrar contenido en secciones específicas */
+    #vende-content, .compra-content, .brasil-content, .alquila-content {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    #vende-content .benefits-boxes {
+      justify-items: center;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
@@ -719,8 +743,11 @@
     const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
     const preTasacionForm = document.getElementById('pre-tasacion-form');
     
-    // URL de tu Web App de Google Apps Script - CAMBIA TU_ID por el ID real
+    // URL de tu Web App de Google Apps Script
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
+    
+    // NÚMERO DE WHATSAPP PARA CONTACTAR PUBLICACIONES
+    const WHATSAPP_PROPERTY_NUMBER = '5493756505202';
     
     // Almacén global de propiedades cargadas
     let allProperties = [];
@@ -788,7 +815,7 @@
       });
     }
     
-    // Función para crear tarjeta de propiedad
+    // Función para crear tarjeta de propiedad - CAMBIADO NÚMERO WHATSAPP
     function createPropertyCard(property) {
       const card = document.createElement('div');
       card.className = 'property-card';
@@ -814,7 +841,7 @@
         <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
         ${descripcion ? `<p style="color: #555; margin-bottom: 15px;">${descripcion.substring(0, 100)}...</p>` : ''}
         <a href="${verMasUrl}" class="ver-mas-btn">Ver más</a>
-        <a href="https://wa.me/5493756508620?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
+        <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
       `;
       
       return card;
