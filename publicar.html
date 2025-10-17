@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar Anuncio - Inmobiliaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 5px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .error {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📢 Publicar Nuevo Anuncio</h1>
+            <p>Completa todos los campos para publicar tu propiedad</p>
+        </div>
+
+        <div class="form-container">
+            <div class="success" id="successMessage">
+                ✅ ¡Anuncio publicado exitosamente!
+            </div>
+
+            <form id="publicationForm">
+                <div class="form-group">
+                    <label for="titulo">Título de la Publicación *</label>
+                    <input type="text" id="titulo" name="titulo" required 
+                           placeholder="Ej: Hermoso departamento 3 ambientes en Palermo">
+                    <div class="error" id="tituloError">El título es obligatorio</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Operación *</label>
+                        <select id="tipo" name="tipo" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="venta">Venta</option>
+                            <option value="alquiler">Alquiler</option>
+                        </select>
+                        <div class="error" id="tipoError">Selecciona un tipo de operación</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subtipo">Tipo de Propiedad *</label>
+                        <select id="subtipo" name="subtipo" required>
+                            <option value="">Seleccionar subtipo</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="casa">Casa</option>
+                            <option value="terreno">Terreno</option>
+                            <option value="local">Local Comercial</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        <div class="error" id="subtipoError">Selecciona el tipo de propiedad</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio *</label>
+                    <input type="number" id="precio" name="precio" required 
+                           placeholder="Ej: 250000" step="1000">
+                    <div class="error" id="precioError">Ingresa un precio válido</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagenes">Imágenes * (Máximo 5)</label>
+                    <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple required>
+                    <div class="image-preview" id="imagePreview"></div>
+                    <div class="error" id="imagenesError">Debes seleccionar al menos una imagen</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción Detallada *</label>
+                    <textarea id="descripcion" name="descripcion" required 
+                              placeholder="Describe la propiedad, características, ubicación, amenities, etc..."></textarea>
+                    <div class="error" id="descripcionError">La descripción es obligatoria</div>
+                </div>
+
+                <button type="submit" class="btn">🚀 Publicar Anuncio</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">← Volver al Inicio</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Previsualización de imágenes
+        document.getElementById('imagenes').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            if (files.length > 5) {
+                alert('Solo puedes subir un máximo de 5 imágenes');
+                this.value = '';
+                return;
+            }
+            
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        preview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // Validación del formulario
+        document.getElementById('publicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let isValid = true;
+            const errors = document.querySelectorAll('.error');
+            errors.forEach(error => error.style.display = 'none');
+
+            // Validar campos requeridos
+            const requiredFields = ['titulo', 'tipo', 'subtipo', 'precio', 'descripcion', 'imagenes'];
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value || (field === 'imagenes' && input.files.length === 0)) {
+                    document.getElementById(field + 'Error').style.display = 'block';
+                    isValid = false;
+                }
+            });
+
+            // Validar precio
+            const precio = document.getElementById('precio').value;
+            if (precio <= 0) {
+                document.getElementById('precioError').textContent = 'El precio debe ser mayor a 0';
+                document.getElementById('precioError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Simular envío del formulario
+                const formData = new FormData(this);
+                const publicationData = {
+                    titulo: document.getElementById('titulo').value,
+                    tipo: document.getElementById('tipo').value,
+                    subtipo: document.getElementById('subtipo').value,
+                    precio: parseFloat(precio),
+                    descripcion: document.getElementById('descripcion').value,
+                    imagenes: Array.from(formData.getAll('imagenes')).map(f => f.name)
+                };
+
+                // Aquí normalmente enviarías los datos al servidor
+                console.log('Datos de la publicación:', publicationData);
+                
+                // Mostrar mensaje de éxito
+                document.getElementById('successMessage').style.display = 'block';
+                this.reset();
+                document.getElementById('imagePreview').innerHTML = '';
+                
+                // Scroll al mensaje de éxito
+                document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                
+                // Redirigir después de 3 segundos (opcional)
+                setTimeout(() => {
+                    if (confirm('¿Deseas ver todas las publicaciones?')) {
+                        window.location.href = 'index.html';
+                    }
+                }, 3000);
+            }
+        });
+
+        // Validación en tiempo real
+        ['titulo', 'precio', 'descripcion'].forEach(field => {
+            document.getElementById(field).addEventListener('blur', function() {
+                if (!this.value) {
+                    document.getElementById(field + 'Error').style.display = 'block';
+                }
+            });
+        });
+
+        ['tipo', 'subtipo'].forEach(field => {
+            document.getElementById(field).addEventListener('change', function() {
+                if (this.value) {
+                    document.getElementById(field + 'Error').style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
