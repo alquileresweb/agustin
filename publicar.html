@@ -372,6 +372,7 @@
                 };
 
                 console.log('📤 Enviando datos:', publicationData);
+                console.log('🌐 Origen de la solicitud:', window.location.origin);
 
                 // Enviar a Google Apps Script
                 const response = await fetch(WEB_APP_URL, {
@@ -386,7 +387,9 @@
 
                 // Verificar si la respuesta es exitosa
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    const errorText = await response.text();
+                    console.error('❌ Respuesta no exitosa:', response.status, errorText);
+                    throw new Error(`Error HTTP ${response.status}: ${errorText || response.statusText}`);
                 }
 
                 const result = await response.json();
@@ -401,7 +404,11 @@
                 
             } catch (error) {
                 console.error('❌ Error completo:', error);
-                showError(error.message);
+                let errorMsg = error.message;
+                if (error.message.includes('Failed to fetch')) {
+                    errorMsg = 'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
+                }
+                showError(errorMsg);
             } finally {
                 hideLoading();
             }
@@ -552,6 +559,7 @@
 
         console.log('✅ Formulario inicializado correctamente');
         console.log('📡 Web App URL:', WEB_APP_URL);
+        console.log('🌐 Origen actual:', window.location.origin);
     </script>
 </body>
 </html>
