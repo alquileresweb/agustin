@@ -250,13 +250,6 @@
 
             <form id="publicationForm">
                 <div class="form-group">
-                    <label for="email">Correo Electrónico *</label>
-                    <input type="email" id="email" name="email" required 
-                           placeholder="Ej: tuemail@ejemplo.com">
-                    <div class="error" id="emailError">El correo electrónico es obligatorio</div>
-                </div>
-
-                <div class="form-group">
                     <label for="titulo">Título de la Publicación *</label>
                     <input type="text" id="titulo" name="titulo" required 
                            placeholder="Ej: Hermoso departamento 3 ambientes en Palermo"
@@ -597,7 +590,6 @@
 
                 console.log('📤 Enviando a Google Apps Script con CORS:', {
                     action: publicationData.action,
-                    email: publicationData.email,
                     titulo: publicationData.titulo,
                     tipo: publicationData.tipo,
                     subtipo: publicationData.subtipo,
@@ -656,7 +648,6 @@
 
                 const params = new URLSearchParams({
                     action: 'addPublicacionToPublicar',
-                    email: publicationData.email,
                     titulo: publicationData.titulo.substring(0, 50), // Limitar longitud
                     tipo: publicationData.tipo,
                     subtipo: publicationData.subtipo,
@@ -829,7 +820,6 @@
             try {
                 const publicationData = {
                     action: 'addPublicacionToPublicar',
-                    email: document.getElementById('email').value.trim(),
                     titulo: document.getElementById('titulo').value.trim(),
                     tipo: document.getElementById('tipo').value,
                     subtipo: document.getElementById('subtipo').value,
@@ -870,7 +860,7 @@
             const errors = document.querySelectorAll('.error');
             errors.forEach(error => error.style.display = 'none');
 
-            const requiredFields = ['email', 'titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
+            const requiredFields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
                 if (!input.value.trim()) {
@@ -878,13 +868,6 @@
                     isValid = false;
                 }
             });
-
-            const email = document.getElementById('email').value.trim();
-            if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
-                document.getElementById('emailError').textContent = 'Ingresa un correo electrónico válido';
-                document.getElementById('emailError').style.display = 'block';
-                isValid = false;
-            }
 
             const titulo = document.getElementById('titulo').value.trim();
             if (titulo.length < 5 || titulo.length > 100) {
@@ -965,7 +948,7 @@
         }
 
         // Validaciones en tiempo real
-        ['email', 'titulo', 'precio', 'descripcion'].forEach(field => {
+        ['titulo', 'precio', 'descripcion'].forEach(field => {
             document.getElementById(field).addEventListener('blur', function() {
                 if (this.value.trim()) {
                     document.getElementById(field + 'Error').style.display = 'none';
