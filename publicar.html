@@ -236,16 +236,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📢 Publicar Nuevo Anuncio</h1>
+            <h1>Publicar Nuevo Anuncio</h1>
             <p>Completa todos los campos para publicar tu propiedad</p>
         </div>
 
         <div class="form-container">
             <div class="error-message" id="errorMessage"></div>
             <div class="success" id="successMessage">
-                ✅ ¡Anuncio publicado exitosamente!
+                ¡Anuncio publicado exitosamente!
             </div>
-            <div class="loading" id="loadingMessage">⏳ Publicando tu anuncio...</div>
+            <div class="loading" id="loadingMessage">Publicando tu anuncio...</div>
 
             <form id="publicationForm">
                 <div class="form-group">
@@ -293,8 +293,8 @@
                         <label for="pais">País *</label>
                         <select id="pais" name="pais" required>
                             <option value="">Seleccionar país</option>
-                            <option value="Argentina">🇦🇷 Argentina</option>
-                            <option value="Brasil">🇧🇷 Brasil</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Brasil">Brasil</option>
                         </select>
                         <div class="error" id="paisError">Selecciona un país</div>
                     </div>
@@ -320,7 +320,7 @@
                     <div class="error" id="descripcionError">La descripción es obligatoria (máx 1000 caracteres)</div>
                 </div>
 
-                <button type="submit" class="btn" id="submitBtn">🚀 Publicar Anuncio</button>
+                <button type="submit" class="btn" id="submitBtn">Publicar Anuncio</button>
                 <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">← Volver al Inicio</button>
             </form>
         </div>
@@ -329,7 +329,7 @@
     <script>
         // URL del Web App de Google Apps Script
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
-        const ORIGIN = 'https://inmobiliariaagustinsantos.com.ar';
+        const ORIGIN = window.location.origin || 'https://inmobiliariaagustinsantos.com.ar';
 
         // Elementos del DOM
         const form = document.getElementById('publicationForm');
@@ -343,6 +343,13 @@
         const uploadProgressBar = document.getElementById('uploadProgressBar');
 
         let uploadedImageUrls = []; // Almacenar URLs de imágenes subidas
+
+        // === CONFIGURACIÓN CORS MEJORADA ===
+        const CORS_CONFIG = {
+            mode: 'cors',
+            credentials: 'omit',
+            redirect: 'follow'
+        };
 
         // === CONFIGURACIÓN DE CLOUDINARY ===
         const CLOUDINARY_CONFIG = {
@@ -372,7 +379,7 @@
             let processed = 0;
             const total = Math.min(files.length, maxFiles);
 
-            console.log(`📤 Subiendo ${total} imágenes a Cloudinary...`);
+            console.log(`Subiendo ${total} imágenes a Cloudinary...`);
 
             // ✅ VERIFICACIÓN PRELIMINAR DE CORS
             await verificarCorsCloudinary();
@@ -428,7 +435,7 @@
                 }
             }
 
-            console.log(`✅ Subida completada: ${urls.length} exitosas, ${errors.length} errores`);
+            console.log(`Subida completada: ${urls.length} exitosas, ${errors.length} errores`);
             return { urls, errors, success: errors.length === 0 };
         }
 
@@ -467,19 +474,19 @@
                 
                 // ✅ VERIFICAR RESPUESTA DE CLOUDINARY
                 if (result.secure_url && result.resource_type === 'image') {
-                    console.log(`✅ ${file.name} subido: ${result.secure_url}`);
+                    console.log(`${file.name} subido: ${result.secure_url}`);
                     return result.secure_url;
                 } else {
                     throw new Error(`Respuesta inválida: ${JSON.stringify(result)}`);
                 }
 
             } catch (error) {
-                console.error(`❌ Error subiendo ${file.name}:`, error);
+                console.error(`Error subiendo ${file.name}:`, error);
                 
                 // ✅ MANEJO DE RETRIES
                 if (retryCount < CLOUDINARY_CONFIG.MAX_RETRIES && 
                     (error.name === 'TimeoutError' || error.message.includes('network'))) {
-                    console.log(`🔄 Reintentando ${file.name} (${retryCount + 1}/${CLOUDINARY_CONFIG.MAX_RETRIES})`);
+                    console.log(`Reintentando ${file.name} (${retryCount + 1}/${CLOUDINARY_CONFIG.MAX_RETRIES})`);
                     await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
                     return procesarArchivoIndividual(file, { ...options, retryCount: retryCount + 1 });
                 }
@@ -496,10 +503,10 @@
                     mode: 'cors'
                 });
                 if (!response.ok) {
-                    console.warn('⚠️ Posible problema de CORS con Cloudinary');
+                    console.warn('Posible problema de CORS con Cloudinary');
                 }
             } catch (error) {
-                console.warn('⚠️ Verificación CORS falló:', error);
+                console.warn('Verificación CORS falló:', error);
                 // Continuar de todas formas - Cloudinary suele funcionar
             }
         }
@@ -548,58 +555,73 @@
             return formData;
         }
 
-        // === FUNCIÓN ACTUALIZADA PARA SUBIR MÚLTIPLES IMÁGENES ===
-        async function subirImagenesMultiples(files) {
-            uploadedImageUrls = [];
-            const errores = [];
-            
-            uploadProgress.style.display = 'block';
-            uploadProgressBar.style.width = '0%';
-            
-            try {
-                const resultado = await subirImagenesCloudinary(files, {
-                    maxFiles: 5,
-                    folder: `alquileres/${Date.now()}`,
-                    onProgress: (progress) => {
-                        uploadProgressBar.style.width = `${progress.progress}%`;
-                        console.log(`Progreso: ${progress.progress.toFixed(1)}% (${progress.current}/${progress.total})`);
-                        
-                        // Marcar imagen como subida en preview
-                        const img = imagePreview.querySelector(`img[title="${progress.file.name}"]`);
-                        if (img && progress.status === 'success') {
-                            img.classList.add('uploaded');
-                        }
-                    },
-                    onSuccess: (url) => {
-                        uploadedImageUrls.push(url);
-                        console.log('✅ Imagen subida:', url);
-                    },
-                    onError: (error, file) => {
-                        console.error('❌ Error:', error, file.name);
-                        errores.push({ archivo: file.name, error: error.message });
-                    }
-                });
+        // === FUNCIÓN UTILITARIA: SUBIR MÚLTIPLES CON PROGRESO ===
+        function subirConProgreso(inputId, callback) {
+            const input = document.getElementById(inputId);
+            input.addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
                 
-                if (resultado.errors.length > 0) {
-                    console.warn('⚠️ Errores en subida:', resultado.errors);
-                    alert(`⚠️ ${resultado.errors.length} imagen(es) fallaron al subir. Se guardarán las ${resultado.urls.length} exitosas.`);
+                if (files.length === 0) {
+                    alert('No se seleccionaron imágenes válidas');
+                    return;
                 }
                 
-            } catch (error) {
-                console.error('Error en subida masiva:', error);
-                alert('Error al subir imágenes. Intenta nuevamente.');
-                throw error;
-            } finally {
-                uploadProgress.style.display = 'none';
-                uploadProgressBar.style.width = '0%';
-            }
+                try {
+                    const { urls, errors } = await subirImagenesCloudinary(files, {
+                        onProgress: (progress) => {
+                            console.log(`Progreso: ${progress.progress.toFixed(1)}% (${progress.current}/${progress.total})`);
+                            callback?.('progress', progress);
+                        },
+                        onSuccess: (url) => {
+                            console.log('Imagen subida:', url);
+                            callback?.('success', url);
+                        },
+                        onError: (error, file) => {
+                            console.error('Error:', error, file.name);
+                            callback?.('error', error, file);
+                        }
+                    });
+                    
+                    if (urls.length > 0) {
+                        callback?.('complete', { urls, errors });
+                        // Actualizar preview o campo hidden con URLs
+                        actualizarPreviewConUrls(urls);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error general:', error);
+                    callback?.('error', error);
+                }
+            });
+        }
+
+        // === ACTUALIZAR PREVIEW CON URLS DE CLOUDINARY ===
+        function actualizarPreviewConUrls(urls, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
             
-            return {
-                urls: uploadedImageUrls,
-                errores,
-                exitosas: uploadedImageUrls.length,
-                total: files.length
-            };
+            urls.forEach((url, index) => {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'preview-img-container';
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'preview-img';
+                img.alt = `Imagen ${index + 1}`;
+                img.loading = 'lazy';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-img';
+                deleteBtn.textContent = '×';
+                deleteBtn.onclick = () => {
+                    imgContainer.remove();
+                    // Opcional: eliminar de Cloudinary si es necesario
+                };
+                
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(deleteBtn);
+                container.appendChild(imgContainer);
+            });
         }
 
         // === ENVIAR A GOOGLE APPS SCRIPT CON CORS MEJORADO (ORIGINAL MANTENIDO) ===
@@ -609,7 +631,7 @@
                     ? publicationData.imagenes.join(',')
                     : publicationData.imagenes || '';
 
-                console.log('📤 Enviando a Google Apps Script con CORS mejorado:', {
+                console.log('Enviando a Google Apps Script con CORS mejorado:', {
                     titulo: publicationData.titulo,
                     imagenesCount: Array.isArray(publicationData.imagenes) ? publicationData.imagenes.length : 0,
                     tipoImagenes: typeof publicationData.imagenes,
@@ -625,10 +647,8 @@
                 };
 
                 const response = await fetch(WEB_APP_URL, {
+                    ...CORS_CONFIG,
                     method: 'POST',
-                    mode: 'cors',
-                    credentials: 'omit',
-                    redirect: 'follow',
                     headers: {
                         'Content-Type': 'application/json',
                         'Origin': ORIGIN
@@ -636,23 +656,23 @@
                     body: JSON.stringify(datosFinales)
                 });
 
-                console.log('📥 Respuesta Google Apps Script:', response.status, response.statusText);
+                console.log('Respuesta Google Apps Script:', response.status, response.statusText);
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('❌ Error HTTP:', response.status, errorText);
+                    console.error('Error HTTP:', response.status, errorText);
                     throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
 
                 const result = await response.json();
-                console.log('✅ Resultado Google Apps Script:', result);
+                console.log('Resultado Google Apps Script:', result);
                 return result;
 
             } catch (error) {
-                console.error('❌ Error enviando a Google Apps Script:', error);
+                console.error('Error enviando a Google Apps Script:', error);
                 
                 if (error.message.includes('CORS') || error.message.includes('fetch') || error.name === 'TypeError') {
-                    console.log('🔄 Reintentando con configuración alternativa...');
+                    console.log('Reintentando con configuración alternativa...');
                     return await enviarConWorkaround(publicationData);
                 }
                 
@@ -663,7 +683,7 @@
         // === SOLICITUD OPTIONS PREFLIGHT MANUAL (ORIGINAL MANTENIDO) ===
         async function realizarPreflight() {
             try {
-                console.log('🔍 Realizando preflight OPTIONS...');
+                console.log('Realizando preflight OPTIONS...');
                 const preflightResponse = await fetch(WEB_APP_URL, {
                     method: 'OPTIONS',
                     mode: 'cors',
@@ -675,16 +695,16 @@
                     }
                 });
 
-                console.log('✅ Preflight status:', preflightResponse.status);
+                console.log('Preflight status:', preflightResponse.status);
                 return preflightResponse;
             } catch (error) {
-                console.warn('⚠️ Preflight falló (normal en algunos navegadores):', error.message);
+                console.warn('Preflight falló (normal en algunos navegadores):', error.message);
             }
         }
 
         // === WORKAROUND PARA CORS PROBLEMÁTICO (ORIGINAL MANTENIDO) ===
         async function enviarConWorkaround(publicationData) {
-            console.log('🛠️ Usando workaround para CORS...');
+            console.log('Usando workaround para CORS...');
             
             const imagenesParaBackend = Array.isArray(publicationData.imagenes) 
                 ? publicationData.imagenes.join(',')
@@ -706,7 +726,7 @@
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('❌ Workaround error:', response.status, errorText);
+                console.error('Workaround error:', response.status, errorText);
                 throw new Error(`Workaround falló: HTTP ${response.status}`);
             }
 
@@ -734,7 +754,7 @@
             uploadedImageUrls = [];
             
             if (files.length > 5) {
-                alert('❌ Solo puedes subir un máximo de 5 imágenes');
+                alert('Solo puedes subir un máximo de 5 imágenes');
                 this.value = '';
                 return;
             }
@@ -761,14 +781,14 @@
                     reader.readAsDataURL(file);
                     
                 } catch (error) {
-                    alert(`❌ ${file.name}: ${error.message}`);
+                    alert(`${file.name}: ${error.message}`);
                     this.value = '';
                     return;
                 }
             }
             
             if (totalSize > 25 * 1024 * 1024) {
-                alert('❌ El tamaño total de las imágenes no puede exceder 25MB');
+                alert('El tamaño total de las imágenes no puede exceder 25MB');
                 this.value = '';
                 return;
             }
@@ -776,11 +796,41 @@
             // Subir imágenes automáticamente
             if (validFiles.length > 0) {
                 try {
-                    await subirImagenesMultiples(validFiles);
+                    uploadProgress.style.display = 'block';
+                    uploadProgressBar.style.width = '0%';
+                    const resultado = await subirImagenesCloudinary(validFiles, {
+                        maxFiles: 5,
+                        folder: `publicaciones/${Date.now()}`,
+                        onProgress: (progress) => {
+                            uploadProgressBar.style.width = `${progress.progress}%`;
+                            console.log(`Progreso: ${progress.progress.toFixed(1)}% (${progress.current}/${progress.total})`);
+                            
+                            // Marcar imagen como subida en preview
+                            const img = imagePreview.querySelector(`img[title="${progress.file.name}"]`);
+                            if (img && progress.status === 'success') {
+                                img.classList.add('uploaded');
+                            }
+                        },
+                        onSuccess: (url) => {
+                            uploadedImageUrls.push(url);
+                            console.log('Imagen subida:', url);
+                        },
+                        onError: (error, file) => {
+                            console.error('Error:', error, file.name);
+                        }
+                    });
+                    
+                    if (resultado.errors.length > 0) {
+                        console.warn('Errores en subida:', resultado.errors);
+                        alert(`${resultado.errors.length} imagen(es) fallaron al subir. Se guardarán las ${resultado.urls.length} exitosas.`);
+                    }
                 } catch (error) {
                     console.error('Error en subida masiva:', error);
                     alert('Error al subir imágenes. Intenta nuevamente.');
                     uploadedImageUrls = [];
+                } finally {
+                    uploadProgress.style.display = 'none';
+                    uploadProgressBar.style.width = '0%';
                 }
             }
         });
@@ -816,7 +866,7 @@
                     timestamp: new Date().toISOString()
                 };
 
-                console.log('📤 Enviando datos con imágenes de Cloudinary:', publicationData);
+                console.log('Enviando datos con imágenes de Cloudinary:', publicationData);
 
                 const result = await enviarAGoogleAppsScript(publicationData);
 
@@ -828,7 +878,7 @@
                 }
                 
             } catch (error) {
-                console.error('❌ Error completo:', error);
+                console.error('Error completo:', error);
                 showError(`Error de conexión: ${error.message}`);
             } finally {
                 hideLoading();
@@ -877,9 +927,9 @@
         function showSuccess(result) {
             const titulo = document.getElementById('titulo').value;
             successMessage.innerHTML = `
-                ✅ ¡Anuncio "${titulo}" publicado exitosamente!<br>
-                📸 ${uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
-                🆔 ID: ${result.id || 'N/A'}<br>
+                ¡Anuncio "${titulo}" publicado exitosamente!<br>
+                ${uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
+                ID: ${result.id || 'N/A'}<br>
                 <small>URLs guardadas en columna F de la hoja "Publicar"</small>
             `;
             successMessage.style.display = 'block';
@@ -888,7 +938,7 @@
 
         function showError(message) {
             errorMessage.innerHTML = `
-                ❌ Error al publicar el anuncio:<br>
+                Error al publicar el anuncio:<br>
                 <strong>${message}</strong>
             `;
             errorMessage.style.display = 'block';
@@ -896,16 +946,16 @@
         }
 
         function showLoading() {
-            loadingMessage.innerHTML = '⏳ Guardando anuncio en Google Sheets...';
+            loadingMessage.innerHTML = 'Guardando anuncio en Google Sheets...';
             loadingMessage.style.display = 'block';
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '⏳ Publicando...';
+            submitBtn.innerHTML = 'Publicando...';
         }
 
         function hideLoading() {
             loadingMessage.style.display = 'none';
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '🚀 Publicar Anuncio';
+            submitBtn.innerHTML = 'Publicar Anuncio';
         }
 
         function hideMessages() {
@@ -964,10 +1014,10 @@
             counter.textContent = `${length}/1000 caracteres`;
         });
 
-        console.log('✅ Formulario con NUEVA función Cloudinary + CORS avanzado inicializado');
-        console.log('📡 Web App URL:', WEB_APP_URL);
-        console.log('🌐 Origin:', ORIGIN);
-        console.log('☁️ Cloudinary Config:', CLOUDINARY_CONFIG);
+        console.log('Formulario con NUEVA función Cloudinary + CORS avanzado inicializado');
+        console.log('Web App URL:', WEB_APP_URL);
+        console.log('Origin:', ORIGIN);
+        console.log('Cloudinary Config:', CLOUDINARY_CONFIG);
     </script>
 </body>
 </html>
