@@ -351,32 +351,26 @@
             redirect: 'follow'
         };
 
-        // === NUEVA CONFIGURACIÓN DE CLOUDINARY ===
+        // === CONFIGURACIÓN DE CLOUDINARY ACTUALIZADA ===
         const CLOUDINARY_CONFIG = {
-            CLOUD_NAME: 'dnugmwern',
-            UPLOAD_PRESET: 'preset_alquileres',
-            API_URL: 'https://api.cloudinary.com/v1_1/dnugmwern/image/upload',
+            CLOUD_NAME: 'dn4tjz4ck', // ← Nueva cloud_name
+            UPLOAD_PRESET: 'preset_alquileres', // ← Upload preset público
+            API_KEY: '742759356638557', // ← Nueva API Key
+            API_URL: 'https://api.cloudinary.com/v1_1/dn4tjz4ck/image/upload', // ← Actualizada con nueva cloud_name
             MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
             ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
             MAX_RETRIES: 3,
             TIMEOUT: 30000 // 30 segundos
         };
 
-        // ⚠️ IMPORTANTE: En producción, obtener la API key de manera segura
-        // NO exponer en cliente - usar proxy o upload presets unsigned
-        function getCloudinaryApiKey() {
-            // En producción: obtener de servidor o usar solo upload_preset
-            return 'TU_CLOUDINARY_API_KEY_AQUI'; // ← Reemplazar con tu API key
-        }
-
-        // === FUNCIÓN PRINCIPAL CON CORS Y RETRIES (NUEVA) ===
+        // === FUNCIÓN PRINCIPAL CON CORS Y RETRIES (ACTUALIZADA) ===
         async function subirImagenesCloudinary(files, options = {}) {
             const {
                 onProgress = null,
                 onSuccess = null,
                 onError = null,
-                maxFiles = 5,
-                folder = 'publicaciones',
+                maxFiles = 10,
+                folder = 'alquileres',
                 transformation = 'q_auto,f_auto,w_1200'
             } = options;
 
@@ -391,7 +385,7 @@
             await verificarCorsCloudinary();
 
             // 🔄 PROCESAR ARCHIVOS EN PARALELO (BATCHES PARA EVITAR RATE LIMIT)
-            const batchSize = 2; // Máximo 2 uploads simultáneos para estabilidad
+            const batchSize = 3; // Máximo 3 uploads simultáneos
             for (let i = 0; i < total; i += batchSize) {
                 const batch = files.slice(i, i + batchSize);
                 const batchPromises = batch.map((file, index) => 
@@ -445,16 +439,16 @@
             return { urls, errors, success: errors.length === 0 };
         }
 
-        // === PROCESAR ARCHIVO INDIVIDUAL CON RETRIES ===
+        // === PROCESAR ARCHIVO INDIVIDUAL CON RETRIES (ACTUALIZADA) ===
         async function procesarArchivoIndividual(file, options) {
             const { retryCount = 0, onProgress, totalFiles, globalIndex } = options;
             
             // ✅ VALIDACIONES PREVIAS
-            if (!validarArchivoCloudinary(file)) {
+            if (!validarArchivo(file)) {
                 throw new Error(`Archivo inválido: ${file.name}`);
             }
 
-            const formData = crearFormDataCloudinary(file, options);
+            const formData = crearFormData(file, options);
             
             try {
                 // ✅ FETCH CON CONFIGURACIÓN CORS AVANZADA
@@ -462,7 +456,7 @@
                     method: 'POST',
                     mode: 'cors',
                     cache: 'no-cache',
-                    credentials: 'omit',
+                    credentials: 'omit', // Importante para CORS público
                     headers: {
                         // NO incluir Content-Type - FormData lo maneja automáticamente
                     },
@@ -491,7 +485,7 @@
                 
                 // ✅ MANEJO DE RETRIES
                 if (retryCount < CLOUDINARY_CONFIG.MAX_RETRIES && 
-                    (error.name === 'TimeoutError' || error.message.includes('network') || response?.status >= 500)) {
+                    (error.name === 'TimeoutError' || error.message.includes('network'))) {
                     console.log(`🔄 Reintentando ${file.name} (${retryCount + 1}/${CLOUDINARY_CONFIG.MAX_RETRIES})`);
                     await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
                     return procesarArchivoIndividual(file, { ...options, retryCount: retryCount + 1 });
@@ -501,7 +495,7 @@
             }
         }
 
-        // === VERIFICACIÓN INICIAL DE CORS ===
+        // === VERIFICACIÓN INICIAL DE CORS (ACTUALIZADA) ===
         async function verificarCorsCloudinary() {
             try {
                 const response = await fetch(`https://res.cloudinary.com/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload/w_1,h_1,c_fill/v1/test-cors.jpg`, {
@@ -517,27 +511,34 @@
             }
         }
 
-        // === VALIDACIÓN DE ARCHIVO CLOUDINARY ===
-        function validarArchivoCloudinary(file) {
+        // === VALIDACIÓN DE ARCHIVO (ACTUALIZADA) ===
+        function validarArchivo(file) {
+            // Tamaño máximo
             if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) {
                 throw new Error(`Archivo demasiado grande: ${file.size} > ${CLOUDINARY_CONFIG.MAX_FILE_SIZE} bytes`);
             }
             
+            // Tipo permitido
             if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) {
                 throw new Error(`Tipo no permitido: ${file.type}`);
             }
             
+            // Verificar que sea realmente una imagen
             return file.type.startsWith('image/');
         }
 
-        // === CREAR FORMDATA PARA CLOUDINARY ===
-        function crearFormDataCloudinary(file, options) {
+        // === CREAR FORMDATA PARA CLOUDINARY (ACTUALIZADA) ===
+        function crearFormData(file, options) {
             const formData = new FormData();
             
+            // Archivo
             formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
-            formData.append('api_key', getCloudinaryApiKey());
             
+            // Configuración obligatoria
+            formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
+            formData.append('api_key', CLOUDINARY_CONFIG.API_KEY); // ← Usar API Key directa
+            
+            // Configuración opcional
             if (options.folder) {
                 formData.append('folder', options.folder);
             }
@@ -546,6 +547,7 @@
                 formData.append('transformation', options.transformation);
             }
             
+            // Opciones adicionales de optimización
             formData.append('quality', 'auto');
             formData.append('format', 'auto');
             formData.append('resource_type', 'image');
@@ -564,7 +566,7 @@
             try {
                 const resultado = await subirImagenesCloudinary(files, {
                     maxFiles: 5,
-                    folder: `publicaciones/${Date.now()}`,
+                    folder: `alquileres/publicaciones/${Date.now()}`,
                     onProgress: (progress) => {
                         uploadProgressBar.style.width = `${progress.progress}%`;
                         console.log(`Progreso: ${progress.progress.toFixed(1)}% (${progress.current}/${progress.total})`);
@@ -748,7 +750,7 @@
             // Validar archivos antes de procesar
             for (let file of files) {
                 try {
-                    validarArchivoCloudinary(file);
+                    validarArchivo(file);
                     totalSize += file.size;
                     validFiles.push(file);
                     
@@ -967,7 +969,7 @@
             counter.textContent = `${length}/1000 caracteres`;
         });
 
-        console.log('✅ Formulario con NUEVA función Cloudinary + CORS avanzado inicializado');
+        console.log('✅ Formulario con NUEVA función Cloudinary actualizada + CORS avanzado inicializado');
         console.log('📡 Web App URL:', WEB_APP_URL);
         console.log('🌐 Origin:', ORIGIN);
         console.log('☁️ Cloudinary Config:', CLOUDINARY_CONFIG);
