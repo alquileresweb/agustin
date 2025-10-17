@@ -329,7 +329,7 @@
     <script>
         // URL del Web App de Google Apps Script
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
-        const ORIGIN = 'https://inmobiliariaagustinsantos.com.ar';
+        const ORIGIN = window.location.origin || 'https://inmobiliariaagustinsantos.com.ar';
 
         // === CONFIGURACIÓN DE CLOUDINARY ===
         const CLOUDINARY_CONFIG = {
@@ -357,12 +357,7 @@
         // === CONFIGURACIÓN CORS MEJORADA ===
         const CORS_CONFIG = {
             mode: 'cors',
-            credentials: 'omit', // No envía cookies, evita problemas con credentials
-            headers: {
-                'Content-Type': 'application/json',
-                'Origin': ORIGIN,
-                'X-Requested-With': 'XMLHttpRequest'
-            },
+            credentials: 'omit',
             redirect: 'follow'
         };
 
@@ -406,7 +401,6 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), opciones.timeout || 60000);
 
-                // Configuración CORS específica para Cloudinary (multipart/form-data)
                 const cloudinaryCORS = {
                     method: 'POST',
                     body: formData,
@@ -448,25 +442,40 @@
             }
         }
 
-        // === ENVIAR A GOOGLE APPS SCRIPT CON CORS MEJORADO ===
+        // === ENVIAR A GOOGLE APPS SCRIPT CON CORS MEJORADO (CORREGIDO) ===
         async function enviarAGoogleAppsScript(publicationData) {
             try {
+                // CORREGIDO: Manejar array de URLs correctamente
+                const imagenesParaBackend = Array.isArray(publicationData.imagenes) 
+                    ? publicationData.imagenes.join(',') // ← Convertir a string para backend
+                    : publicationData.imagenes || '';
+
                 console.log('📤 Enviando a Google Apps Script con CORS mejorado:', {
                     titulo: publicationData.titulo,
-                    imagenesCount: publicationData.imagenes ? publicationData.imagenes.split(',').length : 0
+                    imagenesCount: Array.isArray(publicationData.imagenes) ? publicationData.imagenes.length : 0,
+                    tipoImagenes: typeof publicationData.imagenes,
+                    esArray: Array.isArray(publicationData.imagenes)
                 });
 
-                // Primera: solicitud OPTIONS preflight manual para asegurar CORS
+                // Primera: solicitud OPTIONS preflight manual
                 await realizarPreflight();
+
+                // Preparar datos finales
+                const datosFinales = {
+                    ...publicationData,
+                    imagenes: imagenesParaBackend, // ← String para compatibilidad backend
+                    origin: ORIGIN
+                };
 
                 // Segunda: solicitud POST principal
                 const response = await fetch(WEB_APP_URL, {
                     ...CORS_CONFIG,
                     method: 'POST',
-                    body: JSON.stringify({
-                        ...publicationData,
-                        origin: ORIGIN // ← Importante para validación en backend
-                    })
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': ORIGIN
+                    },
+                    body: JSON.stringify(datosFinales)
                 });
 
                 console.log('📥 Respuesta Google Apps Script:', response.status, response.statusText);
@@ -484,9 +493,9 @@
             } catch (error) {
                 console.error('❌ Error enviando a Google Apps Script:', error);
                 
-                // Intentar una vez más con configuración alternativa
-                if (error.message.includes('CORS') || error.message.includes('fetch')) {
-                    console.log('🔄 Reintentando con configuración CORS alternativa...');
+                // Workaround para errores CORS
+                if (error.message.includes('CORS') || error.message.includes('fetch') || error.name === 'TypeError') {
+                    console.log('🔄 Reintentando con configuración alternativa...');
                     return await enviarConWorkaround(publicationData);
                 }
                 
@@ -513,30 +522,35 @@
                 return preflightResponse;
             } catch (error) {
                 console.warn('⚠️ Preflight falló (normal en algunos navegadores):', error.message);
-                // Continuar, algunos navegadores manejan preflight automáticamente
             }
         }
 
-        // === WORKAROUND PARA CORS PROBLEMÁTICO ===
+        // === WORKAROUND PARA CORS PROBLEMÁTICO (CORREGIDO) ===
         async function enviarConWorkaround(publicationData) {
             console.log('🛠️ Usando workaround para CORS...');
             
-            // Opción 1: Sin Content-Type (deja que el navegador lo establezca)
+            const imagenesParaBackend = Array.isArray(publicationData.imagenes) 
+                ? publicationData.imagenes.join(',')
+                : publicationData.imagenes || '';
+
             const response = await fetch(WEB_APP_URL, {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'omit',
                 headers: {
                     'Origin': ORIGIN
-                    // NO incluir Content-Type, el navegador lo detectará automáticamente
+                    // SIN Content-Type - navegador lo detecta automáticamente
                 },
                 body: JSON.stringify({
                     ...publicationData,
+                    imagenes: imagenesParaBackend,
                     origin: ORIGIN
                 })
             });
 
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error('❌ Workaround error:', response.status, errorText);
                 throw new Error(`Workaround falló: HTTP ${response.status}`);
             }
 
@@ -759,7 +773,7 @@
             }
         });
 
-        // Validación y envío del formulario CON CORS MEJORADO
+        // Validación y envío del formulario
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -778,19 +792,19 @@
             
             try {
                 const publicationData = {
+                    action: 'addPublicacion',
                     titulo: document.getElementById('titulo').value.trim(),
                     tipo: document.getElementById('tipo').value,
                     subtipo: document.getElementById('subtipo').value,
                     precio: parseFloat(document.getElementById('precio').value),
                     pais: document.getElementById('pais').value,
-                    imagenes: uploadedImageUrls, // ← Array de URLs para Google Apps Script
+                    imagenes: uploadedImageUrls, // ← Array de URLs Cloudinary
                     descripcion: document.getElementById('descripcion').value.trim(),
                     timestamp: new Date().toISOString()
                 };
 
                 console.log('📤 Enviando datos con imágenes de Cloudinary:', publicationData);
 
-                // Usar función mejorada con CORS
                 const result = await enviarAGoogleAppsScript(publicationData);
 
                 if (result.success) {
@@ -802,13 +816,13 @@
                 
             } catch (error) {
                 console.error('❌ Error completo:', error);
-                showError(`Error de conexión: ${error.message}. Verifica CORS o reintenta.`);
+                showError(`Error de conexión: ${error.message}`);
             } finally {
                 hideLoading();
             }
         });
 
-        // Resto de funciones sin cambios...
+        // === FUNCIONES DE VALIDACIÓN Y UI ===
         function validateForm() {
             let isValid = true;
             const errors = document.querySelectorAll('.error');
@@ -817,7 +831,7 @@
             const requiredFields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
-                if (!input.value) {
+                if (!input.value.trim()) {
                     document.getElementById(field + 'Error').style.display = 'block';
                     isValid = false;
                 }
@@ -851,8 +865,8 @@
             const titulo = document.getElementById('titulo').value;
             successMessage.innerHTML = `
                 ✅ ¡Anuncio "${titulo}" publicado exitosamente!<br>
-                📸 ${result.imagenesCount || uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
-                🆔 ID: ${result.id}<br>
+                📸 ${uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
+                🆔 ID: ${result.id || 'N/A'}<br>
                 <small>URLs guardadas en columna F de la hoja "Publicar"</small>
             `;
             successMessage.style.display = 'block';
@@ -869,11 +883,10 @@
         }
 
         function showLoading() {
-            loadingMessage.innerHTML = '⏳ Subiendo imágenes y publicando anuncio...';
+            loadingMessage.innerHTML = '⏳ Guardando anuncio en Google Sheets...';
             loadingMessage.style.display = 'block';
             submitBtn.disabled = true;
             submitBtn.innerHTML = '⏳ Publicando...';
-            loadingMessage.scrollIntoView({ behavior: 'smooth' });
         }
 
         function hideLoading() {
@@ -898,13 +911,13 @@
                 } else {
                     window.location.reload();
                 }
-            }, 4000);
+            }, 3000);
         }
 
-        // Validaciones en tiempo real (sin cambios)
+        // Validaciones en tiempo real
         ['titulo', 'precio', 'descripcion'].forEach(field => {
             document.getElementById(field).addEventListener('blur', function() {
-                if (this.value) {
+                if (this.value.trim()) {
                     document.getElementById(field + 'Error').style.display = 'none';
                 }
             });
@@ -927,22 +940,21 @@
 
         document.getElementById('descripcion').addEventListener('input', function() {
             const length = this.value.length;
-            const counter = document.createElement('small');
+            let counter = this.parentNode.querySelector('.char-counter');
+            if (!counter) {
+                counter = document.createElement('small');
+                counter.className = 'char-counter';
+                this.parentNode.appendChild(counter);
+            }
             counter.style.color = length > 900 ? '#dc3545' : '#666';
             counter.style.fontSize = '0.8em';
             counter.textContent = `${length}/1000 caracteres`;
-            
-            const existingCounter = this.parentNode.querySelector('small:last-of-type');
-            if (existingCounter && existingCounter.textContent.includes('caracteres')) {
-                existingCounter.remove();
-            }
-            
-            this.parentNode.appendChild(counter);
         });
 
-        console.log('✅ Formulario con Cloudinary y CORS mejorado inicializado correctamente');
+        console.log('✅ Formulario con Cloudinary y CORS mejorado inicializado');
         console.log('📡 Web App URL:', WEB_APP_URL);
-        console.log('🌐 Origin configurado:', ORIGIN);
+        console.log('🌐 Origin:', ORIGIN);
+        console.log('☁️ Cloudinary:', CLOUDINARY_CONFIG.CLOUD_NAME);
     </script>
 </body>
 </html>
