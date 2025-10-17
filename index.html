@@ -645,7 +645,9 @@
         </div>
       </div>
       <!-- Contenedor para propiedades de Argentina dinámicas -->
-      <div id="argentina-properties" class="property-grid" style="display: none;"></div>
+      <div id="argentina-properties" class="property-grid" style="display: none;">
+        <div class="loading-properties">Cargando propiedades de Argentina...</div>
+      </div>
     </div>
     
     <!-- Modal para detalle de Casa -->
@@ -717,96 +719,54 @@
     const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
     const preTasacionForm = document.getElementById('pre-tasacion-form');
     
+    // URL de tu Web App de Google Apps Script - CAMBIA TU_ID por el ID real
+    const WEB_APP_URL = 'https://script.google.com/macros/s/TU_ID/exec';
+    
     // Almacén global de propiedades cargadas
     let allProperties = [];
     
-    // Función para cargar propiedades desde Google Sheets
-    async function loadPropertiesFromSheet() {
+    // Función actualizada para cargar propiedades desde Google Apps Script Web App
+    async function loadPropertiesFromSheet(filters = {}) {
       try {
-        // URL de tu Google Sheet - IMPORTANTE: Debes publicar la hoja como CSV
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/1xZYDiKh2DMi66_lIrZeYPL4onXgaZsQ6w8Q9d0isZ6E/export?format=csv';
-        const response = await fetch(sheetUrl);
-        
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        
-        const csvText = await response.text();
-        
-        // Parsear CSV simple
-        const rows = csvText.split('\n').map(row => {
-          // Manejar comas dentro de campos entre comillas
-          const cells = [];
-          let current = '';
-          let inQuotes = false;
-          for (let i = 0; i < row.length; i++) {
-            const char = row[i];
-            if (char === '"') {
-              inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-              cells.push(current.trim().replace(/"/g, ''));
-              current = '';
-            } else {
-              current += char;
-            }
-          }
-          cells.push(current.trim().replace(/"/g, ''));
-          return cells;
+        const params = new URLSearchParams({
+          operacion: filters.operacion || '',
+          pais: filters.pais || '',
+          propiedad: filters.propiedad || ''
         });
         
-        const headers = rows[0].map(h => h.toLowerCase().trim());
-        const data = rows.slice(1).filter(row => row.length > 1 && row[0].trim());
+        const response = await fetch(`${WEB_APP_URL}?${params}`);
         
-        allProperties = data.map(row => {
-          const property = {};
-          headers.forEach((header, index) => {
-            property[header] = row[index] || '';
-          });
-          
-          // Procesar imágenes (separadas por |, ; o espacio)
-          if (property.imagenes) {
-            property.imagenes = property.imagenes.split(/[\|;| ]/).filter(img => img.trim());
-          } else {
-            property.imagenes = [];
-          }
-          
-          // Normalizar nombres de campos
-          property['tipo operacion'] = property['tipo operacion'] || property['tipo_operacion'] || '';
-          property['tipo propiedad'] = property['tipo propiedad'] || property['tipo_propiedad'] || '';
-          
-          return property;
-        }).filter(property => property.titulo && property.titulo.trim());
-        
-        console.log('Propiedades cargadas:', allProperties);
-        
-        // Si ya estamos en una sección activa, recargar propiedades
-        if (brasilContent.classList.contains('active')) {
-          showBrasilContent();
-        } else if (alquilaContent.classList.contains('active')) {
-          showAlquilaContent();
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
+        const result = await response.json();
+        
+        if (result.success) {
+          return result.publicaciones || [];
+        } else {
+          throw new Error(result.message || 'Error en la respuesta del servidor');
+        }
       } catch (error) {
         console.error('Error cargando propiedades:', error);
-        showErrorMessage('Error al cargar propiedades. Verifica que la hoja esté publicada como CSV.');
+        throw error;
       }
     }
     
-    // Función para filtrar y mostrar propiedades
-    function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
-      const filteredProperties = allProperties.filter(property => {
-        const matchesOperacion = property['tipo operacion']?.toLowerCase() === tipoOperacion.toLowerCase() ||
-                                property['tipo_operacion']?.toLowerCase() === tipoOperacion.toLowerCase();
-        const matchesPais = pais ? 
-          (property.pais?.toLowerCase() === pais.toLowerCase() || 
-           property['país']?.toLowerCase() === pais.toLowerCase()) : true;
-        const matchesTipo = tipoPropiedad ? 
-          (property['tipo propiedad']?.toLowerCase() === tipoPropiedad.toLowerCase() ||
-           property['tipo_propiedad']?.toLowerCase() === tipoPropiedad.toLowerCase()) : true;
-        return matchesOperacion && matchesPais && matchesTipo;
-      });
-      
-      renderProperties(filteredProperties);
+    // Función para mostrar propiedades por filtros específicos
+    async function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
+      try {
+        const properties = await loadPropertiesFromSheet({
+          operacion: tipoOperacion,
+          pais: pais,
+          propiedad: tipoPropiedad
+        });
+        
+        renderProperties(properties);
+      } catch (error) {
+        console.error('Error al filtrar propiedades:', error);
+        showErrorMessage('Error al cargar propiedades. Verifica la conexión.');
+      }
     }
     
     // Función para renderizar propiedades en el DOM
@@ -836,15 +796,14 @@
       const primeraImagen = (property.imagenes && property.imagenes.length > 0) ? 
         property.imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
       
-      const precio = property.precio || 'Precio consultar';
-      const tipoOperacion = property['tipo operacion'] || property['tipo_operacion'] || '';
-      const tipoPropiedad = property['tipo propiedad'] || property['tipo_propiedad'] || '';
+      const precio = property.precio ? `$${parseFloat(property.precio).toLocaleString()}` : 'Precio consultar';
+      const tipoOperacion = property.tipoOperacion || '';
+      const tipoPropiedad = property.tipoPropiedad || '';
       const descripcion = property.descripcion || '';
       
       const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
       
-      // URL para "Ver más" - ahora sin referencia a alquiya
-      const verMasUrl = property.url || property.id ? `#propiedad-${property.id}` : '#';
+      const verMasUrl = property.id ? `#propiedad-${property.id}` : '#';
       
       card.innerHTML = `
         <img src="${primeraImagen}" alt="${property.titulo}" 
@@ -870,17 +829,18 @@
     }
     
     // Función para mostrar propiedades de Argentina por tipo
-    function showArgentinaPropertiesByType(tipoPropiedad) {
+    async function showArgentinaPropertiesByType(tipoPropiedad) {
       // Mapear data-type a nombres de tipo propiedad
       const tipoMap = {
-        'terrenos': 'Terreno',
-        'departamentos': 'Departamento',
-        'casas': 'Casa',
-        'locales': 'Local Comercial'
+        'terrenos': 'terreno',
+        'departamentos': 'departamento',
+        'casas': 'casa',
+        'locales': 'local comercial'
       };
       const tipoFinal = tipoMap[tipoPropiedad] || tipoPropiedad;
       
-      showPropertiesByFilters('Venta', 'argentina', tipoFinal);
+      // Cargar propiedades de Venta en Argentina por tipo específico
+      await showPropertiesByFilters('venta', 'argentina', tipoFinal);
       argentinaProperties.style.display = 'grid';
       imageGrid.style.display = 'none';
     }
@@ -898,7 +858,7 @@
     }
     
     // Función para mostrar contenido de Brasil
-    function showBrasilContent() {
+    async function showBrasilContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
@@ -908,14 +868,12 @@
       imageGrid.style.display = 'none';
       argentinaProperties.style.display = 'none';
       
-      // Cargar propiedades de Brasil (Venta)
-      if (allProperties.length > 0) {
-        showPropertiesByFilters('Venta', 'brasil');
-      }
+      // Cargar propiedades de Venta en Brasil
+      await showPropertiesByFilters('venta', 'brasil');
     }
     
     // Función para mostrar contenido de Alquilá
-    function showAlquilaContent() {
+    async function showAlquilaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
@@ -925,10 +883,8 @@
       imageGrid.style.display = 'none';
       argentinaProperties.style.display = 'none';
       
-      // Cargar propiedades de Alquiler en Argentina
-      if (allProperties.length > 0) {
-        showPropertiesByFilters('Alquiler', 'argentina');
-      }
+      // Cargar propiedades de Alquiler (automáticamente filtra Argentina)
+      await showPropertiesByFilters('alquiler');
     }
     
     // Funcionalidad para el modal de Casa
@@ -985,15 +941,15 @@
       showCompraContent();
     });
     
-    document.getElementById('brasil-link').addEventListener('click', function(e) {
+    document.getElementById('brasil-link').addEventListener('click', async function(e) {
       e.preventDefault();
       e.stopPropagation();
-      showBrasilContent();
+      await showBrasilContent();
     });
     
-    document.getElementById('alquila-link').addEventListener('click', function(e) {
+    document.getElementById('alquila-link').addEventListener('click', async function(e) {
       e.preventDefault();
-      showAlquilaContent();
+      await showAlquilaContent();
     });
     
     document.getElementById('vende-link').addEventListener('click', function(e) {
@@ -1034,13 +990,9 @@
     
     // Event listeners para las imágenes de propiedades en Argentina
     document.querySelectorAll('.image-item').forEach(item => {
-      item.addEventListener('click', function() {
+      item.addEventListener('click', async function() {
         const tipoPropiedad = this.dataset.type;
-        showArgentinaPropertiesByType(tipoPropiedad);
-        // Mantener modal para casas si es necesario
-        if (tipoPropiedad === 'casas' && allProperties.length > 0) {
-          // Mostrar propiedades de casas en lugar del modal estático
-        }
+        await showArgentinaPropertiesByType(tipoPropiedad);
       });
     });
     
@@ -1072,9 +1024,9 @@
       }
     });
     
-    // Cargar propiedades al iniciar la página
-    document.addEventListener('DOMContentLoaded', async function() {
-      await loadPropertiesFromSheet();
+    // Inicialización - No necesita cargar todas las propiedades al inicio
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('✅ Página cargada. Las propiedades se cargarán dinámicamente según la sección.');
     });
   </script>
 </body>
