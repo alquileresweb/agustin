@@ -49,6 +49,14 @@
       justify-content: center;
       flex-wrap: wrap;
       margin: 0 auto;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: #000;
+      padding: 10px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
     
     .menu.active {
@@ -60,53 +68,15 @@
       color: #fff;
       font-weight: bold;
       font-size: 1em;
-      padding: 10px 15px;
+      padding: 15px 20px;
       border-radius: 5px;
       transition: background-color 0.3s;
+      text-align: center;
+      width: 100%;
     }
     
     .menu a:hover {
       background-color: rgba(255,255,255,0.1);
-    }
-    
-    .dropdown {
-      position: relative;
-      display: inline-block;
-    }
-    
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      background-color: #fff;
-      min-width: 200px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-      z-index: 1001;
-      border-radius: 5px;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    
-    .dropdown-content a {
-      color: #333;
-      padding: 12px 16px;
-      display: block;
-      text-decoration: none;
-      font-size: 0.9em;
-      border-bottom: 1px solid #eee;
-      text-align: center;
-    }
-    
-    .dropdown-content a:last-child {
-      border-bottom: none;
-    }
-    
-    .dropdown-content a:hover {
-      background-color: #f1f1f1;
-    }
-    
-    .dropdown:hover .dropdown-content {
-      display: block;
     }
     
     .contact-btn {
@@ -324,8 +294,7 @@
     /* GRIDS RESPONSIVOS */
     .property-grid,
     .brasil-property-grid,
-    .alquila-property-grid,
-    .image-grid {
+    .alquila-property-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 25px;
@@ -421,37 +390,6 @@
     
     .whatsapp-btn:hover {
       box-shadow: 0 5px 15px rgba(37,211,102,0.4);
-    }
-    
-    .image-item {
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.3s;
-      width: 100%;
-      max-width: 300px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 15px;
-    }
-    
-    .image-item:hover {
-      transform: scale(1.05);
-    }
-    
-    .image-item img {
-      width: 100%;
-      max-width: 250px;
-      height: auto;
-      border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    
-    .image-item p {
-      margin: 15px 0 0;
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #333;
     }
     
     /* MODALES RESPONSIVOS */
@@ -614,12 +552,18 @@
       
       .menu {
         display: flex !important;
+        position: static;
+        flex-direction: row;
+        background: none;
+        box-shadow: none;
+        padding: 0;
         gap: 30px;
       }
       
       .menu a {
         font-size: 1.2em;
         padding: 15px 20px;
+        width: auto;
       }
       
       .property-grid,
@@ -703,8 +647,7 @@
       
       .property-grid,
       .brasil-property-grid,
-      .alquila-property-grid,
-      .image-grid {
+      .alquila-property-grid {
         grid-template-columns: 1fr;
         gap: 20px;
         padding: 0 10px;
@@ -803,13 +746,7 @@
       <a href="#" class="menu-link" id="vende-link">Vendé</a>
       <a href="#" class="menu-link" id="compra-link">Comprá</a>
       <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
-      <div class="dropdown">
-        <a href="#" class="menu-link" id="inverti-link">Invertí</a>
-        <div class="dropdown-content">
-          <a href="#" id="argentina-link">Propiedades en Argentina</a>
-          <a href="#" id="brasil-link">Propiedades en Brasil</a>
-        </div>
-      </div>
+      <a href="#" class="menu-link" id="brasil-link">Brasil</a>
     </div>
     
     <a href="https://wa.me/5493756508620?text=Hola" class="contact-btn" target="_blank">Contactar</a>
@@ -843,25 +780,7 @@
     </div>
     
     <div class="content-area" id="compra-content">
-      <div class="image-grid">
-        <div class="image-item" data-type="terrenos">
-          <img src="https://i.postimg.cc/Vky6jL2K/7.png" alt="Terrenos" loading="lazy">
-          <p>Terrenos</p>
-        </div>
-        <div class="image-item" data-type="departamentos">
-          <img src="https://i.postimg.cc/xdn14pfZ/8.png" alt="Departamentos" loading="lazy">
-          <p>Departamentos</p>
-        </div>
-        <div class="image-item" data-type="casas">
-          <img src="https://i.postimg.cc/vBS8DQWS/9.png" alt="Casas" loading="lazy">
-          <p>Casas</p>
-        </div>
-        <div class="image-item" data-type="locales">
-          <img src="https://i.postimg.cc/3NsKCnfZ/10.png" alt="Locales Comerciales" loading="lazy">
-          <p>Locales Comerciales</p>
-        </div>
-      </div>
-      <div id="argentina-properties" class="property-grid" style="display: none;">
+      <div id="argentina-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Argentina...</div>
       </div>
     </div>
@@ -918,7 +837,7 @@
   </div>
 
   <script>
-    // MENU HAMBURGUESA
+    // MENU HAMBURGUESA - DESPLIEGA HACIA ABAJO EN MÓVIL
     const hamburger = document.getElementById('hamburger');
     const menu = document.getElementById('menu');
     
@@ -941,7 +860,6 @@
     const compraContent = document.getElementById('compra-content');
     const brasilContent = document.getElementById('brasil-content');
     const alquilaContent = document.getElementById('alquila-content');
-    const imageGrid = compraContent.querySelector('.image-grid');
     const argentinaProperties = document.getElementById('argentina-properties');
     const brasilProperties = document.getElementById('brasil-properties');
     const alquilaProperties = document.getElementById('alquila-properties');
@@ -1027,7 +945,7 @@
       });
     }
     
-    // Función para crear tarjeta de propiedad - CAMBIADO NÚMERO WHATSAPP
+    // Función para crear tarjeta de propiedad
     function createPropertyCard(property) {
       const card = document.createElement('div');
       card.className = 'property-card';
@@ -1063,35 +981,21 @@
     function getActivePropertyContainer() {
       if (brasilContent.classList.contains('active')) return brasilProperties;
       if (alquilaContent.classList.contains('active')) return alquilaProperties;
-      if (argentinaProperties.style.display !== 'none') return argentinaProperties;
+      if (compraContent.classList.contains('active')) return argentinaProperties;
       return null;
     }
     
-    // Función para mostrar propiedades de Argentina por tipo
-    async function showArgentinaPropertiesByType(tipoPropiedad) {
-      const tipoMap = {
-        'terrenos': 'terreno',
-        'departamentos': 'departamento',
-        'casas': 'casa',
-        'locales': 'local comercial'
-      };
-      const tipoFinal = tipoMap[tipoPropiedad] || tipoPropiedad;
-      
-      await showPropertiesByFilters('venta', 'argentina', tipoFinal);
-      argentinaProperties.style.display = 'grid';
-      imageGrid.style.display = 'none';
-    }
-    
-    // Función para mostrar contenido de compra Argentina
-    function showCompraContent() {
+    // Función para mostrar contenido de compra Argentina (AUTOMÁTICO)
+    async function showCompraContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
       compraContent.classList.add('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
-      argentinaProperties.style.display = 'none';
-      imageGrid.style.display = 'grid';
+      
+      // Cargar automáticamente propiedades de Venta en Argentina
+      await showPropertiesByFilters('venta', 'argentina');
     }
     
     // Función para mostrar contenido de Brasil
@@ -1102,8 +1006,6 @@
       compraContent.classList.remove('active');
       brasilContent.classList.add('active');
       alquilaContent.classList.remove('active');
-      imageGrid.style.display = 'none';
-      argentinaProperties.style.display = 'none';
       
       await showPropertiesByFilters('venta', 'brasil');
     }
@@ -1116,8 +1018,6 @@
       compraContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.add('active');
-      imageGrid.style.display = 'none';
-      argentinaProperties.style.display = 'none';
       
       await showPropertiesByFilters('alquiler');
     }
@@ -1166,19 +1066,13 @@
     });
     
     // Event listeners principales
-    document.getElementById('compra-link').addEventListener('click', function(e) {
+    document.getElementById('compra-link').addEventListener('click', async function(e) {
       e.preventDefault();
-    });
-    
-    document.getElementById('argentina-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      showCompraContent();
+      await showCompraContent();
     });
     
     document.getElementById('brasil-link').addEventListener('click', async function(e) {
       e.preventDefault();
-      e.stopPropagation();
       await showBrasilContent();
     });
     
@@ -1195,8 +1089,6 @@
       compraContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
-      imageGrid.style.display = 'none';
-      argentinaProperties.style.display = 'none';
     });
     
     document.getElementById('inicio-link').addEventListener('click', function(e) {
@@ -1207,28 +1099,6 @@
       compraContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
-      imageGrid.style.display = 'none';
-      argentinaProperties.style.display = 'none';
-    });
-    
-    document.getElementById('inverti-link').addEventListener('click', function(e) {
-      e.preventDefault();
-      sidebar.classList.remove('active');
-      vendeContent.classList.remove('active');
-      inicioContent.classList.remove('active');
-      compraContent.classList.remove('active');
-      brasilContent.classList.remove('active');
-      alquilaContent.classList.remove('active');
-      imageGrid.style.display = 'none';
-      argentinaProperties.style.display = 'none';
-    });
-    
-    // Event listeners para las imágenes de propiedades en Argentina
-    document.querySelectorAll('.image-item').forEach(item => {
-      item.addEventListener('click', async function() {
-        const tipoPropiedad = this.dataset.type;
-        await showArgentinaPropertiesByType(tipoPropiedad);
-      });
     });
     
     // Event listeners para cerrar modales
