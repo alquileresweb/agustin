@@ -374,41 +374,26 @@
                 console.log('📤 Enviando datos:', publicationData);
                 console.log('🌐 Origen de la solicitud:', window.location.origin);
 
-                // Enviar a Google Apps Script
+                // Enviar a Google Apps Script con no-cors
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'cors',
+                    mode: 'no-cors',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Origin': window.location.origin
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(publicationData)
                 });
 
-                // Verificar si la respuesta es exitosa
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ Respuesta no exitosa:', response.status, errorText);
-                    throw new Error(`Error HTTP ${response.status}: ${errorText || response.statusText}`);
-                }
+                // En modo no-cors, no podemos leer response.json() ni response.status
+                console.log('📤 Solicitud enviada (no-cors). No se puede leer la respuesta.');
 
-                const result = await response.json();
-                console.log('📥 Respuesta del servidor:', result);
-
-                if (result.success) {
-                    showSuccess(result);
-                    resetForm();
-                } else {
-                    throw new Error(result.message || 'Error desconocido del servidor');
-                }
+                // Asumir éxito si no hay error de red
+                showSuccess({ id: 'Desconocido', row: 'Desconocido' });
+                resetForm();
                 
             } catch (error) {
                 console.error('❌ Error completo:', error);
-                let errorMsg = error.message;
-                if (error.message.includes('Failed to fetch')) {
-                    errorMsg = 'No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.';
-                }
-                showError(errorMsg);
+                showError('No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.');
             } finally {
                 hideLoading();
             }
@@ -461,8 +446,8 @@
         function showSuccess(result) {
             const titulo = document.getElementById('titulo').value;
             successMessage.innerHTML = `
-                ✅ ¡Anuncio "${titulo}" publicado exitosamente!<br>
-                <small>ID: <strong>${result.id}</strong> | Fila: ${result.row}</small>
+                ✅ ¡Anuncio "${titulo}" enviado exitosamente!<br>
+                <small>Nota: Verifica la hoja de cálculo para confirmar la publicación.</small>
             `;
             successMessage.style.display = 'block';
             successMessage.scrollIntoView({ behavior: 'smooth' });
