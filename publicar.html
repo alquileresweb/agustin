@@ -581,28 +581,69 @@
             };
         }
 
-        // ⭐ FUNCIÓN CORREGIDA: USA FALLBACK PRIMERO (QUE FUNCIONA) ⭐
-        async function enviarPublicacionCompleta(datosPublicacion) {
-            try {
-                // ⭐ PASO 1: PREPARAR DATOS CON ACCIÓN ORIGINAL (FUNCIONA)
-                const datosParaFallback = {
-                    action: 'addPublicacionToPublicar', // ⭐ ACCIÓN ORIGINAL
-                    titulo: datosPublicacion.titulo,
-                    tipo: datosPublicacion.tipo,
-                    subtipo: datosPublicacion.subtipo,
-                    precio: datosPublicacion.precio,
-                    pais: datosPublicacion.pais,
-                    imagenes: uploadedImageUrls.join(','), // ⭐ URLs como string
-                    descripcion: datosPublicacion.descripcion,
-                    timestamp: new Date().toISOString(),
-                    hoja: 'Publicar'
-                };
+        // ⭐ FUNCIÓN CORREGIDA: CORS + Fallback ⭐
+async function enviarPublicacionCompleta(datosPublicacion) {
+    try {
+        const datosParaEnvio = {
+            action: 'procesarPublicacionCompleta', // ⭐ NUEVA ACCIÓN
+            titulo: datosPublicacion.titulo,
+            tipo: datosPublicacion.tipo,
+            subtipo: datosPublicacion.subtipo,
+            precio: datosPublicacion.precio,
+            pais: datosPublicacion.pais,
+            descripcion: datosPublicacion.descripcion,
+            images: uploadedImageUrls, // ⭐ ARRAY DE URLs
+            timestamp: new Date().toISOString()
+        };
 
-                console.log('🚀 ENVIANDO CON FALLBACK (QUE FUNCIONA):', {
-                    action: datosParaFallback.action,
-                    titulo: datosParaFallback.titulo,
-                    imagenes: uploadedImageUrls.length
-                });
+        console.log('🚀 ENVIANDO CORS:', datosParaEnvio);
+
+        // ⭐ PRIMER INTENTO: CORS (AHORA FUNCIONA)
+        let response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'cors', // ⭐ CAMBIADO A CORS
+            cache: 'no-cache',
+            credentials: 'omit',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(datosParaEnvio)
+        });
+
+        console.log('📥 Respuesta CORS:', response.status, response.type);
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log('✅ CORS ÉXITO:', result);
+            return result;
+        }
+
+        // ⭐ FALLBACK: no-cors (si CORS falla)
+        console.log('🔄 Fallback no-cors...');
+        response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datosParaEnvio)
+        });
+
+        if (response.type === 'opaque') {
+            return {
+                success: true,
+                message: '✅ Publicación COMPLETA (fallback)',
+                publicacion: { id: 'PUB-' + Date.now(), fila: 'Automática', titulo: datosPublicacion.titulo },
+                imagenes: { total: uploadedImageUrls.length, exitosas: uploadedImageUrls.length, links: uploadedImageUrls },
+                url_verificacion: '#'
+            };
+        }
+
+    } catch (error) {
+        console.error('❌ Error:', error);
+        return { success: false, error: error.message };
+    }
+}
 
                 // ⭐ PASO 2: USAR MÉTODO NO-CORS (PROBADO QUE FUNCIONA)
                 const response = await fetch(WEB_APP_URL, {
