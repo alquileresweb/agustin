@@ -250,6 +250,13 @@
 
             <form id="publicationForm">
                 <div class="form-group">
+                    <label for="email">Correo Electrónico *</label>
+                    <input type="email" id="email" name="email" required 
+                           placeholder="Ej: usuario@ejemplo.com">
+                    <div class="error" id="emailError">El correo electrónico es obligatorio</div>
+                </div>
+
+                <div class="form-group">
                     <label for="titulo">Título de la Publicación *</label>
                     <input type="text" id="titulo" name="titulo" required 
                            placeholder="Ej: Hermoso departamento 3 ambientes en Palermo"
@@ -262,8 +269,8 @@
                         <label for="tipo">Tipo de Operación *</label>
                         <select id="tipo" name="tipo" required>
                             <option value="">Seleccionar tipo</option>
-                            <option value="Venta">Venta</option>
-                            <option value="Alquiler">Alquiler</option>
+                            <option value="venta">Venta</option>
+                            <option value="alquiler">Alquiler</option>
                         </select>
                         <div class="error" id="tipoError">Selecciona un tipo de operación</div>
                     </div>
@@ -272,11 +279,11 @@
                         <label for="subtipo">Tipo de Propiedad *</label>
                         <select id="subtipo" name="subtipo" required>
                             <option value="">Seleccionar subtipo</option>
-                            <option value="Departamento">Departamento</option>
-                            <option value="Casa">Casa</option>
-                            <option value="Terreno">Terreno</option>
-                            <option value="Local">Local Comercial</option>
-                            <option value="Otro">Otro</option>
+                            <option value="departamento">Departamento</option>
+                            <option value="casa">Casa</option>
+                            <option value="terreno">Terreno</option>
+                            <option value="local">Local Comercial</option>
+                            <option value="otro">Otro</option>
                         </select>
                         <div class="error" id="subtipoError">Selecciona el tipo de propiedad</div>
                     </div>
@@ -590,6 +597,7 @@
 
                 console.log('📤 Enviando a Google Apps Script con CORS:', {
                     action: publicationData.action,
+                    email: publicationData.email,
                     titulo: publicationData.titulo,
                     tipo: publicationData.tipo,
                     subtipo: publicationData.subtipo,
@@ -607,7 +615,7 @@
 
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'cors', // Usar modo CORS para leer la respuesta
+                    mode: 'cors', // Usar CORS para leer la respuesta
                     cache: 'no-cache',
                     credentials: 'omit',
                     headers: {
@@ -616,6 +624,11 @@
                     body: JSON.stringify(datosFinales)
                 });
 
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
                 const result = await response.json();
                 console.log('📥 Respuesta Google Apps Script:', result);
 
@@ -623,73 +636,20 @@
                     return {
                         success: true,
                         message: result.message || 'Publicación enviada correctamente a la hoja Publicar',
-                        id: result.id || 'GAS-' + Date.now(),
+                        id: result.id,
                         row: result.row
                     };
                 } else {
-                    throw new Error(result.error || 'Error desconocido al enviar a Google Apps Script');
+                    throw new Error(result.error || 'Error desconocido al enviar a Google Sheets');
                 }
 
             } catch (error) {
-                console.error('❌ Error al enviar a Google Apps Script:', error);
-                // Intentar con fallback si CORS falla
-                return await enviarConGetFallback(publicationData);
+                console.error('❌ Error en enviarAGoogleAppsScript:', error);
+                throw error;
             }
         }
 
-        // === WORKAROUND CON GET PARAMETERS ===
-        async function enviarConGetFallback(publicationData) {
-            try {
-                console.log('🛠️ Usando fallback GET con parámetros URL...');
-                
-                const imagenesParaBackend = Array.isArray(publicationData.imagenes) 
-                    ? publicationData.imagenes.slice(0, 3).join('|') // Limitar para URL
-                    : publicationData.imagenes || '';
-
-                const params = new URLSearchParams({
-                    action: 'addPublicacionToPublicar',
-                    titulo: publicationData.titulo.substring(0, 50), // Limitar longitud
-                    tipo: publicationData.tipo,
-                    subtipo: publicationData.subtipo,
-                    precio: publicationData.precio.toString(),
-                    pais: publicationData.pais,
-                    imagenes: imagenesParaBackend,
-                    descripcion: publicationData.descripcion.substring(0, 200), // Limitar
-                    timestamp: publicationData.timestamp,
-                    hoja: 'Publicar' // Especificar la hoja
-                });
-
-                const getUrl = `${WEB_APP_URL}?${params.toString()}`;
-                
-                const response = await fetch(getUrl, {
-                    method: 'GET',
-                    mode: 'cors', // Intentar con CORS
-                    cache: 'no-cache',
-                    credentials: 'omit'
-                });
-
-                const result = await response.json();
-                console.log('✅ GET fallback ejecutado:', result);
-
-                if (result.success) {
-                    return {
-                        success: true,
-                        message: result.message || 'Publicación enviada con GET fallback a la hoja Publicar',
-                        id: result.id || 'GET-' + Date.now(),
-                        row: result.row
-                    };
-                } else {
-                    throw new Error(result.error || 'Error desconocido en GET fallback');
-                }
-
-            } catch (error) {
-                console.error('❌ GET fallback falló:', error);
-                // Último recurso: form post tradicional
-                return await enviarConFormPost(publicationData);
-            }
-        }
-
-        // === MÉTODO FINAL: FORM POST TRADICIONAL ===
+        // === WORKAROUND CON FORM POST TRADICIONAL (FALLBACK) ===
         async function enviarConFormPost(publicationData) {
             console.log('📋 Usando form post tradicional como último recurso...');
             
@@ -704,7 +664,7 @@
                     const input = document.createElement('input');
                     input.type = 'hidden';
                     input.name = key;
-                    input.value = typeof publicationData[key] === 'string' ? publicationData[key] : JSON.stringify(publicationData[key]);
+                    input.value = JSON.stringify(publicationData[key]);
                     form.appendChild(input);
                 });
                 
@@ -732,12 +692,11 @@
         // === FUNCIÓN DE PRUEBA DIRECTA ===
         async function probarConexionAppsScript() {
             try {
-                const response = await fetch(`${WEB_APP_URL}?action=test`, {
+                const response = await fetch(WEB_APP_URL, {
                     method: 'GET',
                     mode: 'cors'
                 });
-                const result = await response.json();
-                console.log('🧪 Prueba de conexión:', result);
+                console.log('🧪 Prueba de conexión:', response.status);
                 return response.ok;
             } catch (error) {
                 console.warn('⚠️ Prueba de conexión falló:', error);
@@ -752,7 +711,7 @@
             uploadedImageUrls = [];
             
             if (files.length > 5) {
-                alert('❌ Solo puedes subir un máximo de 5 imágenes');
+                showError('Solo puedes subir un máximo de 5 imágenes');
                 this.value = '';
                 return;
             }
@@ -777,14 +736,14 @@
                     reader.readAsDataURL(file);
                     
                 } catch (error) {
-                    alert(`❌ ${file.name}: ${error.message}`);
+                    showError(`${file.name}: ${error.message}`);
                     this.value = '';
                     return;
                 }
             }
             
             if (totalSize > 25 * 1024 * 1024) {
-                alert('❌ El tamaño total de las imágenes no puede exceder 25MB');
+                showError('El tamaño total de las imágenes no puede exceder 25MB');
                 this.value = '';
                 return;
             }
@@ -794,7 +753,7 @@
                     await subirImagenesMultiples(validFiles);
                 } catch (error) {
                     console.error('Error en subida masiva:', error);
-                    alert('Error al subir imágenes. Intenta nuevamente.');
+                    showError('Error al subir imágenes. Intenta nuevamente.');
                     uploadedImageUrls = [];
                 }
             }
@@ -820,6 +779,7 @@
             try {
                 const publicationData = {
                     action: 'addPublicacionToPublicar',
+                    email: document.getElementById('email').value.trim(),
                     titulo: document.getElementById('titulo').value.trim(),
                     tipo: document.getElementById('tipo').value,
                     subtipo: document.getElementById('subtipo').value,
@@ -827,8 +787,7 @@
                     pais: document.getElementById('pais').value,
                     imagenes: uploadedImageUrls,
                     descripcion: document.getElementById('descripcion').value.trim(),
-                    timestamp: new Date().toISOString(),
-                    hoja: 'Publicar'
+                    timestamp: new Date().toISOString()
                 };
 
                 console.log('📤 Enviando datos con imágenes de Cloudinary a la hoja Publicar:', publicationData);
@@ -837,7 +796,12 @@
                 const conexionOk = await probarConexionAppsScript();
                 console.log('🔗 Conexión Apps Script:', conexionOk ? 'OK' : 'Usando fallback');
 
-                const result = await enviarAGoogleAppsScript(publicationData);
+                let result;
+                if (conexionOk) {
+                    result = await enviarAGoogleAppsScript(publicationData);
+                } else {
+                    result = await enviarConFormPost(publicationData);
+                }
 
                 if (result.success) {
                     showSuccess(result);
@@ -860,7 +824,7 @@
             const errors = document.querySelectorAll('.error');
             errors.forEach(error => error.style.display = 'none');
 
-            const requiredFields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
+            const requiredFields = ['email', 'titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
                 if (!input.value.trim()) {
@@ -868,6 +832,13 @@
                     isValid = false;
                 }
             });
+
+            const email = document.getElementById('email').value.trim();
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                document.getElementById('emailError').textContent = 'Ingresa un correo electrónico válido';
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
 
             const titulo = document.getElementById('titulo').value.trim();
             if (titulo.length < 5 || titulo.length > 100) {
@@ -899,8 +870,7 @@
                 ✅ ¡Anuncio "${titulo}" publicado exitosamente en la hoja Publicar!<br>
                 📸 ${uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
                 🆔 ID: ${result.id || 'N/A'}<br>
-                📍 Fila: ${result.row || 'N/A'}<br>
-                <small>✅ Datos enviados a Google Sheets (hoja: Publicar)</small>
+                <small>✅ Fila: ${result.row || 'N/A'}</small>
             `;
             successMessage.style.display = 'block';
             successMessage.scrollIntoView({ behavior: 'smooth' });
@@ -948,7 +918,7 @@
         }
 
         // Validaciones en tiempo real
-        ['titulo', 'precio', 'descripcion'].forEach(field => {
+        ['email', 'titulo', 'precio', 'descripcion'].forEach(field => {
             document.getElementById(field).addEventListener('blur', function() {
                 if (this.value.trim()) {
                     document.getElementById(field + 'Error').style.display = 'none';
@@ -962,6 +932,13 @@
                     document.getElementById(field + 'Error').style.display = 'none';
                 }
             });
+        });
+
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value.trim();
+            if (email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                document.getElementById('emailError').style.display = 'none';
+            }
         });
 
         document.getElementById('titulo').addEventListener('input', function() {
