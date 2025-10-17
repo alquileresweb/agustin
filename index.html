@@ -53,7 +53,7 @@
       position: absolute;
       top: 100%;
       left: 0;
-      width: 100%;
+      right: 0;
       background-color: #000;
       padding: 10px 0;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
@@ -72,11 +72,15 @@
       border-radius: 5px;
       transition: background-color 0.3s;
       text-align: center;
-      width: 100%;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     
     .menu a:hover {
       background-color: rgba(255,255,255,0.1);
+    }
+    
+    .menu a:last-child {
+      border-bottom: none;
     }
     
     .contact-btn {
@@ -292,9 +296,7 @@
     }
     
     /* GRIDS RESPONSIVOS */
-    .property-grid,
-    .brasil-property-grid,
-    .alquila-property-grid {
+    .property-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 25px;
@@ -305,9 +307,7 @@
       margin: 30px 0;
     }
     
-    .property-card,
-    .brasil-property-card,
-    .alquila-property-card {
+    .property-card {
       background: white;
       border-radius: 20px;
       padding: 25px;
@@ -318,16 +318,12 @@
       border: 1px solid #eee;
     }
     
-    .property-card:hover,
-    .brasil-property-card:hover,
-    .alquila-property-card:hover {
+    .property-card:hover {
       transform: translateY(-10px);
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
     
-    .property-card img,
-    .brasil-property-card img,
-    .alquila-property-card img {
+    .property-card img {
       width: 100%;
       height: 250px;
       object-fit: cover;
@@ -335,9 +331,7 @@
       margin-bottom: 20px;
     }
     
-    .property-title,
-    .brasil-property-title,
-    .alquila-property-title {
+    .property-title {
       font-size: 1.5em;
       font-weight: bold;
       color: #333;
@@ -552,23 +546,20 @@
       
       .menu {
         display: flex !important;
-        position: static;
         flex-direction: row;
+        position: static;
         background: none;
         box-shadow: none;
         padding: 0;
-        gap: 30px;
       }
       
       .menu a {
         font-size: 1.2em;
         padding: 15px 20px;
-        width: auto;
+        border-bottom: none;
       }
       
-      .property-grid,
-      .brasil-property-grid,
-      .alquila-property-grid {
+      .property-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 40px;
       }
@@ -593,18 +584,14 @@
         padding: 0 40px;
       }
       
-      .property-card img,
-      .brasil-property-card img,
-      .alquila-property-card img {
+      .property-card img {
         height: 300px;
       }
     }
     
     /* MEDIA QUERIES PARA TABLET */
     @media (min-width: 768px) and (max-width: 1023px) {
-      .property-grid,
-      .brasil-property-grid,
-      .alquila-property-grid {
+      .property-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
       }
@@ -645,9 +632,7 @@
         font-size: 0.9em;
       }
       
-      .property-grid,
-      .brasil-property-grid,
-      .alquila-property-grid {
+      .property-grid {
         grid-template-columns: 1fr;
         gap: 20px;
         padding: 0 10px;
@@ -681,16 +666,12 @@
         width: 90%;
       }
       
-      .property-card,
-      .brasil-property-card,
-      .alquila-property-card {
+      .property-card {
         padding: 20px;
         margin: 10px;
       }
       
-      .property-title,
-      .brasil-property-title,
-      .alquila-property-title {
+      .property-title {
         font-size: 1.3em;
       }
       
@@ -744,9 +725,9 @@
     <div class="menu" id="menu">
       <a href="#" class="menu-link" id="inicio-link">Inicio</a>
       <a href="#" class="menu-link" id="vende-link">Vendé</a>
-      <a href="#" class="menu-link" id="compra-link">Comprá</a>
+      <a href="#" class="menu-link" id="argentina-link">Propiedades Argentina</a>
+      <a href="#" class="menu-link" id="brasil-link">Propiedades Brasil</a>
       <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
-      <a href="#" class="menu-link" id="brasil-link">Brasil</a>
     </div>
     
     <a href="https://wa.me/5493756508620?text=Hola" class="contact-btn" target="_blank">Contactar</a>
@@ -785,13 +766,13 @@
       </div>
     </div>
     
-    <div class="content-area brasil-content" id="brasil-content">
+    <div class="content-area" id="brasil-content">
       <div id="brasil-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
     </div>
     
-    <div class="content-area alquila-content" id="alquila-content">
+    <div class="content-area" id="alquila-content">
       <div id="alquila-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades para alquilar...</div>
       </div>
@@ -837,7 +818,7 @@
   </div>
 
   <script>
-    // MENU HAMBURGUESA - DESPLIEGA HACIA ABAJO EN MÓVIL
+    // MENU HAMBURGUESA
     const hamburger = document.getElementById('hamburger');
     const menu = document.getElementById('menu');
     
@@ -985,8 +966,8 @@
       return null;
     }
     
-    // Función para mostrar contenido de compra Argentina (AUTOMÁTICO)
-    async function showCompraContent() {
+    // Función para mostrar contenido de Argentina (Venta automática)
+    async function showArgentinaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
@@ -1066,9 +1047,9 @@
     });
     
     // Event listeners principales
-    document.getElementById('compra-link').addEventListener('click', async function(e) {
+    document.getElementById('argentina-link').addEventListener('click', async function(e) {
       e.preventDefault();
-      await showCompraContent();
+      await showArgentinaContent();
     });
     
     document.getElementById('brasil-link').addEventListener('click', async function(e) {
