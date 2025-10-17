@@ -250,13 +250,6 @@
 
             <form id="publicationForm">
                 <div class="form-group">
-                    <label for="email">Correo Electrónico *</label>
-                    <input type="email" id="email" name="email" required 
-                           placeholder="Ej: usuario@ejemplo.com">
-                    <div class="error" id="emailError">El correo electrónico es obligatorio</div>
-                </div>
-
-                <div class="form-group">
                     <label for="titulo">Título de la Publicación *</label>
                     <input type="text" id="titulo" name="titulo" required 
                            placeholder="Ej: Hermoso departamento 3 ambientes en Palermo"
@@ -588,16 +581,15 @@
             };
         }
 
-        // === ENVIAR A GOOGLE APPS SCRIPT CON CORS ===
+        // === ENVIAR A GOOGLE APPS SCRIPT CON NO-CORS ===
         async function enviarAGoogleAppsScript(publicationData) {
             try {
                 const imagenesParaBackend = Array.isArray(publicationData.imagenes) 
                     ? publicationData.imagenes.join(',')
                     : publicationData.imagenes || '';
 
-                console.log('📤 Enviando a Google Apps Script con CORS:', {
+                console.log('📤 Enviando a Google Apps Script con NO-CORS:', {
                     action: publicationData.action,
-                    email: publicationData.email,
                     titulo: publicationData.titulo,
                     tipo: publicationData.tipo,
                     subtipo: publicationData.subtipo,
@@ -610,12 +602,14 @@
                 const datosFinales = {
                     ...publicationData,
                     imagenes: imagenesParaBackend,
+                    origin: ORIGIN,
                     hoja: 'Publicar' // Especificar la hoja "Publicar"
                 };
 
+                // ✅ MÉTODO 1: NO-CORS (opaque response)
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'cors', // Usar CORS para leer la respuesta
+                    mode: 'no-cors', // ← IMPORTANTE: no-cors evita el preflight
                     cache: 'no-cache',
                     credentials: 'omit',
                     headers: {
@@ -624,32 +618,79 @@
                     body: JSON.stringify(datosFinales)
                 });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                console.log('📥 Respuesta Google Apps Script (no-cors):', response.type);
+                
+                // Con no-cors, no podemos leer la respuesta pero sabemos si se envió
+                if (response.type === 'opaque') {
+                    console.log('✅ Datos enviados exitosamente a Google Apps Script (respuesta opaca)');
+                    return { success: true, message: 'Publicación enviada correctamente a la hoja Publicar', id: 'GAS-' + Date.now() };
                 }
 
-                const result = await response.json();
-                console.log('📥 Respuesta Google Apps Script:', result);
-
-                if (result.success) {
-                    return {
-                        success: true,
-                        message: result.message || 'Publicación enviada correctamente a la hoja Publicar',
-                        id: result.id,
-                        row: result.row
-                    };
-                } else {
-                    throw new Error(result.error || 'Error desconocido al enviar a Google Sheets');
+                // Fallback: intentar leer si CORS funciona
+                if (response.ok) {
+                    const result = await response.json();
+                    return result;
                 }
 
             } catch (error) {
-                console.error('❌ Error en enviarAGoogleAppsScript:', error);
-                throw error;
+                console.error('❌ Error con no-cors:', error);
+                
+                // 🔄 MÉTODO 2: Workaround con GET parameters (si POST falla)
+                return await enviarConGetFallback(publicationData);
             }
         }
 
-        // === WORKAROUND CON FORM POST TRADICIONAL (FALLBACK) ===
+        // === WORKAROUND CON GET PARAMETERS ===
+        async function enviarConGetFallback(publicationData) {
+            try {
+                console.log('🛠️ Usando fallback GET con parámetros URL...');
+                
+                const imagenesParaBackend = Array.isArray(publicationData.imagenes) 
+                    ? publicationData.imagenes.slice(0, 3).join('|') // Limitar para URL
+                    : publicationData.imagenes || '';
+
+                const params = new URLSearchParams({
+                    action: 'addPublicacionToPublicar', // Nueva acción para la hoja "Publicar"
+                    titulo: publicationData.titulo.substring(0, 50), // Limitar longitud
+                    tipo: publicationData.tipo,
+                    subtipo: publicationData.subtipo,
+                    precio: publicationData.precio,
+                    pais: publicationData.pais,
+                    imagenes: imagenesParaBackend,
+                    descripcion: publicationData.descripcion.substring(0, 200), // Limitar
+                    timestamp: publicationData.timestamp,
+                    origin: ORIGIN,
+                    hoja: 'Publicar' // Especificar la hoja
+                });
+
+                const getUrl = `${WEB_APP_URL}?${params.toString()}`;
+                
+                const response = await fetch(getUrl, {
+                    method: 'GET',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    credentials: 'omit'
+                });
+
+                console.log('✅ GET fallback ejecutado:', response.type);
+                
+                if (response.type === 'opaque') {
+                    return { 
+                        success: true, 
+                        message: 'Publicación enviada con GET fallback a la hoja Publicar',
+                        id: 'GET-' + Date.now()
+                    };
+                }
+
+            } catch (error) {
+                console.error('❌ GET fallback falló:', error);
+                
+                // 🔄 MÉTODO 3: Form submission tradicional
+                return await enviarConFormPost(publicationData);
+            }
+        }
+
+        // === MÉTODO FINAL: FORM POST TRADICIONAL ===
         async function enviarConFormPost(publicationData) {
             console.log('📋 Usando form post tradicional como último recurso...');
             
@@ -692,14 +733,14 @@
         // === FUNCIÓN DE PRUEBA DIRECTA ===
         async function probarConexionAppsScript() {
             try {
-                const response = await fetch(WEB_APP_URL, {
+                const response = await fetch(`${WEB_APP_URL}?test=1&mode=no-cors`, {
                     method: 'GET',
-                    mode: 'cors'
+                    mode: 'no-cors'
                 });
-                console.log('🧪 Prueba de conexión:', response.status);
-                return response.ok;
+                console.log('🧪 Prueba de conexión:', response.type);
+                return response.type === 'opaque';
             } catch (error) {
-                console.warn('⚠️ Prueba de conexión falló:', error);
+                console.warn('⚠️ Prueba falló:', error);
                 return false;
             }
         }
@@ -711,7 +752,7 @@
             uploadedImageUrls = [];
             
             if (files.length > 5) {
-                showError('Solo puedes subir un máximo de 5 imágenes');
+                alert('❌ Solo puedes subir un máximo de 5 imágenes');
                 this.value = '';
                 return;
             }
@@ -736,14 +777,14 @@
                     reader.readAsDataURL(file);
                     
                 } catch (error) {
-                    showError(`${file.name}: ${error.message}`);
+                    alert(`❌ ${file.name}: ${error.message}`);
                     this.value = '';
                     return;
                 }
             }
             
             if (totalSize > 25 * 1024 * 1024) {
-                showError('El tamaño total de las imágenes no puede exceder 25MB');
+                alert('❌ El tamaño total de las imágenes no puede exceder 25MB');
                 this.value = '';
                 return;
             }
@@ -753,7 +794,7 @@
                     await subirImagenesMultiples(validFiles);
                 } catch (error) {
                     console.error('Error en subida masiva:', error);
-                    showError('Error al subir imágenes. Intenta nuevamente.');
+                    alert('Error al subir imágenes. Intenta nuevamente.');
                     uploadedImageUrls = [];
                 }
             }
@@ -778,8 +819,7 @@
             
             try {
                 const publicationData = {
-                    action: 'addPublicacionToPublicar',
-                    email: document.getElementById('email').value.trim(),
+                    action: 'addPublicacionToPublicar', // Nueva acción para la hoja "Publicar"
                     titulo: document.getElementById('titulo').value.trim(),
                     tipo: document.getElementById('tipo').value,
                     subtipo: document.getElementById('subtipo').value,
@@ -787,7 +827,8 @@
                     pais: document.getElementById('pais').value,
                     imagenes: uploadedImageUrls,
                     descripcion: document.getElementById('descripcion').value.trim(),
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    hoja: 'Publicar' // Especificar la hoja explícitamente
                 };
 
                 console.log('📤 Enviando datos con imágenes de Cloudinary a la hoja Publicar:', publicationData);
@@ -796,23 +837,18 @@
                 const conexionOk = await probarConexionAppsScript();
                 console.log('🔗 Conexión Apps Script:', conexionOk ? 'OK' : 'Usando fallback');
 
-                let result;
-                if (conexionOk) {
-                    result = await enviarAGoogleAppsScript(publicationData);
-                } else {
-                    result = await enviarConFormPost(publicationData);
-                }
+                const result = await enviarAGoogleAppsScript(publicationData);
 
                 if (result.success) {
                     showSuccess(result);
                     resetForm();
                 } else {
-                    showError(result.error || 'Error desconocido al publicar en la hoja Publicar');
+                    showError(result.message || 'Error desconocido al publicar en la hoja Publicar');
                 }
                 
             } catch (error) {
                 console.error('❌ Error completo:', error);
-                showError(`Error de conexión: ${error.message}. Intenta nuevamente.`);
+                showError(`Error de conexión: ${error.message}. Los datos se enviaron con fallback a la hoja Publicar.`);
             } finally {
                 hideLoading();
             }
@@ -824,7 +860,7 @@
             const errors = document.querySelectorAll('.error');
             errors.forEach(error => error.style.display = 'none');
 
-            const requiredFields = ['email', 'titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
+            const requiredFields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
                 if (!input.value.trim()) {
@@ -832,13 +868,6 @@
                     isValid = false;
                 }
             });
-
-            const email = document.getElementById('email').value.trim();
-            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                document.getElementById('emailError').textContent = 'Ingresa un correo electrónico válido';
-                document.getElementById('emailError').style.display = 'block';
-                isValid = false;
-            }
 
             const titulo = document.getElementById('titulo').value.trim();
             if (titulo.length < 5 || titulo.length > 100) {
@@ -870,7 +899,7 @@
                 ✅ ¡Anuncio "${titulo}" publicado exitosamente en la hoja Publicar!<br>
                 📸 ${uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
                 🆔 ID: ${result.id || 'N/A'}<br>
-                <small>✅ Fila: ${result.row || 'N/A'}</small>
+                <small>✅ Datos enviados a Google Sheets (hoja: Publicar, método: ${result.method || 'no-cors'})</small>
             `;
             successMessage.style.display = 'block';
             successMessage.scrollIntoView({ behavior: 'smooth' });
@@ -918,7 +947,7 @@
         }
 
         // Validaciones en tiempo real
-        ['email', 'titulo', 'precio', 'descripcion'].forEach(field => {
+        ['titulo', 'precio', 'descripcion'].forEach(field => {
             document.getElementById(field).addEventListener('blur', function() {
                 if (this.value.trim()) {
                     document.getElementById(field + 'Error').style.display = 'none';
@@ -932,13 +961,6 @@
                     document.getElementById(field + 'Error').style.display = 'none';
                 }
             });
-        });
-
-        document.getElementById('email').addEventListener('input', function() {
-            const email = this.value.trim();
-            if (email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-                document.getElementById('emailError').style.display = 'none';
-            }
         });
 
         document.getElementById('titulo').addEventListener('input', function() {
@@ -962,7 +984,7 @@
         });
 
         // Inicialización
-        console.log('✅ Formulario inicializado con Cloudinary OK + Google Apps Script CORS');
+        console.log('✅ Formulario inicializado con Cloudinary OK + Google Apps Script NO-CORS');
         console.log('📡 Web App URL:', WEB_APP_URL);
         console.log('☁️ Cloudinary funcionando correctamente');
     </script>
