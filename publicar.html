@@ -104,43 +104,6 @@
             border: 2px solid #ddd;
         }
 
-        .image-preview img.uploaded {
-            border-color: #28a745;
-            position: relative;
-        }
-
-        .image-preview img.uploaded::after {
-            content: '✅';
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #28a745;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        .upload-progress {
-            width: 100%;
-            height: 4px;
-            background: #e9ecef;
-            border-radius: 2px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-
-        .upload-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #28a745, #20c997);
-            width: 0%;
-            transition: width 0.3s;
-        }
-
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -303,11 +266,8 @@
                 <div class="form-group">
                     <label for="imagenes">Imágenes * (Máximo 5)</label>
                     <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple required>
-                    <small style="color: #666; font-size: 0.9em;">Formatos aceptados: JPG, PNG (máx. 10MB por imagen)</small>
+                    <small style="color: #666; font-size: 0.9em;">Formatos aceptados: JPG, PNG, GIF (máx. 5MB por imagen)</small>
                     <div class="image-preview" id="imagePreview"></div>
-                    <div class="upload-progress" id="uploadProgress" style="display: none;">
-                        <div class="upload-progress-bar" id="uploadProgressBar"></div>
-                    </div>
                     <div class="error" id="imagenesError">Debes seleccionar al menos una imagen</div>
                 </div>
 
@@ -330,16 +290,6 @@
         // URL del Web App de Google Apps Script
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
 
-        // === CONFIGURACIÓN DE CLOUDINARY ===
-        const CLOUDINARY_CONFIG = {
-            CLOUD_NAME: 'dnugmwern',
-            UPLOAD_URL: 'https://api.cloudinary.com/v1_1/dnugmwern/image/upload',
-            UPLOAD_PRESET: 'preset_alquileres',
-            MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB máximo
-            ALLOWED_FORMATS: ['image/jpeg', 'image/jpg', 'image/png'],
-            MAX_RESOLUTION: 2048
-        };
-
         // Elementos del DOM
         const form = document.getElementById('publicationForm');
         const submitBtn = document.getElementById('submitBtn');
@@ -347,244 +297,11 @@
         const errorMessage = document.getElementById('errorMessage');
         const loadingMessage = document.getElementById('loadingMessage');
         const imagePreview = document.getElementById('imagePreview');
-        const imagenesInput = document.getElementById('imagenes');
-        const uploadProgress = document.getElementById('uploadProgress');
-        const uploadProgressBar = document.getElementById('uploadProgressBar');
 
-        let uploadedImageUrls = []; // Almacenar URLs de imágenes subidas
-
-        // === FUNCIÓN PRINCIPAL - SUBIR UNA IMAGEN ===
-        async function subirImagenCloudinary(file, opciones = {}) {
-            try {
-                const progressCallback = opciones.onProgress || (() => {});
-                progressCallback(10);
-
-                const optimizedFile = await optimizarImagen(file, opciones);
-                progressCallback(30);
-
-                const formData = crearFormData(optimizedFile, opciones);
-                progressCallback(50);
-
-                const url = await realizarSubida(formData, progressCallback, opciones);
-                progressCallback(100);
-
-                if (!url) {
-                    throw new Error('No se recibió URL válida de Cloudinary');
-                }
-
-                console.log('✅ Imagen subida exitosamente:', url);
-                return {
-                    secure_url: url,
-                    public_id: extraerPublicId(url),
-                    formato: file.type,
-                    tamaño: file.size,
-                    timestamp: Date.now()
-                };
-
-            } catch (error) {
-                console.error('❌ Error subiendo imagen a Cloudinary:', error);
-                throw error;
-            }
-        }
-
-        // === VALIDAR ARCHIVO IMAGEN ===
-        function validarArchivoImagen(file) {
-            if (!file || !(file instanceof File)) {
-                return { valido: false, error: 'No es un archivo válido' };
-            }
-
-            if (!CLOUDINARY_CONFIG.ALLOWED_FORMATS.includes(file.type)) {
-                return { valido: false, error: 'Formato no soportado. Usa JPG o PNG' };
-            }
-
-            if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) {
-                return { 
-                    valido: false, 
-                    error: `Archivo demasiado grande. Máximo ${formatBytes(CLOUDINARY_CONFIG.MAX_FILE_SIZE)}` 
-                };
-            }
-
-            return { valido: true };
-        }
-
-        // === OPTIMIZAR IMAGEN ===
-        async function optimizarImagen(file, opciones) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const reader = new FileReader();
-
-                reader.onload = (e) => {
-                    img.onload = () => {
-                        const maxRes = opciones.maxResolution || CLOUDINARY_CONFIG.MAX_RESOLUTION;
-                        let { width, height } = img;
-                        
-                        if (width > height) {
-                            if (width > maxRes) {
-                                height = (height * maxRes) / width;
-                                width = maxRes;
-                            }
-                        } else {
-                            if (height > maxRes) {
-                                width = (width * maxRes) / height;
-                                height = maxRes;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        canvas.toBlob((blob) => {
-                            const optimizedFile = new File([blob], file.name, {
-                                type: 'image/jpeg',
-                                lastModified: Date.now()
-                            });
-                            resolve(optimizedFile);
-                        }, 'image/jpeg', 0.8);
-                    };
-                    img.src = e.target.result;
-                };
-
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // === CREAR FORM DATA ===
-        function crearFormData(file, opciones) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
-            
-            const transformaciones = {
-                calidad: 'auto',
-                formato: 'auto',
-                optimizacion: 'automatic'
-            };
-            
-            Object.assign(transformaciones, opciones.transformaciones || {});
-            Object.entries(transformaciones).forEach(([key, value]) => {
-                if (value) formData.append(key, value);
-            });
-
-            if (opciones.folder) {
-                formData.append('folder', opciones.folder);
-            }
-
-            if (opciones.tags) {
-                opciones.tags.forEach(tag => formData.append('tags', tag));
-            }
-
-            return formData;
-        }
-
-        // === REALIZAR SUBIDA ===
-        async function realizarSubida(formData, progressCallback, opciones) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), opciones.timeout || 60000);
-
-                const response = await fetch(CLOUDINARY_CONFIG.UPLOAD_URL, {
-                    method: 'POST',
-                    body: formData,
-                    signal: controller.signal
-                });
-
-                clearTimeout(timeoutId);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Cloudinary HTTP ${response.status}: ${errorText}`);
-                }
-
-                const resultado = await response.json();
-
-                if (resultado.error) {
-                    throw new Error(`Cloudinary API Error: ${resultado.error.message}`);
-                }
-
-                progressCallback(90);
-                return resultado.secure_url;
-
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    throw new Error('Timeout: La subida tomó demasiado tiempo');
-                }
-                throw error;
-            }
-        }
-
-        // === UTILIDADES ===
-        function extraerPublicId(url) {
-            const match = url.match(/\/([^\/]+)\/([^\/]+)$/);
-            return match ? match[2].split('.')[0] : null;
-        }
-
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        // === SUBIR MÚLTIPLES IMÁGENES ===
-        async function subirImagenesMultiples(files) {
-            uploadedImageUrls = [];
-            const errores = [];
-            
-            uploadProgress.style.display = 'block';
-            
-            for (let i = 0; i < files.length; i++) {
-                try {
-                    const file = files[i];
-                    console.log(`Subiendo imagen ${i + 1}/${files.length}: ${file.name}`);
-                    
-                    const resultado = await subirImagenCloudinary(file, {
-                        onProgress: (progress) => {
-                            uploadProgressBar.style.width = `${progress}%`;
-                            console.log(`Progreso imagen ${i + 1}: ${progress}%`);
-                        },
-                        tags: ['publicacion', `imagen_${i + 1}`, new Date().toISOString().split('T')[0]],
-                        folder: 'publicaciones'
-                    });
-                    
-                    uploadedImageUrls.push(resultado.secure_url);
-                    
-                    // Marcar imagen como subida en preview
-                    const img = imagePreview.querySelector(`img[title="${file.name}"]`);
-                    if (img) {
-                        img.classList.add('uploaded');
-                    }
-                    
-                } catch (error) {
-                    console.error(`❌ Error en imagen ${i + 1}:`, error.message);
-                    errores.push({ archivo: files[i].name, error: error.message });
-                }
-            }
-            
-            uploadProgress.style.display = 'none';
-            uploadProgressBar.style.width = '0%';
-            
-            if (errores.length > 0) {
-                console.warn('⚠️ Errores en subida:', errores);
-                alert(`⚠️ ${errores.length} imagen(es) fallaron al subir. Se guardarán las exitosas.`);
-            }
-            
-            return {
-                urls: uploadedImageUrls,
-                errores,
-                exitosas: uploadedImageUrls.length,
-                total: files.length
-            };
-        }
-
-        // Previsualización y subida automática de imágenes
-        imagenesInput.addEventListener('change', async function(e) {
+        // Previsualización de imágenes
+        document.getElementById('imagenes').addEventListener('change', function(e) {
             const files = e.target.files;
             imagePreview.innerHTML = '';
-            uploadedImageUrls = [];
             
             if (files.length > 5) {
                 alert('❌ Solo puedes subir un máximo de 5 imágenes');
@@ -593,16 +310,15 @@
             }
             
             let totalSize = 0;
-            const validFiles = [];
-            
             Array.from(files).forEach(file => {
-                const validacion = validarArchivoImagen(file);
-                if (!validacion.valido) {
-                    alert(`❌ ${file.name}: ${validacion.error}`);
+                // Validar tipo de archivo
+                if (!file.type.startsWith('image/')) {
+                    alert(`❌ ${file.name} no es una imagen válida`);
                     this.value = '';
                     return;
                 }
                 
+                // Validar tamaño (5MB máximo)
                 if (file.size > 5 * 1024 * 1024) {
                     alert(`❌ ${file.name} es muy grande (máx 5MB)`);
                     this.value = '';
@@ -610,7 +326,6 @@
                 }
                 
                 totalSize += file.size;
-                validFiles.push(file);
                 
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -625,17 +340,6 @@
             if (totalSize > 25 * 1024 * 1024) {
                 alert('❌ El tamaño total de las imágenes no puede exceder 25MB');
                 this.value = '';
-                return;
-            }
-            
-            // Subir imágenes automáticamente después de selección
-            if (validFiles.length > 0) {
-                try {
-                    await subirImagenesMultiples(validFiles);
-                } catch (error) {
-                    console.error('Error en subida masiva:', error);
-                    alert('Error al subir imágenes. Intenta nuevamente.');
-                }
             }
         });
 
@@ -643,76 +347,75 @@
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Limpiar mensajes anteriores
             hideMessages();
             
+            // Validar formulario
             if (!validateForm()) {
                 return;
             }
 
-            if (uploadedImageUrls.length === 0) {
-                showError('Debes subir al menos una imagen a Cloudinary');
-                return;
-            }
-
+            // Mostrar loading
             showLoading();
             
             try {
+                // Preparar datos
+                const imagenes = Array.from(document.getElementById('imagenes').files).map(f => f.name);
                 const publicationData = {
-                    action: 'addPublicacion',
                     titulo: document.getElementById('titulo').value.trim(),
                     tipo: document.getElementById('tipo').value,
                     subtipo: document.getElementById('subtipo').value,
                     precio: parseFloat(document.getElementById('precio').value),
                     pais: document.getElementById('pais').value,
-                    imagenes: uploadedImageUrls.join(','), // URLs separadas por comas para columna F
-                    descripcion: document.getElementById('descripcion').value.trim(),
-                    timestamp: new Date().toISOString()
+                    imagenes: imagenes,
+                    descripcion: document.getElementById('descripcion').value.trim()
                 };
 
-                console.log('📤 Enviando datos con imágenes de Cloudinary:', publicationData);
+                console.log('📤 Enviando datos:', publicationData);
+                console.log('🌐 Origen de la solicitud:', window.location.origin);
 
-                // Enviar a Google Apps Script
+                // Enviar a Google Apps Script con no-cors
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'cors',
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(publicationData)
                 });
 
-                const result = await response.json();
+                // En modo no-cors, no podemos leer response.json() ni response.status
+                console.log('📤 Solicitud enviada (no-cors). No se puede leer la respuesta.');
 
-                if (result.success) {
-                    showSuccess(result);
-                    resetForm();
-                } else {
-                    showError(result.error || 'Error desconocido al publicar');
-                }
+                // Asumir éxito si no hay error de red
+                showSuccess({ id: 'Desconocido', row: 'Desconocido' });
+                resetForm();
                 
             } catch (error) {
                 console.error('❌ Error completo:', error);
-                showError('No se pudo conectar con el servidor. Verifica tu conexión.');
+                showError('No se pudo conectar con el servidor. Verifica tu conexión o contacta al administrador.');
             } finally {
                 hideLoading();
             }
         });
 
-        // Resto de funciones sin cambios...
+        // Función de validación del formulario
         function validateForm() {
             let isValid = true;
             const errors = document.querySelectorAll('.error');
             errors.forEach(error => error.style.display = 'none');
 
-            const requiredFields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
+            // Validar campos requeridos
+            const requiredFields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion', 'imagenes'];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
-                if (!input.value) {
+                if (!input.value || (field === 'imagenes' && input.files.length === 0)) {
                     document.getElementById(field + 'Error').style.display = 'block';
                     isValid = false;
                 }
             });
 
+            // Validar título
             const titulo = document.getElementById('titulo').value.trim();
             if (titulo.length < 5 || titulo.length > 100) {
                 document.getElementById('tituloError').textContent = 'El título debe tener entre 5 y 100 caracteres';
@@ -720,6 +423,7 @@
                 isValid = false;
             }
 
+            // Validar precio
             const precio = parseFloat(document.getElementById('precio').value);
             if (precio < 1000) {
                 document.getElementById('precioError').textContent = 'El precio debe ser mínimo $1,000';
@@ -727,6 +431,7 @@
                 isValid = false;
             }
 
+            // Validar descripción
             const descripcion = document.getElementById('descripcion').value.trim();
             if (descripcion.length < 10 || descripcion.length > 1000) {
                 document.getElementById('descripcionError').textContent = 'La descripción debe tener entre 10 y 1000 caracteres';
@@ -737,60 +442,65 @@
             return isValid;
         }
 
+        // Mostrar mensaje de éxito
         function showSuccess(result) {
             const titulo = document.getElementById('titulo').value;
             successMessage.innerHTML = `
-                ✅ ¡Anuncio "${titulo}" publicado exitosamente!<br>
-                📸 ${uploadedImageUrls.length} imagenes subidas a Cloudinary<br>
-                <small>URLs guardadas en columna F de la hoja "Publicar"</small>
+                ✅ ¡Anuncio "${titulo}" enviado exitosamente!<br>
+                <small>Nota: Verifica la hoja de cálculo para confirmar la publicación.</small>
             `;
             successMessage.style.display = 'block';
             successMessage.scrollIntoView({ behavior: 'smooth' });
         }
 
+        // Mostrar mensaje de error
         function showError(message) {
             errorMessage.innerHTML = `
                 ❌ Error al publicar el anuncio:<br>
-                <strong>${message}</strong>
+                <strong>${message}</strong><br>
+                <small>Por favor, verifica tu conexión e intenta nuevamente</small>
             `;
             errorMessage.style.display = 'block';
             errorMessage.scrollIntoView({ behavior: 'smooth' });
         }
 
+        // Mostrar loading
         function showLoading() {
-            loadingMessage.innerHTML = '⏳ Subiendo imágenes y publicando anuncio...';
             loadingMessage.style.display = 'block';
             submitBtn.disabled = true;
             submitBtn.innerHTML = '⏳ Publicando...';
             loadingMessage.scrollIntoView({ behavior: 'smooth' });
         }
 
+        // Ocultar loading
         function hideLoading() {
             loadingMessage.style.display = 'none';
             submitBtn.disabled = false;
             submitBtn.innerHTML = '🚀 Publicar Anuncio';
         }
 
+        // Ocultar todos los mensajes
         function hideMessages() {
             successMessage.style.display = 'none';
             errorMessage.style.display = 'none';
         }
 
+        // Resetear formulario
         function resetForm() {
             form.reset();
             imagePreview.innerHTML = '';
-            uploadedImageUrls = [];
-            uploadProgress.style.display = 'none';
+            // Redirigir después de 4 segundos
             setTimeout(() => {
-                if (confirm('¿Deseas ver todas las publicaciones?')) {
+                if (confirm('¿Deseas ver todas las publicaciones en el catálogo?')) {
                     window.location.href = 'index.html';
                 } else {
+                    // Recargar para nuevo anuncio
                     window.location.reload();
                 }
             }, 4000);
         }
 
-        // Validaciones en tiempo real (sin cambios)
+        // Validación en tiempo real
         ['titulo', 'precio', 'descripcion'].forEach(field => {
             document.getElementById(field).addEventListener('blur', function() {
                 if (this.value) {
@@ -807,6 +517,7 @@
             });
         });
 
+        // Validar título en tiempo real
         document.getElementById('titulo').addEventListener('input', function() {
             const length = this.value.length;
             if (length > 0 && length <= 100) {
@@ -814,6 +525,7 @@
             }
         });
 
+        // Validar descripción en tiempo real
         document.getElementById('descripcion').addEventListener('input', function() {
             const length = this.value.length;
             const counter = document.createElement('small');
@@ -821,6 +533,7 @@
             counter.style.fontSize = '0.8em';
             counter.textContent = `${length}/1000 caracteres`;
             
+            // Remover contador anterior
             const existingCounter = this.parentNode.querySelector('small:last-of-type');
             if (existingCounter && existingCounter.textContent.includes('caracteres')) {
                 existingCounter.remove();
@@ -829,8 +542,9 @@
             this.parentNode.appendChild(counter);
         });
 
-        console.log('✅ Formulario con Cloudinary inicializado correctamente');
+        console.log('✅ Formulario inicializado correctamente');
         console.log('📡 Web App URL:', WEB_APP_URL);
+        console.log('🌐 Origen actual:', window.location.origin);
     </script>
 </body>
 </html>
