@@ -6,26 +6,11 @@
   <title>Inmobiliaria Agustin Santos</title>
   <link rel="icon" type="image/jpg" href="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg">
   <style>
-    * {
-      box-sizing: border-box;
-    }
-    
     body {
       margin: 0;
-      padding: 0;
       font-family: Arial, sans-serif;
       overflow-x: hidden;
-      width: 100%;
     }
-    
-    .page-wrapper {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      max-width: 100%;
-      margin: 0 auto;
-    }
-    
     .header {
       display: flex;
       justify-content: space-between;
@@ -34,7 +19,6 @@
       background-color: #000;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       flex-wrap: wrap;
-      width: 100%;
     }
     .logo img {
       height: 60px;
@@ -102,9 +86,6 @@
       display: flex;
       flex-direction: column;
       min-height: calc(100vh - 80px);
-      width: 100%;
-      max-width: 100%;
-      margin: 0 auto;
     }
     .sidebar {
       width: 100%;
@@ -139,12 +120,37 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      width: 100%;
-      max-width: 100%;
-      margin: 0 auto;
     }
     .content-area.active {
       display: flex;
+    }
+    /* Estilos específicos para INICIO - Imagen ocupando toda la pantalla */
+    #inicio-content.active {
+      padding: 0;
+      justify-content: flex-start;
+    }
+    #inicio-content img {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+    #inicio-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.3);
+      z-index: -1;
+    }
+    #inicio-content {
+      position: relative;
+      min-height: 100vh;
     }
     .pre-tasacion-btn {
       background-color: #28a745;
@@ -163,8 +169,6 @@
       font-size: 1.2em;
       margin: 15px 0;
       text-align: center;
-      width: 100%;
-      max-width: 800px;
     }
     .boxes {
       display: flex;
@@ -172,8 +176,6 @@
       margin-bottom: 15px;
       flex-wrap: wrap;
       justify-content: center;
-      width: 100%;
-      max-width: 600px;
     }
     .box {
       background-color: #f8f8f8;
@@ -187,8 +189,6 @@
       font-size: 1.1em;
       margin: 15px 0;
       text-align: center;
-      width: 100%;
-      max-width: 800px;
     }
     .benefits-boxes {
       display: grid;
@@ -197,7 +197,6 @@
       justify-items: center;
       max-width: 100%;
       padding: 0 10px;
-      width: 100%;
     }
     .benefit-box img {
       width: 100%;
@@ -205,20 +204,27 @@
       height: auto;
       border-radius: 5px;
     }
-    .inicio-content img {
-      width: 100%;
-      max-width: 600px;
-      height: auto;
-      border-radius: 5px;
-      object-fit: cover;
-      max-height: 40vh;
+    /* Centrar elementos en VENDÉ */
+    #vende-content {
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
-    /* Imagen de inicio más pequeña en móviles */
-    @media (max-width: 767px) {
-      .inicio-content img {
-        max-height: 30vh;
-        width: 90%;
-      }
+    #vende-content .pre-tasacion-btn {
+      position: relative;
+      z-index: 1;
+      margin: 20px 0;
+    }
+    #vende-content .benefits-boxes {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      justify-items: center;
     }
     .compra-content {
       display: flex;
@@ -227,8 +233,7 @@
       justify-content: center;
       padding: 15px;
       text-align: center;
-      width: 100%;
-      max-width: 100%;
+      position: relative;
     }
     .brasil-content {
       display: flex;
@@ -238,17 +243,18 @@
       padding: 15px;
       text-align: center;
       width: 100%;
-      max-width: 100%;
+      position: relative;
     }
-    .brasil-property-grid {
+    /* Centrar grid de propiedades en Alquilá y Comprá */
+    .brasil-property-grid, .alquila-property-grid, .property-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 15px;
       width: 100%;
-      max-width: 1200px;
+      max-width: 800px;
       justify-items: center;
       box-sizing: border-box;
-      margin: 0 auto;
+      position: relative;
     }
     .brasil-property-card {
       background-color: #f8f8f8;
@@ -280,17 +286,17 @@
       padding: 15px;
       text-align: center;
       width: 100%;
-      max-width: 100%;
+      position: relative;
     }
     .alquila-property-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 15px;
       width: 100%;
-      max-width: 1200px;
+      max-width: 800px;
       justify-items: center;
       box-sizing: border-box;
-      margin: 0 auto;
+      position: relative;
     }
     .alquila-property-card {
       background-color: #f8f8f8;
@@ -320,10 +326,10 @@
       grid-template-columns: 1fr;
       gap: 15px;
       width: 100%;
-      max-width: 1200px;
+      max-width: 800px;
       justify-items: center;
       box-sizing: border-box;
-      margin: 0 auto;
+      position: relative;
     }
     .property-card {
       background-color: #f8f8f8;
@@ -392,7 +398,6 @@
       margin-top: 15px;
       order: 1;
       justify-items: center;
-      width: 100%;
     }
     .image-item {
       text-align: center;
@@ -482,8 +487,6 @@
       }
       .main-container {
         flex-direction: row;
-        max-width: 1400px;
-        margin: 0 auto;
       }
       .sidebar {
         width: 40%;
@@ -495,7 +498,16 @@
       .content-area {
         padding: 20px;
         order: 2;
-        max-width: 60%;
+      }
+      #inicio-content.active {
+        padding: 0;
+      }
+      #inicio-content img {
+        width: 100vw;
+        height: calc(100vh - 80px);
+        position: fixed;
+        top: 80px;
+        left: 0;
       }
       .pre-tasacion-btn {
         padding: 15px 30px;
@@ -512,24 +524,19 @@
         font-size: 1.3em;
         margin: 20px 0;
       }
-      .benefits-boxes {
+      #vende-content .benefits-boxes {
         grid-template-columns: repeat(3, 1fr);
         max-width: 1200px;
         padding: 0;
-        margin: 0 auto;
+        gap: 30px;
       }
       .benefit-box img {
         max-width: 300px;
-      }
-      .inicio-content img {
-        max-width: 1200px;
-        max-height: none;
       }
       .image-grid {
         grid-template-columns: repeat(2, 1fr);
         max-width: 600px;
         order: 1;
-        margin: 0 auto;
       }
       .image-item img {
         max-width: 250px;
@@ -540,15 +547,14 @@
       .brasil-property-grid, .alquila-property-grid, .property-grid {
         grid-template-columns: repeat(2, minmax(400px, 1fr));
         width: 100%;
-        max-width: 1200px;
-        column-gap: 20px;
-        row-gap: 20px;
+        max-width: 1000px;
+        column-gap: 30px;
+        row-gap: 30px;
         box-sizing: border-box;
-        margin: 0 auto;
       }
       .brasil-property-card, .alquila-property-card, .property-card {
         width: 100%;
-        max-width: 600px;
+        max-width: none;
         box-sizing: border-box;
       }
       .brasil-property-card img, .alquila-property-card img, .property-card img {
@@ -645,133 +651,127 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      width: 100%;
-      max-width: 100%;
     }
     #vende-content .benefits-boxes {
       justify-items: center;
       align-items: center;
-      margin: 0 auto;
     }
   </style>
 </head>
 <body>
-  <div class="page-wrapper">
-    <div class="header">
-      <div class="logo">
-        <img src="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Inmobiliaria Agustin Santos">
-      </div>
-      <div class="menu">
-        <a href="#" class="menu-link" id="inicio-link">Inicio</a>
-        <a href="#" class="menu-link" id="vende-link">Vendé</a>
-        <div class="dropdown">
-          <a href="#" class="menu-link" id="compra-link">Comprá</a>
-          <div class="dropdown-content">
-            <a href="#" id="argentina-link">Propiedades en Argentina</a>
-            <a href="#" id="brasil-link">Propiedades en Brasil</a>
-          </div>
+  <div class="header">
+    <div class="logo">
+      <img src="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Inmobiliaria Agustin Santos">
+    </div>
+    <div class="menu">
+      <a href="#" class="menu-link" id="inicio-link">Inicio</a>
+      <a href="#" class="menu-link" id="vende-link">Vendé</a>
+      <div class="dropdown">
+        <a href="#" class="menu-link" id="compra-link">Comprá</a>
+        <div class="dropdown-content">
+          <a href="#" id="argentina-link">Propiedades en Argentina</a>
+          <a href="#" id="brasil-link">Propiedades en Brasil</a>
         </div>
-        <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
-        <a href="#" class="menu-link" id="inverti-link">Invertí</a>
       </div>
-      <a href="https://wa.me/5493756508620?text=Hola" class="contact-btn" target="_blank">Contactar</a>
+      <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
+      <a href="#" class="menu-link" id="inverti-link">Invertí</a>
+    </div>
+    <a href="https://wa.me/5493756508620?text=Hola" class="contact-btn" target="_blank">Contactar</a>
+  </div>
+  <div class="main-container">
+    <div class="sidebar" id="sidebar">
+      <span class="loading-message">Sin contenido externo</span>
+    </div>
+    <div class="content-area active" id="inicio-content">
+      <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
+    </div>
+    <div class="content-area" id="vende-content">
+      <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
+      <div class="section-text">No solo lo vendemos, sino que también...</div>
+      <div class="boxes">
+        <div class="box">Lo Promocionamos</div>
+        <div class="box">Tasamos tu Propiedad</div>
+      </div>
+      <div class="benefits-text">Y además tenés BENEFICIOS para vos</div>
+      <div class="benefits-boxes">
+        <div class="benefit-box"><img src="https://i.postimg.cc/5NTLYJ4b/1.png" alt="Beneficio 1"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/0NdwBJp1/2.png" alt="Beneficio 2"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/pry5rG43/3.png" alt="Beneficio 3"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/VLx0sFgw/4.png" alt="Beneficio 4"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/LX8nQQ9Z/5.png" alt="Beneficio 5"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/d3z31q8L/6.png" alt="Beneficio 6"></div>
+      </div>
+    </div>
+    <div class="content-area compra-content" id="compra-content">
+      <div class="image-grid">
+        <div class="image-item" data-type="terrenos">
+          <img src="https://i.postimg.cc/Vky6jL2K/7.png" alt="Terrenos">
+          <p>Terrenos</p>
+        </div>
+        <div class="image-item" data-type="departamentos">
+          <img src="https://i.postimg.cc/xdn14pfZ/8.png" alt="Departamentos">
+          <p>Departamentos</p>
+        </div>
+        <div class="image-item" data-type="casas">
+          <img src="https://i.postimg.cc/vBS8DQWS/9.png" alt="Casas">
+          <p>Casas</p>
+        </div>
+        <div class="image-item" data-type="locales">
+          <img src="https://i.postimg.cc/3NsKCnfZ/10.png" alt="Locales Comerciales">
+          <p>Locales Comerciales</p>
+        </div>
+      </div>
+      <!-- Contenedor para propiedades de Argentina dinámicas -->
+      <div id="argentina-properties" class="property-grid" style="display: none;">
+        <div class="loading-properties">Cargando propiedades de Argentina...</div>
+      </div>
     </div>
     
-    <div class="main-container">
-      <div class="sidebar" id="sidebar">
-        <span class="loading-message">Sin contenido externo</span>
+    <!-- Modal para detalle de Casa -->
+    <div class="casa-detail" id="casa-detail">
+      <div class="casa-detail-content">
+        <button class="close-btn" id="close-casa-detail">&times;</button>
+        <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img">
+        <h3 id="casa-detail-title">Casa en Venta</h3>
+        <a href="#" target="_blank" class="ver-mas-btn">Ver más</a>
       </div>
-      <div class="content-area active" id="inicio-content">
-        <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
+    </div>
+    
+    <div class="content-area brasil-content" id="brasil-content">
+      <div id="brasil-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
-      <div class="content-area" id="vende-content">
-        <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
-        <div class="section-text">No solo lo vendemos, sino que también...</div>
-        <div class="boxes">
-          <div class="box">Lo Promocionamos</div>
-          <div class="box">Tasamos tu Propiedad</div>
-        </div>
-        <div class="benefits-text">Y además tenés BENEFICIOS para vos</div>
-        <div class="benefits-boxes">
-          <div class="benefit-box"><img src="https://i.postimg.cc/5NTLYJ4b/1.png" alt="Beneficio 1"></div>
-          <div class="benefit-box"><img src="https://i.postimg.cc/0NdwBJp1/2.png" alt="Beneficio 2"></div>
-          <div class="benefit-box"><img src="https://i.postimg.cc/pry5rG43/3.png" alt="Beneficio 3"></div>
-          <div class="benefit-box"><img src="https://i.postimg.cc/VLx0sFgw/4.png" alt="Beneficio 4"></div>
-          <div class="benefit-box"><img src="https://i.postimg.cc/LX8nQQ9Z/5.png" alt="Beneficio 5"></div>
-          <div class="benefit-box"><img src="https://i.postimg.cc/d3z31q8L/6.png" alt="Beneficio 6"></div>
-        </div>
+    </div>
+    <div class="content-area alquila-content" id="alquila-content">
+      <div id="alquila-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades para alquilar...</div>
       </div>
-      <div class="content-area compra-content" id="compra-content">
-        <div class="image-grid">
-          <div class="image-item" data-type="terrenos">
-            <img src="https://i.postimg.cc/Vky6jL2K/7.png" alt="Terrenos">
-            <p>Terrenos</p>
-          </div>
-          <div class="image-item" data-type="departamentos">
-            <img src="https://i.postimg.cc/xdn14pfZ/8.png" alt="Departamentos">
-            <p>Departamentos</p>
-          </div>
-          <div class="image-item" data-type="casas">
-            <img src="https://i.postimg.cc/vBS8DQWS/9.png" alt="Casas">
-            <p>Casas</p>
-          </div>
-          <div class="image-item" data-type="locales">
-            <img src="https://i.postimg.cc/3NsKCnfZ/10.png" alt="Locales Comerciales">
-            <p>Locales Comerciales</p>
-          </div>
-        </div>
-        <!-- Contenedor para propiedades de Argentina dinámicas -->
-        <div id="argentina-properties" class="property-grid" style="display: none;">
-          <div class="loading-properties">Cargando propiedades de Argentina...</div>
-        </div>
-      </div>
-      
-      <!-- Modal para detalle de Casa -->
-      <div class="casa-detail" id="casa-detail">
-        <div class="casa-detail-content">
-          <button class="close-btn" id="close-casa-detail">&times;</button>
-          <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img">
-          <h3 id="casa-detail-title">Casa en Venta</h3>
-          <a href="#" target="_blank" class="ver-mas-btn">Ver más</a>
-        </div>
-      </div>
-      
-      <div class="content-area brasil-content" id="brasil-content">
-        <div id="brasil-properties" class="property-grid">
-          <div class="loading-properties">Cargando propiedades de Brasil...</div>
-        </div>
-      </div>
-      <div class="content-area alquila-content" id="alquila-content">
-        <div id="alquila-properties" class="property-grid">
-          <div class="loading-properties">Cargando propiedades para alquilar...</div>
-        </div>
-      </div>
-      <!-- Modal para Pre Tasación -->
-      <div class="pre-tasacion-modal" id="pre-tasacion-modal">
-        <div class="pre-tasacion-form">
-          <button class="close-btn" id="close-pre-tasacion-modal">&times;</button>
-          <h2>Pre Tasación Gratuita</h2>
-          <form id="pre-tasacion-form">
-            <label for="nombre">Nombre y Apellido:</label>
-            <input type="text" id="nombre" name="nombre" required>
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" required>
-            <label for="direccion">Dirección de la Propiedad:</label>
-            <textarea id="direccion" name="direccion" rows="3" required></textarea>
-            <label for="metros">Metros Cuadrados:</label>
-            <input type="number" id="metros" name="metros" required>
-            <label for="tipo-propiedad">Tipo de Propiedad:</label>
-            <select id="tipo-propiedad" name="tipo-propiedad" required>
-              <option value="">Seleccione una opción</option>
-              <option value="Casa">Casa</option>
-              <option value="Departamento">Departamento</option>
-              <option value="Terreno">Terreno</option>
-              <option value="Local Comercial">Local Comercial</option>
-              <option value="Otro">Otro</option>
-            </select>
-            <button type="submit">Enviar</button>
-          </form>
-        </div>
+    </div>
+    <!-- Modal para Pre Tasación -->
+    <div class="pre-tasacion-modal" id="pre-tasacion-modal">
+      <div class="pre-tasacion-form">
+        <button class="close-btn" id="close-pre-tasacion-modal">&times;</button>
+        <h2>Pre Tasación Gratuita</h2>
+        <form id="pre-tasacion-form">
+          <label for="nombre">Nombre y Apellido:</label>
+          <input type="text" id="nombre" name="nombre" required>
+          <label for="telefono">Teléfono:</label>
+          <input type="tel" id="telefono" name="telefono" required>
+          <label for="direccion">Dirección de la Propiedad:</label>
+          <textarea id="direccion" name="direccion" rows="3" required></textarea>
+          <label for="metros">Metros Cuadrados:</label>
+          <input type="number" id="metros" name="metros" required>
+          <label for="tipo-propiedad">Tipo de Propiedad:</label>
+          <select id="tipo-propiedad" name="tipo-propiedad" required>
+            <option value="">Seleccione una opción</option>
+            <option value="Casa">Casa</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Terreno">Terreno</option>
+            <option value="Local Comercial">Local Comercial</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <button type="submit">Enviar</button>
+        </form>
       </div>
     </div>
   </div>
