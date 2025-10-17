@@ -567,7 +567,7 @@
             } catch (error) {
                 console.error('Error en subida masiva:', error);
                 alert('Error al subir imágenes. Intenta nuevamente.');
-                throw error;
+                uploadedImageUrls = [];
             } finally {
                 uploadProgress.style.display = 'none';
                 uploadProgressBar.style.width = '0%';
@@ -589,14 +589,21 @@
                     : publicationData.imagenes || '';
 
                 console.log('📤 Enviando a Google Apps Script con NO-CORS:', {
+                    action: publicationData.action,
                     titulo: publicationData.titulo,
-                    imagenesCount: Array.isArray(publicationData.imagenes) ? publicationData.imagenes.length : 0
+                    tipo: publicationData.tipo,
+                    subtipo: publicationData.subtipo,
+                    precio: publicationData.precio,
+                    pais: publicationData.pais,
+                    imagenesCount: Array.isArray(publicationData.imagenes) ? publicationData.imagenes.length : 0,
+                    descripcion: publicationData.descripcion.substring(0, 50) + '...'
                 });
 
                 const datosFinales = {
                     ...publicationData,
                     imagenes: imagenesParaBackend,
-                    origin: ORIGIN
+                    origin: ORIGIN,
+                    hoja: 'Publicar' // Especificar la hoja "Publicar"
                 };
 
                 // ✅ MÉTODO 1: NO-CORS (opaque response)
@@ -616,7 +623,7 @@
                 // Con no-cors, no podemos leer la respuesta pero sabemos si se envió
                 if (response.type === 'opaque') {
                     console.log('✅ Datos enviados exitosamente a Google Apps Script (respuesta opaca)');
-                    return { success: true, message: 'Publicación enviada correctamente', id: 'GAS-' + Date.now() };
+                    return { success: true, message: 'Publicación enviada correctamente a la hoja Publicar', id: 'GAS-' + Date.now() };
                 }
 
                 // Fallback: intentar leer si CORS funciona
@@ -643,7 +650,7 @@
                     : publicationData.imagenes || '';
 
                 const params = new URLSearchParams({
-                    action: 'addPublicacion',
+                    action: 'addPublicacionToPublicar', // Nueva acción para la hoja "Publicar"
                     titulo: publicationData.titulo.substring(0, 50), // Limitar longitud
                     tipo: publicationData.tipo,
                     subtipo: publicationData.subtipo,
@@ -652,7 +659,8 @@
                     imagenes: imagenesParaBackend,
                     descripcion: publicationData.descripcion.substring(0, 200), // Limitar
                     timestamp: publicationData.timestamp,
-                    origin: ORIGIN
+                    origin: ORIGIN,
+                    hoja: 'Publicar' // Especificar la hoja
                 });
 
                 const getUrl = `${WEB_APP_URL}?${params.toString()}`;
@@ -669,7 +677,7 @@
                 if (response.type === 'opaque') {
                     return { 
                         success: true, 
-                        message: 'Publicación enviada con GET fallback',
+                        message: 'Publicación enviada con GET fallback a la hoja Publicar',
                         id: 'GET-' + Date.now()
                     };
                 }
@@ -701,6 +709,13 @@
                     form.appendChild(input);
                 });
                 
+                // Añadir el campo "hoja" explícitamente
+                const hojaInput = document.createElement('input');
+                hojaInput.type = 'hidden';
+                hojaInput.name = 'hoja';
+                hojaInput.value = 'Publicar';
+                form.appendChild(hojaInput);
+                
                 document.body.appendChild(form);
                 form.submit();
                 
@@ -708,7 +723,7 @@
                 setTimeout(() => {
                     resolve({ 
                         success: true, 
-                        message: 'Publicación enviada con form tradicional',
+                        message: 'Publicación enviada con form tradicional a la hoja Publicar',
                         id: 'FORM-' + Date.now()
                     });
                 }, 1000);
@@ -804,7 +819,7 @@
             
             try {
                 const publicationData = {
-                    action: 'addPublicacion',
+                    action: 'addPublicacionToPublicar', // Nueva acción para la hoja "Publicar"
                     titulo: document.getElementById('titulo').value.trim(),
                     tipo: document.getElementById('tipo').value,
                     subtipo: document.getElementById('subtipo').value,
@@ -812,10 +827,11 @@
                     pais: document.getElementById('pais').value,
                     imagenes: uploadedImageUrls,
                     descripcion: document.getElementById('descripcion').value.trim(),
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    hoja: 'Publicar' // Especificar la hoja explícitamente
                 };
 
-                console.log('📤 Enviando datos con imágenes de Cloudinary:', publicationData);
+                console.log('📤 Enviando datos con imágenes de Cloudinary a la hoja Publicar:', publicationData);
 
                 // Probar conexión primero
                 const conexionOk = await probarConexionAppsScript();
@@ -827,12 +843,12 @@
                     showSuccess(result);
                     resetForm();
                 } else {
-                    showError(result.message || 'Error desconocido al publicar');
+                    showError(result.message || 'Error desconocido al publicar en la hoja Publicar');
                 }
                 
             } catch (error) {
                 console.error('❌ Error completo:', error);
-                showError(`Error de conexión: ${error.message}. Los datos se enviaron con fallback.`);
+                showError(`Error de conexión: ${error.message}. Los datos se enviaron con fallback a la hoja Publicar.`);
             } finally {
                 hideLoading();
             }
@@ -880,10 +896,10 @@
         function showSuccess(result) {
             const titulo = document.getElementById('titulo').value;
             successMessage.innerHTML = `
-                ✅ ¡Anuncio "${titulo}" publicado exitosamente!<br>
+                ✅ ¡Anuncio "${titulo}" publicado exitosamente en la hoja Publicar!<br>
                 📸 ${uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
                 🆔 ID: ${result.id || 'N/A'}<br>
-                <small>✅ Datos enviados a Google Sheets (método: ${result.method || 'no-cors'})</small>
+                <small>✅ Datos enviados a Google Sheets (hoja: Publicar, método: ${result.method || 'no-cors'})</small>
             `;
             successMessage.style.display = 'block';
             successMessage.scrollIntoView({ behavior: 'smooth' });
@@ -891,7 +907,7 @@
 
         function showError(message) {
             errorMessage.innerHTML = `
-                ❌ Error al publicar el anuncio:<br>
+                ❌ Error al publicar el anuncio en la hoja Publicar:<br>
                 <strong>${message}</strong>
             `;
             errorMessage.style.display = 'block';
@@ -899,7 +915,7 @@
         }
 
         function showLoading() {
-            loadingMessage.innerHTML = '⏳ Enviando a Google Sheets...';
+            loadingMessage.innerHTML = '⏳ Enviando a la hoja Publicar en Google Sheets...';
             loadingMessage.style.display = 'block';
             submitBtn.disabled = true;
             submitBtn.innerHTML = '⏳ Enviando...';
