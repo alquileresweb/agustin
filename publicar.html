@@ -231,38 +231,6 @@
                 padding: 10px;
             }
         }
-
-        /* Estilos para preview de Cloudinary */
-        .preview-img-container {
-            position: relative;
-            display: inline-block;
-        }
-        .preview-img {
-            max-width: 100px;
-            max-height: 100px;
-            border-radius: 5px;
-            object-fit: cover;
-            border: 2px solid #ddd;
-        }
-        .delete-img {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .delete-img:hover {
-            background: #c82333;
-        }
     </style>
 </head>
 <body>
@@ -361,7 +329,7 @@
     <script>
         // URL del Web App de Google Apps Script
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
-        const ORIGIN = window.location.origin || 'https://inmobiliariaagustinsantos.com.ar';
+        const ORIGIN = 'https://inmobiliariaagustinsantos.com.ar';
 
         // Elementos del DOM
         const form = document.getElementById('publicationForm');
@@ -376,14 +344,7 @@
 
         let uploadedImageUrls = []; // Almacenar URLs de imágenes subidas
 
-        // === CONFIGURACIÓN CORS MEJORADA ===
-        const CORS_CONFIG = {
-            mode: 'cors',
-            credentials: 'omit',
-            redirect: 'follow'
-        };
-
-        // === CONFIGURACIÓN DE CLOUDINARY ACTUALIZADA ===
+        // === CONFIGURACIÓN DE CLOUDINARY ===
         const CLOUDINARY_CONFIG = {
             CLOUD_NAME: 'dn4tjz4ck', // ← Nueva cloud_name
             UPLOAD_PRESET: 'preset_alquileres', // ← Upload preset público
@@ -395,7 +356,7 @@
             TIMEOUT: 30000 // 30 segundos
         };
 
-        // === FUNCIÓN PRINCIPAL CON CORS Y RETRIES (NUEVA VERSIÓN) ===
+        // === FUNCIÓN PRINCIPAL CON CORS Y RETRIES ===
         async function subirImagenesCloudinary(files, options = {}) {
             const {
                 onProgress = null,
@@ -587,75 +548,6 @@
             return formData;
         }
 
-        // === FUNCIÓN UTILITARIA: SUBIR MÚLTIPLES CON PROGRESO ===
-        function subirConProgreso(inputId, callback) {
-            const input = document.getElementById(inputId);
-            input.addEventListener('change', async (e) => {
-                const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
-                
-                if (files.length === 0) {
-                    alert('No se seleccionaron imágenes válidas');
-                    return;
-                }
-                
-                try {
-                    const { urls, errors } = await subirImagenesCloudinary(files, {
-                        onProgress: (progress) => {
-                            console.log(`Progreso: ${progress.progress.toFixed(1)}% (${progress.current}/${progress.total})`);
-                            callback?.('progress', progress);
-                        },
-                        onSuccess: (url) => {
-                            console.log('✅ Imagen subida:', url);
-                            callback?.('success', url);
-                        },
-                        onError: (error, file) => {
-                            console.error('❌ Error:', error, file.name);
-                            callback?.('error', error, file);
-                        }
-                    });
-                    
-                    if (urls.length > 0) {
-                        callback?.('complete', { urls, errors });
-                        // Actualizar preview o campo hidden con URLs
-                        actualizarPreviewConUrls(urls);
-                    }
-                    
-                } catch (error) {
-                    console.error('Error general:', error);
-                    callback?.('error', error);
-                }
-            });
-        }
-
-        // === ACTUALIZAR PREVIEW CON URLS DE CLOUDINARY ===
-        function actualizarPreviewConUrls(urls, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            
-            urls.forEach((url, index) => {
-                const imgContainer = document.createElement('div');
-                imgContainer.className = 'preview-img-container';
-                
-                const img = document.createElement('img');
-                img.src = url;
-                img.className = 'preview-img';
-                img.alt = `Imagen ${index + 1}`;
-                img.loading = 'lazy';
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'delete-img';
-                deleteBtn.textContent = '×';
-                deleteBtn.onclick = () => {
-                    imgContainer.remove();
-                    // Opcional: eliminar de Cloudinary si es necesario
-                };
-                
-                imgContainer.appendChild(img);
-                imgContainer.appendChild(deleteBtn);
-                container.appendChild(imgContainer);
-            });
-        }
-
         // === FUNCIÓN ACTUALIZADA PARA SUBIR MÚLTIPLES IMÁGENES ===
         async function subirImagenesMultiples(files) {
             uploadedImageUrls = [];
@@ -667,7 +559,7 @@
             try {
                 const resultado = await subirImagenesCloudinary(files, {
                     maxFiles: 5,
-                    folder: `alquileres/publicaciones/${Date.now()}`,
+                    folder: `alquileres/${Date.now()}`,
                     onProgress: (progress) => {
                         uploadProgressBar.style.width = `${progress.progress}%`;
                         console.log(`Progreso: ${progress.progress.toFixed(1)}% (${progress.current}/${progress.total})`);
@@ -733,8 +625,10 @@
                 };
 
                 const response = await fetch(WEB_APP_URL, {
-                    ...CORS_CONFIG,
                     method: 'POST',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    redirect: 'follow',
                     headers: {
                         'Content-Type': 'application/json',
                         'Origin': ORIGIN
@@ -1070,7 +964,7 @@
             counter.textContent = `${length}/1000 caracteres`;
         });
 
-        console.log('✅ Formulario con NUEVA función Cloudinary actualizada inicializado');
+        console.log('✅ Formulario con NUEVA función Cloudinary + CORS avanzado inicializado');
         console.log('📡 Web App URL:', WEB_APP_URL);
         console.log('🌐 Origin:', ORIGIN);
         console.log('☁️ Cloudinary Config:', CLOUDINARY_CONFIG);
