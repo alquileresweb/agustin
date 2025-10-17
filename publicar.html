@@ -329,6 +329,7 @@
     <script>
         // URL del Web App de Google Apps Script
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
+        const ORIGIN = 'https://inmobiliariaagustinsantos.com.ar';
 
         // === CONFIGURACIÓN DE CLOUDINARY ===
         const CLOUDINARY_CONFIG = {
@@ -353,7 +354,19 @@
 
         let uploadedImageUrls = []; // Almacenar URLs de imágenes subidas
 
-        // === FUNCIÓN PRINCIPAL - SUBIR UNA IMAGEN ===
+        // === CONFIGURACIÓN CORS MEJORADA ===
+        const CORS_CONFIG = {
+            mode: 'cors',
+            credentials: 'omit', // No envía cookies, evita problemas con credentials
+            headers: {
+                'Content-Type': 'application/json',
+                'Origin': ORIGIN,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            redirect: 'follow'
+        };
+
+        // === FUNCIÓN PRINCIPAL - SUBIR UNA IMAGEN CON CORS ===
         async function subirImagenCloudinary(file, opciones = {}) {
             try {
                 const progressCallback = opciones.onProgress || (() => {});
@@ -365,7 +378,7 @@
                 const formData = crearFormData(optimizedFile, opciones);
                 progressCallback(50);
 
-                const url = await realizarSubida(formData, progressCallback, opciones);
+                const url = await realizarSubidaConCORS(formData, progressCallback, opciones);
                 progressCallback(100);
 
                 if (!url) {
@@ -385,6 +398,149 @@
                 console.error('❌ Error subiendo imagen a Cloudinary:', error);
                 throw error;
             }
+        }
+
+        // === REALIZAR SUBIDA CON MANEJO CORS MEJORADO ===
+        async function realizarSubidaConCORS(formData, progressCallback, opciones) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), opciones.timeout || 60000);
+
+                // Configuración CORS específica para Cloudinary (multipart/form-data)
+                const cloudinaryCORS = {
+                    method: 'POST',
+                    body: formData,
+                    signal: controller.signal,
+                    mode: 'cors',
+                    credentials: 'omit'
+                };
+
+                console.log('📤 Subiendo a Cloudinary con CORS...');
+                const response = await fetch(CLOUDINARY_CONFIG.UPLOAD_URL, cloudinaryCORS);
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Respuesta Cloudinary:', response.status, errorText);
+                    throw new Error(`Cloudinary HTTP ${response.status}: ${errorText}`);
+                }
+
+                const resultado = await response.json();
+
+                if (resultado.error) {
+                    console.error('❌ Error API Cloudinary:', resultado.error);
+                    throw new Error(`Cloudinary API Error: ${resultado.error.message}`);
+                }
+
+                progressCallback(90);
+                console.log('✅ Cloudinary respuesta:', resultado.secure_url);
+                return resultado.secure_url;
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    throw new Error('Timeout: La subida tomó demasiado tiempo');
+                }
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    throw new Error('Error de red: Verifica tu conexión o CORS');
+                }
+                throw error;
+            }
+        }
+
+        // === ENVIAR A GOOGLE APPS SCRIPT CON CORS MEJORADO ===
+        async function enviarAGoogleAppsScript(publicationData) {
+            try {
+                console.log('📤 Enviando a Google Apps Script con CORS mejorado:', {
+                    titulo: publicationData.titulo,
+                    imagenesCount: publicationData.imagenes ? publicationData.imagenes.split(',').length : 0
+                });
+
+                // Primera: solicitud OPTIONS preflight manual para asegurar CORS
+                await realizarPreflight();
+
+                // Segunda: solicitud POST principal
+                const response = await fetch(WEB_APP_URL, {
+                    ...CORS_CONFIG,
+                    method: 'POST',
+                    body: JSON.stringify({
+                        ...publicationData,
+                        origin: ORIGIN // ← Importante para validación en backend
+                    })
+                });
+
+                console.log('📥 Respuesta Google Apps Script:', response.status, response.statusText);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ Error HTTP:', response.status, errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ Resultado Google Apps Script:', result);
+                return result;
+
+            } catch (error) {
+                console.error('❌ Error enviando a Google Apps Script:', error);
+                
+                // Intentar una vez más con configuración alternativa
+                if (error.message.includes('CORS') || error.message.includes('fetch')) {
+                    console.log('🔄 Reintentando con configuración CORS alternativa...');
+                    return await enviarConWorkaround(publicationData);
+                }
+                
+                throw error;
+            }
+        }
+
+        // === SOLICITUD OPTIONS PREFLIGHT MANUAL ===
+        async function realizarPreflight() {
+            try {
+                console.log('🔍 Realizando preflight OPTIONS...');
+                const preflightResponse = await fetch(WEB_APP_URL, {
+                    method: 'OPTIONS',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Access-Control-Request-Method': 'POST',
+                        'Access-Control-Request-Headers': 'Content-Type,Origin',
+                        'Origin': ORIGIN
+                    }
+                });
+
+                console.log('✅ Preflight status:', preflightResponse.status);
+                return preflightResponse;
+            } catch (error) {
+                console.warn('⚠️ Preflight falló (normal en algunos navegadores):', error.message);
+                // Continuar, algunos navegadores manejan preflight automáticamente
+            }
+        }
+
+        // === WORKAROUND PARA CORS PROBLEMÁTICO ===
+        async function enviarConWorkaround(publicationData) {
+            console.log('🛠️ Usando workaround para CORS...');
+            
+            // Opción 1: Sin Content-Type (deja que el navegador lo establezca)
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'omit',
+                headers: {
+                    'Origin': ORIGIN
+                    // NO incluir Content-Type, el navegador lo detectará automáticamente
+                },
+                body: JSON.stringify({
+                    ...publicationData,
+                    origin: ORIGIN
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Workaround falló: HTTP ${response.status}`);
+            }
+
+            return await response.json();
         }
 
         // === VALIDAR ARCHIVO IMAGEN ===
@@ -477,42 +633,6 @@
             }
 
             return formData;
-        }
-
-        // === REALIZAR SUBIDA ===
-        async function realizarSubida(formData, progressCallback, opciones) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), opciones.timeout || 60000);
-
-                const response = await fetch(CLOUDINARY_CONFIG.UPLOAD_URL, {
-                    method: 'POST',
-                    body: formData,
-                    signal: controller.signal
-                });
-
-                clearTimeout(timeoutId);
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Cloudinary HTTP ${response.status}: ${errorText}`);
-                }
-
-                const resultado = await response.json();
-
-                if (resultado.error) {
-                    throw new Error(`Cloudinary API Error: ${resultado.error.message}`);
-                }
-
-                progressCallback(90);
-                return resultado.secure_url;
-
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    throw new Error('Timeout: La subida tomó demasiado tiempo');
-                }
-                throw error;
-            }
         }
 
         // === UTILIDADES ===
@@ -639,7 +759,7 @@
             }
         });
 
-        // Validación y envío del formulario
+        // Validación y envío del formulario CON CORS MEJORADO
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -658,41 +778,31 @@
             
             try {
                 const publicationData = {
-                    action: 'addPublicacion',
                     titulo: document.getElementById('titulo').value.trim(),
                     tipo: document.getElementById('tipo').value,
                     subtipo: document.getElementById('subtipo').value,
                     precio: parseFloat(document.getElementById('precio').value),
                     pais: document.getElementById('pais').value,
-                    imagenes: uploadedImageUrls.join(','), // URLs separadas por comas para columna F
+                    imagenes: uploadedImageUrls, // ← Array de URLs para Google Apps Script
                     descripcion: document.getElementById('descripcion').value.trim(),
                     timestamp: new Date().toISOString()
                 };
 
                 console.log('📤 Enviando datos con imágenes de Cloudinary:', publicationData);
 
-                // Enviar a Google Apps Script
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    mode: 'cors',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(publicationData)
-                });
-
-                const result = await response.json();
+                // Usar función mejorada con CORS
+                const result = await enviarAGoogleAppsScript(publicationData);
 
                 if (result.success) {
                     showSuccess(result);
                     resetForm();
                 } else {
-                    showError(result.error || 'Error desconocido al publicar');
+                    showError(result.message || 'Error desconocido al publicar');
                 }
                 
             } catch (error) {
                 console.error('❌ Error completo:', error);
-                showError('No se pudo conectar con el servidor. Verifica tu conexión.');
+                showError(`Error de conexión: ${error.message}. Verifica CORS o reintenta.`);
             } finally {
                 hideLoading();
             }
@@ -741,7 +851,8 @@
             const titulo = document.getElementById('titulo').value;
             successMessage.innerHTML = `
                 ✅ ¡Anuncio "${titulo}" publicado exitosamente!<br>
-                📸 ${uploadedImageUrls.length} imagenes subidas a Cloudinary<br>
+                📸 ${result.imagenesCount || uploadedImageUrls.length} imágenes subidas a Cloudinary<br>
+                🆔 ID: ${result.id}<br>
                 <small>URLs guardadas en columna F de la hoja "Publicar"</small>
             `;
             successMessage.style.display = 'block';
@@ -829,8 +940,9 @@
             this.parentNode.appendChild(counter);
         });
 
-        console.log('✅ Formulario con Cloudinary inicializado correctamente');
+        console.log('✅ Formulario con Cloudinary y CORS mejorado inicializado correctamente');
         console.log('📡 Web App URL:', WEB_APP_URL);
+        console.log('🌐 Origin configurado:', ORIGIN);
     </script>
 </body>
 </html>
