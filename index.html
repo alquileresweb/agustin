@@ -603,6 +603,24 @@
       justify-items: center;
       align-items: center;
     }
+    /* Asegurar centrado completo en Comprá, Vendé y Alquilá */
+    #vende-content > *, .compra-content > *, .alquila-content > *, .brasil-content > * {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .compra-content .image-grid,
+    .compra-content .property-grid,
+    .brasil-content .property-grid,
+    .alquila-content .property-grid {
+      max-width: 100%;
+      width: 100%;
+    }
+    /* Ajustes específicos para Comprá */
+    .compra-content .image-grid {
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
