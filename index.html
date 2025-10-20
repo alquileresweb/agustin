@@ -864,166 +864,68 @@
     let allProperties = [];
     
     // Función actualizada para cargar propiedades desde Google Apps Script Web App
-    function loadPropertiesFromSheet(filters = {}) {
-      return new Promise((resolve, reject) => {
+    async function loadPropertiesFromSheet(filters = {}) {
+      try {
         const params = new URLSearchParams({
-          operacion: filters.operacion || '',
-          pais: filters.pais || '',
-          propiedad: filters.propiedad || ''
+          action: 'getFilteredProperties',
+          tipoOperacion: filters.tipoOperacion || '',
+          pais: filters.pais || ''
         });
         
-        // Intentar con JSONP
-        const callbackName = `jsonpCallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        params.set('callback', callbackName);
+        const response = await fetch(`${WEB_APP_URL}?${params}`);
         
-        console.log(`📡 Enviando solicitud JSONP a: ${WEB_APP_URL}?${params}`);
-        
-        // Crear función callback
-        window[callbackName] = function(result) {
-          console.log(`✅ Respuesta JSONP recibida: ${JSON.stringify(result, null, 2)}`);
-          cleanup();
-          if (result.success) {
-            resolve(result.data || []);
-          } else {
-            reject(new Error(result.error || 'Error en la respuesta del servidor'));
-          }
-        };
-        
-        // Crear script para JSONP
-        const script = document.createElement('script');
-        script.id = callbackName;
-        script.src = `${WEB_APP_URL}?${params}`;
-        script.onerror = () => {
-          console.error('❌ Error al cargar el script JSONP');
-          cleanup();
-          attemptFetchFallback(params, resolve, reject);
-        };
-        
-        // Timeout para JSONP
-        const timeout = setTimeout(() => {
-          console.error('❌ Timeout en solicitud JSONP');
-          cleanup();
-          attemptFetchFallback(params, resolve, reject);
-        }, 5000);
-        
-        // Función para limpiar callback y script
-        function cleanup() {
-          clearTimeout(timeout);
-          delete window[callbackName];
-          document.getElementById(callbackName)?.remove();
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        document.head.appendChild(script);
+        const result = await response.json();
         
-        // Fallback a fetch sin el parámetro callback
-        function attemptFetchFallback(params, resolve, reject) {
-          console.log('🔄 Intentando fallback con fetch');
-          const fetchParams = new URLSearchParams(params);
-          fetchParams.delete('callback'); // Eliminar callback para JSON
-          const fetchUrl = `${WEB_APP_URL}?${fetchParams}`;
-          
-          fetch(fetchUrl, {
-            mode: 'cors',
-            headers: {
-              'Accept': 'application/json'
-            }
-          })
-            .then(response => {
-              if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-              return response.json();
-            })
-            .then(result => {
-              console.log(`✅ Respuesta fetch recibida: ${JSON.stringify(result, null, 2)}`);
-              if (result.success) {
-                resolve(result.data || []);
-              } else {
-                reject(new Error(result.error || 'Error en la respuesta del servidor'));
-              }
-            })
-            .catch(error => {
-              console.error('❌ Error en fetch:', error);
-              // Fallback a datos de respaldo
-              console.log('ℹ️ Usando datos de respaldo debido a errores persistentes');
-              resolve(getFallbackProperties(filters));
-            })
-            .finally(() => {
-              cleanup();
-            });
+        if (result.success) {
+          return result.data || [];
+        } else {
+          throw new Error(result.error || 'Error en la respuesta del servidor');
         }
-        
-        // Datos de respaldo en caso de fallo total
-        function getFallbackProperties(filters) {
-          const mockProperties = [
-            {
-              ID: 'MOCK-001',
-              Título: 'Propiedad de Prueba',
-              'Tipo Operación': filters.operacion || 'alquiler',
-              'Tipo Propiedad': 'Casa',
-              Precio: 50000,
-              Imágenes: 'https://via.placeholder.com/400x250?text=Propiedad+Prueba',
-              Descripción: 'Propiedad de respaldo para pruebas.',
-              País: filters.pais || 'Argentina'
-            }
-          ];
-          console.log('📋 Usando propiedades de respaldo:', mockProperties);
-          return mockProperties;
-        }
-      });
+      } catch (error) {
+        console.error('Error cargando propiedades:', error);
+        throw error;
+      }
     }
     
     // Función para mostrar propiedades por filtros específicos
-    async function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
+    async function showPropertiesByFilters(tipoOperacion, pais = null) {
       try {
-        const targetContainer = getActivePropertyContainer();
-        if (targetContainer) {
-          targetContainer.innerHTML = `<div class="loading-properties">Cargando propiedades...</div>`;
-        }
+        const container = getActivePropertyContainer();
+        if (!container) return;
+        
+        // Mostrar mensaje de carga
+        container.innerHTML = `<div class="loading-properties">Cargando propiedades...</div>`;
         
         const properties = await loadPropertiesFromSheet({
-          operacion: tipoOperacion,
-          pais: pais,
-          propiedad: tipoPropiedad
+          tipoOperacion: tipoOperacion,
+          pais: pais
         });
         
-        renderProperties(properties, targetContainer);
+        renderProperties(properties, container);
       } catch (error) {
         console.error('Error al filtrar propiedades:', error);
-        showErrorMessage('Error al cargar propiedades. Verifica la conexión o la configuración del servidor.');
+        showErrorMessage('Error al cargar propiedades. Verifica la conexión.');
       }
     }
     
     // Función para renderizar propiedades en el DOM
     function renderProperties(properties, container = null) {
       const targetContainer = container || getActivePropertyContainer();
-      if (!targetContainer) {
-        console.error('❌ No se encontró contenedor activo');
-        return;
-      }
+      if (!targetContainer) return;
       
       // Limpiar contenedor
       targetContainer.innerHTML = '';
       
-      if (!properties || properties.length === 0) {
+      if (properties.length === 0) {
         targetContainer.innerHTML = '<div class="loading-properties">No se encontraron propiedades con estos filtros</div>';
-        console.log('ℹ️ Sin propiedades para mostrar');
         return;
       }
       
-      // Mapear propiedades para alinear nombres de campos
-      const mappedProperties = properties.map(prop => ({
-        id: prop['ID'] || '',
-        titulo: prop['Título'] || 'Sin título',
-        tipoOperacion: prop['Tipo Operación'] || '',
-        tipoPropiedad: prop['Tipo Propiedad'] || '',
-        precio: prop['Precio'] || 0,
-        imagenes: prop['Imágenes'] ? prop['Imágenes'].split(',').map(url => url.trim()).filter(url => url) : [],
-        descripcion: prop['Descripción'] || '',
-        pais: prop['País'] || ''
-      }));
-      
-      console.log(`📸 Renderizando ${mappedProperties.length} propiedades`);
-      
-      mappedProperties.forEach(property => {
+      properties.forEach(property => {
         const card = createPropertyCard(property);
         targetContainer.appendChild(card);
       });
@@ -1034,12 +936,12 @@
       const card = document.createElement('div');
       card.className = 'property-card';
       
-      const primeraImagen = (property.imagenes && property.imagenes.length > 0) ? 
-        property.imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
+      const imagenes = property.imagenes ? property.imagenes.split(',').filter(url => url.trim()) : [];
+      const primeraImagen = imagenes.length > 0 ? imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
       
-      const precio = property.precio ? `$${parseFloat(property.precio).toLocaleString('es-AR')}` : 'Precio consultar';
-      const tipoOperacion = property.tipoOperacion || '';
-      const tipoPropiedad = property.tipoPropiedad || '';
+      const precio = property.precio ? `$${parseFloat(property.precio).toLocaleString()}` : 'Precio consultar';
+      const tipoOperacion = property.tipo || '';
+      const tipoPropiedad = property.subtipo || '';
       const descripcion = property.descripcion || '';
       
       const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
@@ -1069,7 +971,7 @@
       return null;
     }
     
-    // Función para mostrar contenido de Argentina (Venta automática)
+    // Función para mostrar contenido de Argentina (Venta + Argentina)
     async function showArgentinaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1078,10 +980,11 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
       
-      await showPropertiesByFilters('venta', 'argentina');
+      // Cargar propiedades con tipoOperacion="venta" y pais="Argentina"
+      await showPropertiesByFilters('venta', 'Argentina');
     }
     
-    // Función para mostrar contenido de Brasil
+    // Función para mostrar contenido de Brasil (Venta o Todo + Brasil)
     async function showBrasilContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1090,10 +993,11 @@
       brasilContent.classList.add('active');
       alquilaContent.classList.remove('active');
       
-      await showPropertiesByFilters('venta', 'brasil');
+      // Cargar propiedades con pais="Brasil" (todas, incluyendo venta y alquiler)
+      await showPropertiesByFilters('', 'Brasil');
     }
     
-    // Función para mostrar contenido de Alquilá
+    // Función para mostrar contenido de Alquilá (Alquiler)
     async function showAlquilaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1102,6 +1006,7 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.add('active');
       
+      // Cargar propiedades con tipoOperacion="alquiler"
       await showPropertiesByFilters('alquiler');
     }
     
