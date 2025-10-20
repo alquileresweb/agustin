@@ -867,11 +867,13 @@
     async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
       for (let i = 0; i < retries; i++) {
         try {
-          const response = await fetch(url, options);
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-          }
-          return response;
+          const response = await fetch(url, {
+            ...options,
+            mode: 'no-cors' // Usar no-cors para evitar el bloqueo por CORS
+          });
+          // Nota: Con mode: 'no-cors', no podemos acceder al contenido de la respuesta
+          console.warn('⚠️ Solicitud con no-cors realizada. No se puede acceder a la respuesta debido a restricciones de CORS.');
+          return response; // La respuesta será opaca, no se puede usar .json()
         } catch (error) {
           if (i < retries - 1) {
             console.warn(`Intento ${i + 1} fallido: ${error.message}. Reintentando en ${delay}ms...`);
@@ -899,13 +901,8 @@
           }
         });
         
-        const result = await response.json();
-        
-        if (result.success) {
-          return result.data || [];
-        } else {
-          throw new Error(result.error || 'Error en la respuesta del servidor');
-        }
+        // Con mode: 'no-cors', no podemos acceder a response.json()
+        throw new Error('No se puede procesar la respuesta con mode: no-cors. Por favor, configura CORS en el servidor.');
       } catch (error) {
         console.error('Error cargando propiedades:', error);
         throw error;
@@ -929,7 +926,7 @@
         renderProperties(properties, container);
       } catch (error) {
         console.error('Error al filtrar propiedades:', error);
-        showErrorMessage('Error al cargar propiedades. Por favor, intenta de nuevo más tarde.');
+        showErrorMessage('Error al cargar propiedades. Por favor, configura CORS en el servidor o intenta de nuevo más tarde.');
       }
     }
     
