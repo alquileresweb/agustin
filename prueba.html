@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inmobiliaria Agustin Santos</title>
+  <link rel="icon" type="image/jpg" href="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background-color: #000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+    }
+    .logo img {
+      height: 60px;
+    }
+    .menu {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .menu a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1000;
+      border-radius: 5px;
+      top: 100%;
+      left: 0;
+    }
+    .dropdown-content a {
+      color: #333;
+      padding: 12px 16px;
+      display: block;
+      text-decoration: none;
+      font-size: 0.9em;
+      border-bottom: 1px solid #eee;
+    }
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    .contact-btn {
+      background-color: #25D366;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9em;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .contact-btn:hover {
+      background-color: #1ebe52;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 80px);
+    }
+    .sidebar {
+      width: 100%;
+      background-color: #f0f0f0;
+      border-bottom: 1px solid #ccc;
+      position: relative;
+      display: none;
+      height: 500px;
+    }
+    .sidebar.active {
+      display: block;
+    }
+    .sidebar iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .loading-message {
+      position: absolute;
+      font-size: 1em;
+      color: #333;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+    }
+    .content-area {
+      flex: 1;
+      padding: 15px;
+      background-color: #fff;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    .content-area.active {
+      display: flex;
+    }
+    .pre-tasacion-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-bottom: 15px;
+    }
+    .pre-tasacion-btn:hover {
+      background-color: #218838;
+    }
+    .section-text {
+      font-size: 1.2em;
+      margin: 15px 0;
+      text-align: center;
+    }
+    .boxes {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .box {
+      background-color: #f8f8f8;
+      padding: 12px;
+      border-radius: 5px;
+      text-align: center;
+      width: 150px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .benefits-text {
+      font-size: 1.1em;
+      margin: 15px 0;
+      text-align: center;
+    }
+    .benefits-boxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      justify-items: center;
+      max-width: 100%;
+      padding: 0 10px;
+    }
+    .benefit-box img {
+      width: 100%;
+      max-width: 250px;
+      height: auto;
+      border-radius: 5px;
+    }
+    .inicio-content img {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 5px;
+      object-fit: cover;
+      max-height: 40vh;
+    }
+    .compra-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+    }
+    .brasil-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      text-align: center;
+      width: 100%;
+    }
+    .brasil-property-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      width: 100%;
+      justify-items: center;
+      box-sizing: border-box;
+    }
+    .brasil-property-card {
+      background-color: #f8f8f8;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+    }
+    .brasil-property-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .brasil-property-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    .alquila-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 15px;
+      text-align: center;
+      width: 100%;
+    }
+    .alquila-property-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      width: 100%;
+      justify-items: center;
+      box-sizing: border-box;
+    }
+    .alquila-property-card {
+      background-color: #f8f8f8;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+    }
+    .alquila-property-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .alquila-property-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    /* Estilos para tarjetas dinámicas de propiedades */
+    .property-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      width: 100%;
+      justify-items: center;
+      box-sizing: border-box;
+    }
+    .property-card {
+      background-color: #f8f8f8;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .property-card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .property-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .property-price {
+      font-size: 1.2em;
+      color: #28a745;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    .property-type {
+      color: #666;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+    .ver-mas-btn, .whatsapp-btn {
+      background-color: #007bff;
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      margin: 5px;
+      transition: background-color 0.3s;
+    }
+    .whatsapp-btn {
+      background-color: #25D366;
+    }
+    .ver-mas-btn:hover, .whatsapp-btn:hover {
+      background-color: #0056b3;
+      color: white;
+      text-decoration: none;
+    }
+    .whatsapp-btn:hover {
+      background-color: #1ebe52;
+    }
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      max-width: 100%;
+      margin-top: 15px;
+      order: 1;
+    }
+    .image-item {
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .image-item:hover {
+      transform: scale(1.05);
+    }
+    .image-item img {
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      border-radius: 5px;
+    }
+    .image-item p {
+      margin: 8px 0 0;
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+    .casa-detail {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .casa-detail.active {
+      display: flex;
+    }
+    .casa-detail-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 90%;
+      max-height: 90%;
+      text-align: center;
+      position: relative;
+    }
+    .casa-detail img {
+      max-width: 100%;
+      max-height: 60vh;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    .casa-detail h3 {
+      margin: 10px 0;
+      color: #333;
+    }
+    .casa-detail .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    .casa-detail .close-btn:hover {
+      color: #000;
+    }
+    /* Ocultar image-grid, brasil-content y alquila-content cuando no están activos */
+    .compra-content:not(.active) .image-grid,
+    .brasil-content:not(.active),
+    .alquila-content:not(.active) {
+      display: none !important;
+    }
+    @media (min-width: 768px) {
+      .header {
+        padding: 20px 40px;
+      }
+      .logo img {
+        height: 80px;
+      }
+      .menu a {
+        font-size: 1em;
+      }
+      .contact-btn {
+        padding: 10px 20px;
+        font-size: 1em;
+      }
+      .main-container {
+        flex-direction: row;
+      }
+      .sidebar {
+        width: 40%;
+        height: 600px;
+        border-bottom: none;
+        border-right: 1px solid #ccc;
+        order: 1;
+      }
+      .content-area {
+        padding: 20px;
+        order: 2;
+      }
+      .pre-tasacion-btn {
+        padding: 15px 30px;
+        font-size: 1.2em;
+      }
+      .section-text {
+        font-size: 1.5em;
+        margin: 20px 0;
+      }
+      .box {
+        width: 200px;
+      }
+      .benefits-text {
+        font-size: 1.3em;
+        margin: 20px 0;
+      }
+      .benefits-boxes {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 1200px;
+        padding: 0;
+      }
+      .benefit-box img {
+        max-width: 300px;
+      }
+      .inicio-content img {
+        max-width: 1200px;
+        max-height: none;
+      }
+      .image-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 600px;
+        order: 1;
+      }
+      .image-item img {
+        max-width: 250px;
+      }
+      .image-item p {
+        font-size: 1.1em;
+      }
+      .brasil-property-grid, .alquila-property-grid, .property-grid {
+        grid-template-columns: repeat(2, minmax(400px, 1fr));
+        width: 100%;
+        column-gap: 20px;
+        row-gap: 20px;
+        box-sizing: border-box;
+      }
+      .brasil-property-card, .alquila-property-card, .property-card {
+        width: 100%;
+        max-width: 600px;
+        box-sizing: border-box;
+      }
+      .brasil-property-card img, .alquila-property-card img, .property-card img {
+        height: 300px;
+        max-width: 100%;
+      }
+      .brasil-property-title, .alquila-property-title, .property-title {
+        font-size: 2em;
+      }
+      .casa-detail-content {
+        max-width: 70%;
+        padding: 30px;
+      }
+    }
+    /* Estilos para el modal de pre-tasación */
+    .pre-tasacion-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    .pre-tasacion-modal.active {
+      display: flex;
+    }
+    .pre-tasacion-form {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: left;
+      position: relative;
+    }
+    .pre-tasacion-form h2 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .pre-tasacion-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .pre-tasacion-form input,
+    .pre-tasacion-form textarea,
+    .pre-tasacion-form select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .pre-tasacion-form button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+    }
+    .pre-tasacion-form button:hover {
+      background-color: #218838;
+    }
+    .pre-tasacion-form .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+    .pre-tasacion-form .close-btn:hover {
+      color: #000;
+    }
+    .loading-properties {
+      text-align: center;
+      padding: 50px;
+      font-size: 1.2em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Inmobiliaria Agustin Santos">
+    </div>
+    <div class="menu">
+      <a href="#" class="menu-link" id="inicio-link">Inicio</a>
+      <a href="#" class="menu-link" id="vende-link">Vendé</a>
+      <div class="dropdown">
+        <a href="#" class="menu-link" id="compra-link">Comprá</a>
+        <div class="dropdown-content">
+          <a href="#" id="argentina-link">Propiedades en Argentina</a>
+          <a href="#" id="brasil-link">Propiedades en Brasil</a>
+        </div>
+      </div>
+      <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
+      <a href="#" class="menu-link" id="inverti-link">Invertí</a>
+    </div>
+    <a href="https://wa.me/5493756508620?text=Hola" class="contact-btn" target="_blank">Contactar</a>
+  </div>
+  <div class="main-container">
+    <div class="sidebar" id="sidebar">
+      <span class="loading-message">Cargando propiedades...</span>
+      <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com" onload="document.querySelector('.loading-message').style.display='none';"></iframe>
+    </div>
+    <div class="content-area active" id="inicio-content">
+      <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen">
+    </div>
+    <div class="content-area" id="vende-content">
+      <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
+      <div class="section-text">No solo lo vendemos, sino que también...</div>
+      <div class="boxes">
+        <div class="box">Lo Promocionamos</div>
+        <div class="box">Tasamos tu Propiedad</div>
+      </div>
+      <div class="benefits-text">Y además tenés BENEFICIOS para vos</div>
+      <div class="benefits-boxes">
+        <div class="benefit-box"><img src="https://i.postimg.cc/5NTLYJ4b/1.png" alt="Beneficio 1"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/0NdwBJp1/2.png" alt="Beneficio 2"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/pry5rG43/3.png" alt="Beneficio 3"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/VLx0sFgw/4.png" alt="Beneficio 4"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/LX8nQQ9Z/5.png" alt="Beneficio 5"></div>
+        <div class="benefit-box"><img src="https://i.postimg.cc/d3z31q8L/6.png" alt="Beneficio 6"></div>
+      </div>
+    </div>
+    <div class="content-area compra-content" id="compra-content">
+      <div class="image-grid">
+        <div class="image-item" data-type="terrenos">
+          <img src="https://i.postimg.cc/Vky6jL2K/7.png" alt="Terrenos">
+          <p>Terrenos</p>
+        </div>
+        <div class="image-item" data-type="departamentos">
+          <img src="https://i.postimg.cc/xdn14pfZ/8.png" alt="Departamentos">
+          <p>Departamentos</p>
+        </div>
+        <div class="image-item" data-type="casas">
+          <img src="https://i.postimg.cc/vBS8DQWS/9.png" alt="Casas">
+          <p>Casas</p>
+        </div>
+        <div class="image-item" data-type="locales">
+          <img src="https://i.postimg.cc/3NsKCnfZ/10.png" alt="Locales Comerciales">
+          <p>Locales Comerciales</p>
+        </div>
+      </div>
+      <div class="sidebar" id="compra-sidebar">
+        <span class="loading-message">Cargando propiedades...</span>
+        <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar" onload="document.querySelector('#compra-sidebar .loading-message').style.display='none';"></iframe>
+      </div>
+      <!-- Contenedor para propiedades de Argentina dinámicas -->
+      <div id="argentina-properties" class="property-grid" style="display: none;"></div>
+    </div>
+    
+    <!-- Modal para detalle de Casa -->
+    <div class="casa-detail" id="casa-detail">
+      <div class="casa-detail-content">
+        <button class="close-btn" id="close-casa-detail">&times;</button>
+        <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img">
+        <h3 id="casa-detail-title">Casa en Venta</h3>
+        <a href="http://www.alquiya.com.ar/alquiler.html?id=2f8c4b16-a218-4f04-ab82-282d890a99eb" target="_blank" class="ver-mas-btn">Ver más</a>
+      </div>
+    </div>
+    
+    <div class="content-area brasil-content" id="brasil-content">
+      <div id="brasil-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades de Brasil...</div>
+      </div>
+    </div>
+    <div class="content-area alquila-content" id="alquila-content">
+      <div id="alquila-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades para alquilar...</div>
+      </div>
+      <div class="sidebar" id="alquila-sidebar">
+        <span class="loading-message">Cargando propiedades...</span>
+        <iframe src="https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar" onload="document.querySelector('#alquila-sidebar .loading-message').style.display='none';"></iframe>
+      </div>
+    </div>
+    <!-- Modal para Pre Tasación -->
+    <div class="pre-tasacion-modal" id="pre-tasacion-modal">
+      <div class="pre-tasacion-form">
+        <button class="close-btn" id="close-pre-tasacion-modal">&times;</button>
+        <h2>Pre Tasación Gratuita</h2>
+        <form id="pre-tasacion-form">
+          <label for="nombre">Nombre y Apellido:</label>
+          <input type="text" id="nombre" name="nombre" required>
+          <label for="telefono">Teléfono:</label>
+          <input type="tel" id="telefono" name="telefono" required>
+          <label for="direccion">Dirección de la Propiedad:</label>
+          <textarea id="direccion" name="direccion" rows="3" required></textarea>
+          <label for="metros">Metros Cuadrados:</label>
+          <input type="number" id="metros" name="metros" required>
+          <label for="tipo-propiedad">Tipo de Propiedad:</label>
+          <select id="tipo-propiedad" name="tipo-propiedad" required>
+            <option value="">Seleccione una opción</option>
+            <option value="Casa">Casa</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Terreno">Terreno</option>
+            <option value="Local Comercial">Local Comercial</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <button type="submit">Enviar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const vendeContent = document.getElementById('vende-content');
+    const inicioContent = document.getElementById('inicio-content');
+    const compraContent = document.getElementById('compra-content');
+    const brasilContent = document.getElementById('brasil-content');
+    const alquilaContent = document.getElementById('alquila-content');
+    const imageGrid = compraContent.querySelector('.image-grid');
+    const argentinaProperties = document.getElementById('argentina-properties');
+    const brasilProperties = document.getElementById('brasil-properties');
+    const alquilaProperties = document.getElementById('alquila-properties');
+    
+    // Elementos del modal de Casa
+    const casaDetail = document.getElementById('casa-detail');
+    const closeCasaDetail = document.getElementById('close-casa-detail');
+    
+    // Elementos del modal de Pre Tasación
+    const preTasacionModal = document.getElementById('pre-tasacion-modal');
+    const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
+    const preTasacionForm = document.getElementById('pre-tasacion-form');
+    
+    // Almacén global de propiedades cargadas
+    let allProperties = [];
+    
+    // Función para cargar propiedades desde Google Sheets
+    async function loadPropertiesFromSheet() {
+      try {
+        // URL de tu Google Sheet - IMPORTANTE: Debes publicar la hoja como CSV
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/1xZYDiKh2DMi66_lIrZeYPL4onXgaZsQ6w8Q9d0isZ6E/export?format=csv';
+        const response = await fetch(sheetUrl);
+        
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const csvText = await response.text();
+        
+        // Parsear CSV simple
+        const rows = csvText.split('\n').map(row => {
+          // Manejar comas dentro de campos entre comillas
+          const cells = [];
+          let current = '';
+          let inQuotes = false;
+          for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+              cells.push(current.trim().replace(/"/g, ''));
+              current = '';
+            } else {
+              current += char;
+            }
+          }
+          cells.push(current.trim().replace(/"/g, ''));
+          return cells;
+        });
+        
+        const headers = rows[0].map(h => h.toLowerCase().trim());
+        const data = rows.slice(1).filter(row => row.length > 1 && row[0].trim());
+        
+        allProperties = data.map(row => {
+          const property = {};
+          headers.forEach((header, index) => {
+            property[header] = row[index] || '';
+          });
+          
+          // Procesar imágenes (separadas por |, ; o espacio)
+          if (property.imagenes) {
+            property.imagenes = property.imagenes.split(/[\|;| ]/).filter(img => img.trim());
+          } else {
+            property.imagenes = [];
+          }
+          
+          // Normalizar nombres de campos
+          property['tipo operacion'] = property['tipo operacion'] || property['tipo_operacion'] || '';
+          property['tipo propiedad'] = property['tipo propiedad'] || property['tipo_propiedad'] || '';
+          
+          return property;
+        }).filter(property => property.titulo && property.titulo.trim());
+        
+        console.log('Propiedades cargadas:', allProperties);
+        
+        // Si ya estamos en una sección activa, recargar propiedades
+        if (brasilContent.classList.contains('active')) {
+          showBrasilContent();
+        } else if (alquilaContent.classList.contains('active')) {
+          showAlquilaContent();
+        }
+        
+      } catch (error) {
+        console.error('Error cargando propiedades:', error);
+        showErrorMessage('Error al cargar propiedades. Verifica que la hoja esté publicada como CSV.');
+      }
+    }
+    
+    // Función para filtrar y mostrar propiedades
+    function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
+      const filteredProperties = allProperties.filter(property => {
+        const matchesOperacion = property['tipo operacion']?.toLowerCase() === tipoOperacion.toLowerCase() ||
+                                property['tipo_operacion']?.toLowerCase() === tipoOperacion.toLowerCase();
+        const matchesPais = pais ? 
+          (property.pais?.toLowerCase() === pais.toLowerCase() || 
+           property['país']?.toLowerCase() === pais.toLowerCase()) : true;
+        const matchesTipo = tipoPropiedad ? 
+          (property['tipo propiedad']?.toLowerCase() === tipoPropiedad.toLowerCase() ||
+           property['tipo_propiedad']?.toLowerCase() === tipoPropiedad.toLowerCase()) : true;
+        return matchesOperacion && matchesPais && matchesTipo;
+      });
+      
+      renderProperties(filteredProperties);
+    }
+    
+    // Función para renderizar propiedades en el DOM
+    function renderProperties(properties, container = null) {
+      const targetContainer = container || getActivePropertyContainer();
+      if (!targetContainer) return;
+      
+      // Limpiar contenedor
+      targetContainer.innerHTML = '';
+      
+      if (properties.length === 0) {
+        targetContainer.innerHTML = '<div class="loading-properties">No se encontraron propiedades con estos filtros</div>';
+        return;
+      }
+      
+      properties.forEach(property => {
+        const card = createPropertyCard(property);
+        targetContainer.appendChild(card);
+      });
+    }
+    
+    // Función para crear tarjeta de propiedad
+    function createPropertyCard(property) {
+      const card = document.createElement('div');
+      card.className = 'property-card';
+      
+      const primeraImagen = (property.imagenes && property.imagenes.length > 0) ? 
+        property.imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
+      
+      const precio = property.precio || 'Precio consultar';
+      const tipoOperacion = property['tipo operacion'] || property['tipo_operacion'] || '';
+      const tipoPropiedad = property['tipo propiedad'] || property['tipo_propiedad'] || '';
+      const descripcion = property.descripcion || '';
+      
+      const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
+      
+      // URL para "Ver más" - puedes personalizar según tu sistema
+      const verMasUrl = property.url || property.id ? 
+        `https://alquiya.com.ar/${tipoOperacion.toLowerCase()}.html?id=${property.id}` : '#';
+      
+      card.innerHTML = `
+        <img src="${primeraImagen}" alt="${property.titulo}" 
+             onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'"
+             loading="lazy">
+        <div class="property-title">${property.titulo}</div>
+        <div class="property-price">${precio}</div>
+        <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
+        ${descripcion ? `<p style="color: #555; margin-bottom: 15px;">${descripcion.substring(0, 100)}...</p>` : ''}
+        <a href="${verMasUrl}" target="_blank" class="ver-mas-btn">Ver más</a>
+        <a href="https://wa.me/5493756508620?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
+      `;
+      
+      return card;
+    }
+    
+    // Función para obtener el contenedor activo de propiedades
+    function getActivePropertyContainer() {
+      if (brasilContent.classList.contains('active')) return brasilProperties;
+      if (alquilaContent.classList.contains('active')) return alquilaProperties;
+      if (argentinaProperties.style.display !== 'none') return argentinaProperties;
+      return null;
+    }
+    
+    // Función para mostrar propiedades de Argentina por tipo
+    function showArgentinaPropertiesByType(tipoPropiedad) {
+      // Mapear data-type a nombres de tipo propiedad
+      const tipoMap = {
+        'terrenos': 'Terreno',
+        'departamentos': 'Departamento',
+        'casas': 'Casa',
+        'locales': 'Local Comercial'
+      };
+      const tipoFinal = tipoMap[tipoPropiedad] || tipoPropiedad;
+      
+      showPropertiesByFilters('Venta', 'argentina', tipoFinal);
+      argentinaProperties.style.display = 'grid';
+      imageGrid.style.display = 'none';
+    }
+    
+    // Función para mostrar contenido de compra Argentina
+    function showCompraContent() {
+      sidebar.classList.add('active');
+      vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
+      compraContent.classList.add('active');
+      brasilContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
+      argentinaProperties.style.display = 'none';
+      imageGrid.style.display = 'grid';
+      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=comprar';
+    }
+    
+    // Función para mostrar contenido de Brasil
+    function showBrasilContent() {
+      sidebar.classList.remove('active');
+      vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
+      brasilContent.classList.add('active');
+      alquilaContent.classList.remove('active');
+      imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
+      
+      // Cargar propiedades de Brasil (Venta)
+      if (allProperties.length > 0) {
+        showPropertiesByFilters('Venta', 'brasil');
+      }
+    }
+    
+    // Función para mostrar contenido de Alquilá
+    function showAlquilaContent() {
+      sidebar.classList.add('active');
+      vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
+      brasilContent.classList.remove('active');
+      alquilaContent.classList.add('active');
+      imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
+      
+      // Cargar propiedades de Alquiler en Argentina
+      if (allProperties.length > 0) {
+        showPropertiesByFilters('Alquiler', 'argentina');
+      }
+      sidebar.querySelector('iframe').src = 'https://alquiya.com.ar/inmobiliarias.html?email=axel.martinezz665@gmail.com&tipo=alquilar';
+    }
+    
+    // Funcionalidad para el modal de Casa
+    function showCasaDetail() {
+      casaDetail.classList.add('active');
+    }
+    
+    function hideCasaDetail() {
+      casaDetail.classList.remove('active');
+    }
+    
+    // Funcionalidad para el modal de Pre Tasación
+    function showPreTasacionModal() {
+      preTasacionModal.classList.add('active');
+    }
+    
+    function hidePreTasacionModal() {
+      preTasacionModal.classList.remove('active');
+    }
+    
+    // Función para mostrar mensaje de error
+    function showErrorMessage(message) {
+      const containers = [brasilProperties, alquilaProperties, argentinaProperties];
+      containers.forEach(container => {
+        if (container) {
+          container.innerHTML = `<div class="loading-properties">${message}</div>`;
+        }
+      });
+    }
+    
+    // Enviar formulario de Pre Tasación a WhatsApp
+    preTasacionForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const telefono = document.getElementById('telefono').value;
+      const direccion = document.getElementById('direccion').value;
+      const metros = document.getElementById('metros').value;
+      const tipoPropiedad = document.getElementById('tipo-propiedad').value;
+      const mensaje = `Solicitud de Pre Tasación\nNombre: ${nombre}\nTeléfono: ${telefono}\nDirección: ${direccion}\nMetros Cuadrados: ${metros}\nTipo de Propiedad: ${tipoPropiedad}\nFecha: ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`;
+      const whatsappURL = `https://wa.me/5493756505202?text=${encodeURIComponent(mensaje)}`;
+      window.open(whatsappURL, '_blank');
+      preTasacionForm.reset();
+      hidePreTasacionModal();
+    });
+    
+    // Event listeners principales
+    document.getElementById('compra-link').addEventListener('click', function(e) {
+      e.preventDefault();
+    });
+    
+    document.getElementById('argentina-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      showCompraContent();
+    });
+    
+    document.getElementById('brasil-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      showBrasilContent();
+    });
+    
+    document.getElementById('alquila-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      showAlquilaContent();
+    });
+    
+    document.getElementById('vende-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      sidebar.classList.remove('active');
+      vendeContent.classList.add('active');
+      inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
+      brasilContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
+      imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
+    });
+    
+    document.getElementById('inicio-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      sidebar.classList.remove('active');
+      vendeContent.classList.remove('active');
+      inicioContent.classList.add('active');
+      compraContent.classList.remove('active');
+      brasilContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
+      imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
+    });
+    
+    document.getElementById('inverti-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      sidebar.classList.remove('active');
+      vendeContent.classList.remove('active');
+      inicioContent.classList.remove('active');
+      compraContent.classList.remove('active');
+      brasilContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
+      imageGrid.style.display = 'none';
+      argentinaProperties.style.display = 'none';
+    });
+    
+    // Event listeners para las imágenes de propiedades en Argentina
+    document.querySelectorAll('.image-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const tipoPropiedad = this.dataset.type;
+        showArgentinaPropertiesByType(tipoPropiedad);
+        // Mantener modal para casas si es necesario
+        if (tipoPropiedad === 'casas' && allProperties.length > 0) {
+          // Mostrar propiedades de casas en lugar del modal estático
+        }
+      });
+    });
+    
+    // Event listeners para cerrar el modal de Casa
+    closeCasaDetail.addEventListener('click', hideCasaDetail);
+    casaDetail.addEventListener('click', function(e) {
+      if (e.target === casaDetail) {
+        hideCasaDetail();
+      }
+    });
+    
+    // Event listeners para cerrar el modal de Pre Tasación
+    closePreTasacionModal.addEventListener('click', hidePreTasacionModal);
+    preTasacionModal.addEventListener('click', function(e) {
+      if (e.target === preTasacionModal) {
+        hidePreTasacionModal();
+      }
+    });
+    
+    // Event listener para el botón Pre Tasación GRATUITA
+    document.querySelector('.pre-tasacion-btn').addEventListener('click', showPreTasacionModal);
+    
+    // Cerrar modal con tecla Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && casaDetail.classList.contains('active')) {
+        hideCasaDetail();
+      } else if (e.key === 'Escape' && preTasacionModal.classList.contains('active')) {
+        hidePreTasacionModal();
+      }
+    });
+    
+    // Cargar propiedades al iniciar la página
+    document.addEventListener('DOMContentLoaded', async function() {
+      await loadPropertiesFromSheet();
+    });
+  </script>
+</body>
+</html>
