@@ -327,10 +327,12 @@
       transform: scale(1.05);
     }
     
-    .inicio-content img {
+    .imagen-adaptable {
       width: 100%;
-      max-width: 1200px;
-      height: auto;
+      height: 300px;
+      background-image: url('https://i.postimg.cc/CKcJZtzp/1-2.png');
+      background-size: cover;
+      background-position: center;
       border-radius: 15px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
@@ -625,6 +627,23 @@
       display: none !important;
     }
     
+    /* IMAGEN ADAPTABLE */
+    .imagen-adaptable {
+      width: 100%;
+      height: 300px;
+      background-image: url('https://i.postimg.cc/CKcJZtzp/1-2.png');
+      background-size: cover;
+      background-position: center;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    @media (max-width: 768px) {
+      .imagen-adaptable {
+        background-image: url('https://via.placeholder.com/800x300?text=Imagen+Movil');
+      }
+    }
+    
     /* MEDIA QUERIES PARA DESKTOP */
     @media (min-width: 1024px) {
       .header {
@@ -787,10 +806,6 @@
       .pre-tasacion-form select {
         padding: 12px;
       }
-      
-      .inicio-content img {
-        display: none;
-      }
     }
     
     /* ANIMACIONES */
@@ -837,7 +852,7 @@
     </div>
     
     <div class="content-area active" id="inicio-content">
-      <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen" loading="lazy">
+      <div class="imagen-adaptable"></div>
     </div>
     
     <div class="content-area" id="vende-content">
