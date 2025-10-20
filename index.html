@@ -83,6 +83,46 @@
       border-bottom: none;
     }
     
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1000;
+      border-radius: 5px;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .dropdown-content a {
+      color: #333;
+      padding: 12px 16px;
+      display: block;
+      text-decoration: none;
+      font-size: 1em;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+    
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    
     .contact-btn {
       background-color: #25D366;
       color: white;
@@ -293,6 +333,56 @@
       height: auto;
       border-radius: 15px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .compra-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+      justify-items: center;
+      box-sizing: border-box;
+      padding: 0 20px;
+    }
+    
+    .image-item {
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .image-item:hover {
+      transform: scale(1.05);
+    }
+    
+    .image-item img {
+      width: 100%;
+      max-width: 350px;
+      height: auto;
+      border-radius: 10px;
+    }
+    
+    .image-item p {
+      margin: 15px 0 0;
+      font-size: 1.3em;
+      font-weight: bold;
     }
     
     /* GRIDS RESPONSIVOS */
@@ -530,6 +620,12 @@
       width: 100%;
     }
     
+    /* Ocultar brasil-content y alquila-content cuando no están activos */
+    .brasil-content:not(.active),
+    .alquila-content:not(.active) {
+      display: none !important;
+    }
+    
     /* MEDIA QUERIES PARA DESKTOP */
     @media (min-width: 1024px) {
       .header {
@@ -760,19 +856,19 @@
       </div>
     </div>
     
-    <div class="content-area" id="compra-content">
+    <div class="content-area compra-content" id="argentina-content">
       <div id="argentina-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Argentina...</div>
       </div>
     </div>
     
-    <div class="content-area" id="brasil-content">
+    <div class="content-area brasil-content" id="brasil-content">
       <div id="brasil-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
     </div>
     
-    <div class="content-area" id="alquila-content">
+    <div class="content-area alquila-content" id="alquila-content">
       <div id="alquila-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades para alquilar...</div>
       </div>
@@ -838,7 +934,7 @@
     const sidebar = document.getElementById('sidebar');
     const vendeContent = document.getElementById('vende-content');
     const inicioContent = document.getElementById('inicio-content');
-    const compraContent = document.getElementById('compra-content');
+    const argentinaContent = document.getElementById('argentina-content');
     const brasilContent = document.getElementById('brasil-content');
     const alquilaContent = document.getElementById('alquila-content');
     const argentinaProperties = document.getElementById('argentina-properties');
@@ -887,9 +983,9 @@
     async function loadPropertiesFromSheet(filters = {}) {
       try {
         const params = new URLSearchParams({
-          action: 'getFilteredProperties',
-          tipoOperacion: filters.tipoOperacion || '',
-          pais: filters.pais || ''
+          operacion: filters.operacion || '',
+          pais: filters.pais || '',
+          propiedad: filters.propiedad || ''
         });
         
         const response = await fetchWithRetry(`${WEB_APP_URL}?${params}`, {
@@ -899,13 +995,14 @@
           }
         });
         
-        const data = await response.json();
-        if (!data.success) {
-          throw new Error(data.error || 'Error al cargar propiedades');
-        }
+        const result = await response.json();
         
-        allProperties = data.data || [];
-        return allProperties;
+        if (result.success) {
+          allProperties = result.publicaciones || [];
+          return allProperties;
+        } else {
+          throw new Error(result.message || 'Error en la respuesta del servidor');
+        }
       } catch (error) {
         console.error('Error cargando propiedades:', error);
         throw error;
@@ -913,7 +1010,7 @@
     }
     
     // Función para mostrar propiedades por filtros específicos
-    async function showPropertiesByFilters(tipoOperacion, pais = null) {
+    async function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
       try {
         const container = getActivePropertyContainer();
         if (!container) return;
@@ -922,8 +1019,9 @@
         container.innerHTML = `<div class="loading-properties">Cargando propiedades...</div>`;
         
         const properties = await loadPropertiesFromSheet({
-          tipoOperacion: tipoOperacion,
-          pais: pais
+          operacion: tipoOperacion,
+          pais: pais,
+          propiedad: tipoPropiedad
         });
         
         renderProperties(properties, container);
@@ -957,12 +1055,12 @@
       const card = document.createElement('div');
       card.className = 'property-card';
       
-      const imagenes = property.imagenes ? property.imagenes.split(',').filter(url => url.trim()) : [];
-      const primeraImagen = imagenes.length > 0 ? imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
+      const primeraImagen = (property.imagenes && property.imagenes.length > 0) ? 
+        property.imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
       
       const precio = property.precio ? `$${parseFloat(property.precio).toLocaleString()}` : 'Precio consultar';
-      const tipoOperacion = property.tipo || '';
-      const tipoPropiedad = property.subtipo || '';
+      const tipoOperacion = property.tipoOperacion || '';
+      const tipoPropiedad = property.tipoPropiedad || '';
       const descripcion = property.descripcion || '';
       
       const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
@@ -988,46 +1086,47 @@
     function getActivePropertyContainer() {
       if (brasilContent.classList.contains('active')) return brasilProperties;
       if (alquilaContent.classList.contains('active')) return alquilaProperties;
-      if (compraContent.classList.contains('active')) return argentinaProperties;
+      if (argentinaContent.classList.contains('active')) return argentinaProperties;
       return null;
     }
     
-    // Función para mostrar contenido de Argentina (Venta + Argentina)
+    // Función para mostrar contenido de Argentina
     async function showArgentinaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
-      compraContent.classList.add('active');
+      argentinaContent.classList.add('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
       
-      // Cargar propiedades con tipoOperacion="venta" y pais="Argentina"
-      await showPropertiesByFilters('venta', 'Argentina');
+      // Cargar propiedades de Venta en Argentina directamente
+      await showPropertiesByFilters('venta', 'argentina');
+      argentinaProperties.style.display = 'grid';
     }
     
-    // Función para mostrar contenido de Brasil (Venta o Todo + Brasil)
+    // Función para mostrar contenido de Brasil
     async function showBrasilContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
-      compraContent.classList.remove('active');
+      argentinaContent.classList.remove('active');
       brasilContent.classList.add('active');
       alquilaContent.classList.remove('active');
       
-      // Cargar propiedades con pais="Brasil" (todas, incluyendo venta y alquiler)
-      await showPropertiesByFilters('', 'Brasil');
+      // Cargar propiedades de Venta en Brasil
+      await showPropertiesByFilters('venta', 'brasil');
     }
     
-    // Función para mostrar contenido de Alquilá (Alquiler)
+    // Función para mostrar contenido de Alquilá
     async function showAlquilaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.remove('active');
-      compraContent.classList.remove('active');
+      argentinaContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.add('active');
       
-      // Cargar propiedades con tipoOperacion="alquiler"
+      // Cargar propiedades de Alquiler
       await showPropertiesByFilters('alquiler');
     }
     
@@ -1077,11 +1176,13 @@
     // Event listeners principales
     document.getElementById('argentina-link').addEventListener('click', async function(e) {
       e.preventDefault();
+      e.stopPropagation();
       await showArgentinaContent();
     });
     
     document.getElementById('brasil-link').addEventListener('click', async function(e) {
       e.preventDefault();
+      e.stopPropagation();
       await showBrasilContent();
     });
     
@@ -1095,7 +1196,7 @@
       sidebar.classList.remove('active');
       vendeContent.classList.add('active');
       inicioContent.classList.remove('active');
-      compraContent.classList.remove('active');
+      argentinaContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
     });
@@ -1105,7 +1206,7 @@
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
       inicioContent.classList.add('active');
-      compraContent.classList.remove('active');
+      argentinaContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
     });
