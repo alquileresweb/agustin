@@ -442,9 +442,8 @@
       font-style: italic;
     }
     
-    .ver-mas-btn, 
     .whatsapp-btn {
-      background: linear-gradient(45deg, #007bff, #0056b3);
+      background: linear-gradient(45deg, #25D366, #128C7E);
       color: white;
       padding: 12px 25px;
       border: none;
@@ -460,20 +459,11 @@
       max-width: 200px;
     }
     
-    .whatsapp-btn {
-      background: linear-gradient(45deg, #25D366, #128C7E);
-    }
-    
-    .ver-mas-btn:hover, 
     .whatsapp-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,123,255,0.4);
+      box-shadow: 0 5px 15px rgba(37,211,102,0.4);
       color: white;
       text-decoration: none;
-    }
-    
-    .whatsapp-btn:hover {
-      box-shadow: 0 5px 15px rgba(37,211,102,0.4);
     }
     
     /* MODALES RESPONSIVOS */
@@ -771,7 +761,6 @@
         font-size: 1.3em;
       }
       
-      .ver-mas-btn,
       .whatsapp-btn {
         padding: 10px 20px;
         font-size: 0.9em;
@@ -788,6 +777,10 @@
       .pre-tasacion-form textarea,
       .pre-tasacion-form select {
         padding: 12px;
+      }
+      
+      .inicio-content img {
+        content: url('https://i.postimg.cc/prWhJC7V/Agregar-un-t-tulo-1.png');
       }
     }
     
@@ -880,7 +873,6 @@
         <button class="close-btn" id="close-casa-detail">&times;</button>
         <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img" loading="lazy">
         <h3 id="casa-detail-title">Casa en Venta</h3>
-        <a href="#" target="_blank" class="ver-mas-btn">Ver más</a>
       </div>
     </div>
     
@@ -1065,8 +1057,6 @@
       
       const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
       
-      const verMasUrl = property.id ? `#propiedad-${property.id}` : '#';
-      
       card.innerHTML = `
         <img src="${primeraImagen}" alt="${property.titulo}" 
              onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'"
@@ -1075,7 +1065,6 @@
         <div class="property-price">${precio}</div>
         <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
         ${descripcion ? `<p style="color: #555; margin-bottom: 15px; line-height: 1.5;">${descripcion.substring(0, 100)}...</p>` : ''}
-        <a href="${verMasUrl}" class="ver-mas-btn">Ver más</a>
         <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
       `;
       
