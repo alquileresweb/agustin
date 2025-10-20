@@ -863,46 +863,92 @@
     // Almacén global de propiedades cargadas
     let allProperties = [];
     
-    // Función actualizada para cargar propiedades desde Google Apps Script Web App
-    async function loadPropertiesFromSheet(filters = {}) {
-      try {
+    // Función actualizada para cargar propiedades desde Google Apps Script Web App usando JSONP
+    function loadPropertiesFromSheet(filters = {}) {
+      return new Promise((resolve, reject) => {
         const params = new URLSearchParams({
           operacion: filters.operacion || '',
           pais: filters.pais || '',
-          propiedad: filters.propiedad || ''
+          propiedad: filters.propiedad || '',
+          callback: 'jsonpCallback'
         });
         
-        console.log(`📡 Enviando solicitud a: ${WEB_APP_URL}?${params}`);
-        const response = await fetch(`${WEB_APP_URL}?${params}`);
+        const url = `${WEB_APP_URL}?${params}`;
+        console.log(`📡 Enviando solicitud JSONP a: ${url}`);
         
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+        // Crear función callback única
+        const callbackName = `jsonpCallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        window[callbackName] = function(result) {
+          console.log(`✅ Respuesta JSONP recibida: ${JSON.stringify(result, null, 2)}`);
+          // Limpiar el callback
+          delete window[callbackName];
+          document.getElementById(callbackName)?.remove();
+          
+          if (result.success) {
+            resolve(result.data || []);
+          } else {
+            reject(new Error(result.error || 'Error en la respuesta del servidor'));
+          }
+        };
         
-        const result = await response.json();
-        console.log(`✅ Respuesta recibida: ${JSON.stringify(result, null, 2)}`);
+        // Crear script para JSONP
+        const script = document.createElement('script');
+        script.id = callbackName;
+        script.src = `${WEB_APP_URL}?${params.toString().replace('jsonpCallback', callbackName)}`;
+        script.onerror = () => {
+          console.error('❌ Error al cargar el script JSONP');
+          reject(new Error('Error al cargar el script JSONP'));
+          document.getElementById(callbackName)?.remove();
+        };
+        document.head.appendChild(script);
         
-        if (result.success) {
-          return result.data || [];
-        } else {
-          throw new Error(result.error || 'Error en la respuesta del servidor');
-        }
-      } catch (error) {
-        console.error('❌ Error en fetch:', error);
-        throw error;
-      }
+        // Fallback a fetch si JSONP falla (en caso de que el backend esté actualizado con CORS)
+        setTimeout(() => {
+          if (window[callbackName]) {
+            console.log('🔄 Intentando fallback con fetch');
+            fetch(`${WEB_APP_URL}?${params.toString().replace(`callback=${callbackName}`, '')}`, {
+              mode: 'cors'
+            })
+              .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                return response.json();
+              })
+              .then(result => {
+                console.log(`✅ Respuesta fetch recibida: ${JSON.stringify(result, null, 2)}`);
+                if (result.success) {
+                  resolve(result.data || []);
+                } else {
+                  reject(new Error(result.error || 'Error en la respuesta del servidor'));
+                }
+              })
+              .catch(error => {
+                console.error('❌ Error en fetch:', error);
+                reject(error);
+              })
+              .finally(() => {
+                delete window[callbackName];
+                document.getElementById(callbackName)?.remove();
+              });
+          }
+        }, 5000); // Esperar 5 segundos antes del fallback
+      });
     }
     
     // Función para mostrar propiedades por filtros específicos
     async function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
       try {
+        const targetContainer = getActivePropertyContainer();
+        if (targetContainer) {
+          targetContainer.innerHTML = `<div class="loading-properties">Cargando propiedades...</div>`;
+        }
+        
         const properties = await loadPropertiesFromSheet({
           operacion: tipoOperacion,
           pais: pais,
           propiedad: tipoPropiedad
         });
         
-        renderProperties(properties);
+        renderProperties(properties, targetContainer);
       } catch (error) {
         console.error('Error al filtrar propiedades:', error);
         showErrorMessage('Error al cargar propiedades. Verifica la conexión.');
@@ -995,7 +1041,6 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
       
-      // Cargar automáticamente propiedades de Venta en Argentina
       await showPropertiesByFilters('venta', 'argentina');
     }
     
