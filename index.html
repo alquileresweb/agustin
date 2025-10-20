@@ -872,7 +872,14 @@
           propiedad: filters.propiedad || ''
         });
         
-        const response = await fetch(`${WEB_APP_URL}?${params}`);
+        // Usar fetch con mode: 'cors' para asegurar compatibilidad con el backend
+        const response = await fetch(`${WEB_APP_URL}?${params}`, {
+          method: 'GET',
+          mode: 'cors', // Explícitamente usar CORS
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -881,9 +888,9 @@
         const result = await response.json();
         
         if (result.success) {
-          return result.publicaciones || [];
+          return result.data || []; // Usar result.data según la respuesta del backend
         } else {
-          throw new Error(result.message || 'Error en la respuesta del servidor');
+          throw new Error(result.error || 'Error en la respuesta del servidor');
         }
       } catch (error) {
         console.error('Error cargando propiedades:', error);
@@ -894,16 +901,25 @@
     // Función para mostrar propiedades por filtros específicos
     async function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
       try {
+        const targetContainer = getActivePropertyContainer();
+        if (!targetContainer) {
+          console.error('No se encontró contenedor activo');
+          return;
+        }
+        
+        // Mostrar mensaje de carga
+        targetContainer.innerHTML = '<div class="loading-properties">Cargando propiedades...</div>';
+        
         const properties = await loadPropertiesFromSheet({
           operacion: tipoOperacion,
           pais: pais,
           propiedad: tipoPropiedad
         });
         
-        renderProperties(properties);
+        renderProperties(properties, targetContainer);
       } catch (error) {
         console.error('Error al filtrar propiedades:', error);
-        showErrorMessage('Error al cargar propiedades. Verifica la conexión.');
+        showErrorMessage('Error al cargar propiedades. Por favor, intenta de nuevo.');
       }
     }
     
@@ -931,23 +947,31 @@
       const card = document.createElement('div');
       card.className = 'property-card';
       
-      const primeraImagen = (property.imagenes && property.imagenes.length > 0) ? 
-        property.imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
+      // Normalizar imágenes (manejar string de URLs separadas por comas)
+      const imagenes = property['Imágenes'] ? property['Imágenes'].split(',').map(img => img.trim()).filter(img => img) : [];
+      const primeraImagen = imagenes.length > 0 ? imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
       
-      const precio = property.precio ? `$${parseFloat(property.precio).toLocaleString()}` : 'Precio consultar';
-      const tipoOperacion = property.tipoOperacion || '';
-      const tipoPropiedad = property.tipoPropiedad || '';
-      const descripcion = property.descripcion || '';
+      // Normalizar campos según la estructura de la hoja Publicar
+      const precio = property['Precio'] ? `$${parseFloat(property['Precio']).toLocaleString('es-AR')}` : 'Precio consultar';
+      const tipoOperacion = property['Tipo Operación'] || 'No especificado';
+      const tipoPropiedad = property['Tipo Propiedad'] || 'No especificado';
+      const descripcion = property['Descripción'] || '';
+      const titulo = property['Título'] || 'Propiedad sin título';
+      const id = property['ID'] || '';
       
-      const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
+      // Crear mensaje para WhatsApp
+      const whatsappMessage = encodeURIComponent(
+        `Hola, me interesa la propiedad:\n${titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion ? descripcion.substring(0, 100) + '...' : ''}`
+      );
       
-      const verMasUrl = property.id ? `#propiedad-${property.id}` : '#';
+      // URL para "Ver más" (puedes personalizar si tienes una página de detalles)
+      const verMasUrl = id ? `#propiedad-${id}` : '#';
       
       card.innerHTML = `
-        <img src="${primeraImagen}" alt="${property.titulo}" 
+        <img src="${primeraImagen}" alt="${titulo}" 
              onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'"
              loading="lazy">
-        <div class="property-title">${property.titulo}</div>
+        <div class="property-title">${titulo}</div>
         <div class="property-price">${precio}</div>
         <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
         ${descripcion ? `<p style="color: #555; margin-bottom: 15px; line-height: 1.5;">${descripcion.substring(0, 100)}...</p>` : ''}
@@ -988,7 +1012,7 @@
       brasilContent.classList.add('active');
       alquilaContent.classList.remove('active');
       
-      await showPropertiesByFilters('venta', 'brasil');
+      await showPropertiesByFilters(null, 'brasil');
     }
     
     // Función para mostrar contenido de Alquilá
