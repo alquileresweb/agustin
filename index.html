@@ -863,39 +863,40 @@
     // Almacén global de propiedades cargadas
     let allProperties = [];
     
-    // Función actualizada para cargar propiedades desde Google Apps Script Web App
+    // Función actualizada para cargar propiedades usando JSONP
     async function loadPropertiesFromSheet(filters = {}) {
-      try {
+      return new Promise((resolve, reject) => {
+        const callbackName = `jsonpCallback_${Date.now()}`;
         const params = new URLSearchParams({
           operacion: filters.operacion || '',
           pais: filters.pais || '',
-          propiedad: filters.propiedad || ''
+          propiedad: filters.propiedad || '',
+          callback: callbackName
         });
         
-        // Usar fetch con mode: 'cors' para asegurar compatibilidad con el backend
-        const response = await fetch(`${WEB_APP_URL}?${params}`, {
-          method: 'GET',
-          mode: 'cors', // Explícitamente usar CORS
-          headers: {
-            'Accept': 'application/json'
+        // Crear función global para manejar la respuesta JSONP
+        window[callbackName] = function(data) {
+          // Limpiar después de recibir la respuesta
+          delete window[callbackName];
+          document.body.removeChild(script);
+          if (data.success) {
+            resolve(data.data || []);
+          } else {
+            reject(new Error(data.error || 'Error en la respuesta del servidor'));
           }
-        });
+        };
         
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+        // Crear elemento script para JSONP
+        const script = document.createElement('script');
+        script.src = `${WEB_APP_URL}?${params}`;
+        script.onerror = () => {
+          delete window[callbackName];
+          document.body.removeChild(script);
+          reject(new Error('Error al cargar el script JSONP'));
+        };
         
-        const result = await response.json();
-        
-        if (result.success) {
-          return result.data || []; // Usar result.data según la respuesta del backend
-        } else {
-          throw new Error(result.error || 'Error en la respuesta del servidor');
-        }
-      } catch (error) {
-        console.error('Error cargando propiedades:', error);
-        throw error;
-      }
+        document.body.appendChild(script);
+      });
     }
     
     // Función para mostrar propiedades por filtros específicos
