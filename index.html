@@ -608,6 +608,11 @@
       font-size: 1.3em;
       color: #666;
       width: 100%;
+      display: none;
+    }
+    
+    .loading-properties.active {
+      display: block;
     }
     
     /* Ocultar brasil-content y alquila-content cuando no están activos */
@@ -1007,8 +1012,14 @@
         const container = getActivePropertyContainer();
         if (!container) return;
         
-        // Mostrar mensaje de carga
-        container.innerHTML = `<div class="loading-properties">Cargando propiedades...</div>`;
+        // Mostrar mensaje de carga específico según la sección
+        container.innerHTML = `
+          <div class="loading-properties active">
+            ${pais === 'argentina' ? 'Cargando propiedades de Argentina...' : 
+              pais === 'brasil' ? 'Cargando propiedades de Brasil...' : 
+              'Cargando propiedades para alquilar...'}
+          </div>
+        `;
         
         const properties = await loadPropertiesFromSheet({
           operacion: tipoOperacion,
@@ -1032,7 +1043,11 @@
       targetContainer.innerHTML = '';
       
       if (properties.length === 0) {
-        targetContainer.innerHTML = '<div class="loading-properties">No se encontraron propiedades con estos filtros</div>';
+        targetContainer.innerHTML = `
+          <div class="loading-properties active">
+            No se encontraron propiedades con estos filtros
+          </div>
+        `;
         return;
       }
       
@@ -1141,8 +1156,8 @@
     function showErrorMessage(message) {
       const containers = [brasilProperties, alquilaProperties, argentinaProperties];
       containers.forEach(container => {
-        if (container) {
-          container.innerHTML = `<div class="loading-properties">${message}</div>`;
+        if (container && container.parentElement.classList.contains('active')) {
+          container.innerHTML = `<div class="loading-properties active">${message}</div>`;
         }
       });
     }
@@ -1233,6 +1248,10 @@
     // Inicialización
     document.addEventListener('DOMContentLoaded', function() {
       console.log('✅ Página cargada responsivamente. Listo para dispositivos móviles y desktop.');
+      // Ocultar mensajes de carga al inicio
+      document.querySelectorAll('.loading-properties').forEach(el => {
+        el.classList.remove('active');
+      });
     });
   </script>
 </body>
