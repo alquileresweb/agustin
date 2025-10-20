@@ -863,6 +863,26 @@
     // Almacén global de propiedades cargadas
     let allProperties = [];
     
+    // Función para intentar la solicitud con reintentos
+    async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const response = await fetch(url, options);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          return response;
+        } catch (error) {
+          if (i < retries - 1) {
+            console.warn(`Intento ${i + 1} fallido: ${error.message}. Reintentando en ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+          throw error;
+        }
+      }
+    }
+    
     // Función actualizada para cargar propiedades desde Google Apps Script Web App
     async function loadPropertiesFromSheet(filters = {}) {
       try {
@@ -872,15 +892,12 @@
           pais: filters.pais || ''
         });
         
-        const response = await fetch(`${WEB_APP_URL}?${params}`, {
+        const response = await fetchWithRetry(`${WEB_APP_URL}?${params}`, {
+          method: 'GET',
           headers: {
             'Accept': 'application/json'
           }
         });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
         
         const result = await response.json();
         
@@ -912,7 +929,7 @@
         renderProperties(properties, container);
       } catch (error) {
         console.error('Error al filtrar propiedades:', error);
-        showErrorMessage('Error al cargar propiedades. Verifica la conexión.');
+        showErrorMessage('Error al cargar propiedades. Por favor, intenta de nuevo más tarde.');
       }
     }
     
