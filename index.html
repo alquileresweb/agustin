@@ -335,6 +335,14 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
     
+    .imagen-adaptable {
+      width: 100%;
+      height: 300px;
+      background-image: url('https://i.postimg.cc/jd61S0GD/Dise-o-sin-t-tulo-1.png');
+      background-size: cover;
+      background-position: center;
+    }
+    
     .compra-content {
       display: flex;
       flex-direction: column;
@@ -788,12 +796,8 @@
         padding: 12px;
       }
       
-      .inicio-content picture img {
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        max-height: 250px;
-        object-fit: contain;
+      .imagen-adaptable {
+        background-image: url('https://i.postimg.cc/prWhJC7V/Agregar-un-t-tulo-1.png');
       }
     }
     
@@ -841,11 +845,7 @@
     </div>
     
     <div class="content-area active" id="inicio-content">
-      <picture>
-        <source srcset="https://i.postimg.cc/prWhJC7V/Agregar-un-t-tulo-1.png" media="(max-width: 768px)">
-        <source srcset="https://i.postimg.cc/CKcJZtzp/1-2.png" media="(min-width: 769px)">
-        <img src="https://i.postimg.cc/CKcJZtzp/1-2.png" alt="Inicio Imagen" loading="lazy">
-      </picture>
+      <div class="imagen-adaptable"></div>
     </div>
     
     <div class="content-area" id="vende-content">
