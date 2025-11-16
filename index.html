@@ -341,45 +341,76 @@
       background-image: url('https://i.postimg.cc/jd61S0GD/Dise-o-sin-t-tulo-1.png');
       background-size: cover;
       background-position: center;
-      border-radius: 15px;
-      margin-bottom: 20px;
     }
 
-    /* NUEVO: Panel de experiencia */
-    .experience-panel {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: white;
-      padding: 25px;
-      border-radius: 20px;
-      text-align: center;
-      margin: 20px auto;
-      max-width: 600px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      animation: fadeInUp 1s ease-out;
-    }
-
-    .experience-panel h3 {
-      margin: 0 0 10px;
-      font-size: 1.8em;
+    /* NUEVO: Contador de años */
+    .experience-counter {
+      font-size: 3em;
       font-weight: bold;
+      color: #28a745;
+      margin: 20px 0;
     }
 
-    .experience-panel .years {
-      font-size: 3.5em;
-      font-weight: 900;
-      margin: 0;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    /* NUEVO: Carrusel de opiniones */
+    .opiniones-container {
+      position: relative;
+      max-width: 800px;
+      margin: 30px auto;
+      overflow: hidden;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     }
 
-    .experience-panel p {
-      margin: 10px 0 0;
-      font-size: 1.2em;
-      opacity: 0.9;
+    .opiniones-slider {
+      display: flex;
+      transition: transform 0.5s ease;
     }
 
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .opinion-slide {
+      min-width: 100%;
+      text-align: center;
+    }
+
+    .opinion-slide img {
+      width: 100%;
+      height: auto;
+      max-height: 500px;
+      object-fit: contain;
+    }
+
+    .slider-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      font-size: 1.5em;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .slider-btn.prev { left: 10px; }
+    .slider-btn.next { right: 10px; }
+
+    .opiniones-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 30px;
+      background: #25D366;
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .opiniones-btn:hover {
+      background: #1ebe52;
+      transform: translateY(-2px);
     }
    
     .compra-content {
@@ -453,7 +484,6 @@
       max-width: 400px;
       transition: all 0.3s;
       border: 1px solid #eee;
-      cursor: pointer;
     }
    
     .property-card:hover {
@@ -467,6 +497,7 @@
       object-fit: cover;
       border-radius: 15px;
       margin-bottom: 20px;
+      cursor: pointer;
     }
    
     .property-title {
@@ -516,7 +547,8 @@
    
     /* MODALES RESPONSIVOS */
     .casa-detail,
-    .pre-tasacion-modal {
+    .pre-tasacion-modal,
+    .image-gallery-modal {
       display: none;
       position: fixed;
       top: 0;
@@ -531,7 +563,8 @@
     }
    
     .casa-detail.active,
-    .pre-tasacion-modal.active {
+    .pre-tasacion-modal.active,
+    .image-gallery-modal.active {
       display: flex;
     }
    
@@ -583,36 +616,19 @@
       background-color: #f0f0f0;
       color: #000;
     }
-   
-    /* NUEVO: Modal de imágenes múltiples */
-    .image-gallery-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.95);
-      z-index: 3000;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
 
-    .image-gallery-modal.active {
-      display: flex;
-    }
-
-    .gallery-content {
+    /* NUEVO: Galería de imágenes */
+    .gallery-container {
       position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      text-align: center;
+      max-width: 90vw;
+      max-height: 90vh;
     }
 
-    .gallery-img {
-      max-width: 100%;
+    .gallery-image {
+      width: 100%;
       max-height: 80vh;
+      object-fit: contain;
       border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
     .gallery-nav {
@@ -624,37 +640,27 @@
       border: none;
       width: 50px;
       height: 50px;
-      font-size: 2em;
-      cursor: pointer;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: 0.3s;
+      font-size: 1.8em;
+      cursor: pointer;
+      z-index: 10;
     }
 
-    .gallery-nav:hover {
-      background: rgba(0,0,0,0.8);
-      transform: translateY(-50%) scale(1.1);
-    }
+    .gallery-nav.prev { left: 15px; }
+    .gallery-nav.next { right: 15px; }
 
-    .gallery-prev { left: 20px; }
-    .gallery-next { right: 20px; }
-
-    .gallery-close {
+    .gallery-counter {
       position: absolute;
-      top: 15px;
-      right: 20px;
-      background: rgba(255,255,255,0.9);
-      color: #000;
-      border: none;
-      width: 40px;
-      height: 40px;
-      font-size: 24px;
-      border-radius: 50%;
-      cursor: pointer;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
     }
-
+   
     .pre-tasacion-form {
       background-color: white;
       padding: 30px;
@@ -802,14 +808,6 @@
       .property-card img {
         height: 300px;
       }
-
-      .experience-panel {
-        padding: 35px;
-      }
-
-      .experience-panel .years {
-        font-size: 4.5em;
-      }
     }
    
     /* MEDIA QUERIES PARA TABLET */
@@ -916,14 +914,10 @@
         padding: 12px;
       }
 
-      .experience-panel .years {
-        font-size: 2.8em;
-      }
-
-      .gallery-nav {
+      .slider-btn, .gallery-nav {
         width: 40px;
         height: 40px;
-        font-size: 1.5em;
+        font-size: 1.2em;
       }
     }
    
@@ -940,6 +934,7 @@
     .property-card {
       animation: fadeIn 0.5s ease-out;
     }
+  </style>
   </style>
 </head>
 <body>
@@ -969,16 +964,37 @@
       <span class="loading-message">Sin contenido externo</span>
     </div>
    
+    <!-- INICIO -->
     <div class="content-area active" id="inicio-content">
       <div class="imagen-adaptable"></div>
-      <!-- Panel de experiencia añadido -->
-      <div class="experience-panel">
-        <h3>Más de</h3>
-        <div class="years">8</div>
-        <p>años de experiencia en el mercado inmobiliario</p>
+
+      <!-- Contador de años -->
+      <div class="experience-counter" id="experience-counter">0</div>
+      <p>Años de experiencia</p>
+
+      <!-- Opiniones -->
+      <h2>Esto es lo que comentan nuestros clientes</h2>
+      <div class="opiniones-container">
+        <button class="slider-btn prev" id="prev-opinion">‹</button>
+        <div class="opiniones-slider" id="opiniones-slider">
+          <div class="opinion-slide">
+            <img src="https://i.postimg.cc/SsPWF3nq/Captura-de-pantalla-2025-11-16-153636.png" alt="Opinión 1">
+          </div>
+          <div class="opinion-slide">
+            <img src="https://i.postimg.cc/jC0PCfQd/Captura-de-pantalla-2025-11-16-153655.png" alt="Opinión 2">
+          </div>
+          <div class="opinion-slide">
+            <img src="https://i.postimg.cc/yYcrjXG1/Captura-de-pantalla-2025-11-16-153715.png" alt="Opinión 3">
+          </div>
+        </div>
+        <button class="slider-btn next" id="next-opinion">›</button>
       </div>
+      <a href="https://www.google.com/maps/place/Estudio+Inmobiliario+Agustin+Santos/@-28.5515538,-56.0436804,18z/data=!4m8!3m7!1s0x9455cfa10e7f7b65:0xf65e0d40c1ff613b!8m2!3d-28.5515538!4d-56.0430497!9m1!1b1!16s%2Fg%2F11j8g9lq_9?entry=ttu&g_ep=EgoyMDI1MTExMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="opiniones-btn">
+        Conocé todas las opiniones sobre nosotros
+      </a>
     </div>
    
+    <!-- VENDE -->
     <div class="content-area" id="vende-content">
       <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
       <div class="section-text">No solo lo vendemos, sino que también...</div>
@@ -997,18 +1013,21 @@
       </div>
     </div>
    
+    <!-- ARGENTINA -->
     <div class="content-area compra-content" id="argentina-content">
       <div id="argentina-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Argentina...</div>
       </div>
     </div>
    
+    <!-- BRASIL -->
     <div class="content-area brasil-content" id="brasil-content">
       <div id="brasil-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
     </div>
    
+    <!-- ALQUILÁ -->
     <div class="content-area alquila-content" id="alquila-content">
       <div id="alquila-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades para alquilar...</div>
@@ -1021,16 +1040,6 @@
         <button class="close-btn" id="close-casa-detail">×</button>
         <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img" loading="lazy">
         <h3 id="casa-detail-title">Casa en Venta</h3>
-      </div>
-    </div>
-   
-    <!-- NUEVO: Modal de galería de imágenes -->
-    <div class="image-gallery-modal" id="image-gallery-modal">
-      <div class="gallery-content">
-        <button class="gallery-close" id="gallery-close">×</button>
-        <img src="" alt="Imagen de propiedad" class="gallery-img" id="gallery-img">
-        <button class="gallery-nav gallery-prev" id="gallery-prev">‹</button>
-        <button class="gallery-nav gallery-next" id="gallery-next">›</button>
       </div>
     </div>
    
@@ -1061,7 +1070,19 @@
         </form>
       </div>
     </div>
+
+    <!-- NUEVO: Modal de galería de imágenes -->
+    <div class="image-gallery-modal" id="image-gallery-modal">
+      <div class="gallery-container">
+        <button class="close-btn" id="close-gallery">×</button>
+        <button class="gallery-nav prev" id="prev-image">‹</button>
+        <img src="" alt="Propiedad" class="gallery-image" id="gallery-image">
+        <button class="gallery-nav next" id="next-image">›</button>
+        <div class="gallery-counter" id="gallery-counter">1 / 1</div>
+      </div>
+    </div>
   </div>
+
   <script>
     // MENU HAMBURGUESA
     const hamburger = document.getElementById('hamburger');
@@ -1079,7 +1100,8 @@
         menu.classList.remove('active');
       });
     });
-    const sidebar = document.getElementBy八年('sidebar');
+
+    const sidebar = document.getElementById('sidebar');
     const vendeContent = document.getElementById('vende-content');
     const inicioContent = document.getElementById('inicio-content');
     const argentinaContent = document.getElementById('argentina-content');
@@ -1093,20 +1115,21 @@
     const casaDetail = document.getElementById('casa-detail');
     const closeCasaDetail = document.getElementById('close-casa-detail');
    
-    // NUEVO: Elementos del modal de galería
-    const galleryModal = document.getElementById('image-gallery-modal');
-    const galleryImg = document.getElementById('gallery-img');
-    const galleryPrev = document.getElementById('gallery-prev');
-    const galleryNext = document.getElementById('gallery-next');
-    const galleryClose = document.getElementById('gallery-close');
-    let currentImages = [];
-    let currentIndex = 0;
-
     // Elementos del modal de Pre Tasación
     const preTasacionModal = document.getElementById('pre-tasacion-modal');
     const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
     const preTasacionForm = document.getElementById('pre-tasacion-form');
    
+    // NUEVO: Galería de imágenes
+    const galleryModal = document.getElementById('image-gallery-modal');
+    const galleryImage = document.getElementById('gallery-image');
+    const galleryCounter = document.getElementById('gallery-counter');
+    const prevImageBtn = document.getElementById('prev-image');
+    const nextImageBtn = document.getElementById('next-image');
+    const closeGalleryBtn = document.getElementById('close-gallery');
+    let currentImages = [];
+    let currentIndex = 0;
+
     // URL de tu Web App de Google Apps Script
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
    
@@ -1188,7 +1211,7 @@
         });
        
         renderProperties(properties, container);
-      } catch (error) {
+      }-Ayuda adicional: 
         console.error('Error al filtrar propiedades:', error);
         showErrorMessage('Error al cargar propiedades. Por favor, intenta de nuevo más tarde.');
       }
@@ -1243,57 +1266,100 @@
         <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
       `;
 
-      // Añadir evento para abrir galería al hacer clic en la imagen
+      // Añadir evento de clic en la imagen
       const img = card.querySelector('img');
       img.style.cursor = 'pointer';
-      img.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (property.imagenes && property.imagenes.length > 0) {
-          openImageGallery(property.imagenes, 0);
-        }
-      });
-
-      // Opcional: clic en toda la card abre detalle (manteniendo funcionalidad)
-      card.addEventListener('click', () => {
-        // Puedes mantener funcionalidad adicional aquí si lo deseas
+      img.addEventListener('click', () => {
+        openImageGallery(property.imagenes || []);
       });
      
       return card;
     }
 
-    // NUEVA FUNCIÓN: Abrir galería de imágenes
-    function openImageGallery(images, startIndex = 0) {
+    // NUEVO: Abrir galería de imágenes
+    function openImageGallery(images) {
+      if (!images || images.length === 0) return;
       currentImages = images.filter(img => img && img.trim() !== '');
       if (currentImages.length === 0) return;
 
-      currentIndex = startIndex;
-      galleryImg.src = currentImages[currentIndex];
+      currentIndex = 0;
+      showGalleryImage();
       galleryModal.classList.add('active');
-      updateNavButtons();
     }
 
-    function updateNavButtons() {
-      galleryPrev.style.display = currentImages.length > 1 ? 'flex' : 'none';
-      galleryNext.style.display = currentImages.length > 1 ? 'flex' : 'none';
+    function showGalleryImage() {
+      if (currentImages.length === 0) return;
+      galleryImage.src = currentImages[currentIndex];
+      galleryCounter.textContent = `${currentIndex + 1} / ${currentImages.length}`;
     }
 
-    galleryPrev.addEventListener('click', () => {
+    prevImageBtn.addEventListener('click', () => {
       currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-      galleryImg.src = currentImages[currentIndex];
+      showGalleryImage();
     });
 
-    galleryNext.addEventListener('click', () => {
+    nextImageBtn.addEventListener('click', () => {
       currentIndex = (currentIndex + 1) % currentImages.length;
-      galleryImg.src = currentImages[currentIndex];
+      showGalleryImage();
     });
 
-    galleryClose.addEventListener('click', () => {
+    closeGalleryBtn.addEventListener('click', () => {
       galleryModal.classList.remove('active');
     });
 
     galleryModal.addEventListener('click', (e) => {
       if (e.target === galleryModal) {
         galleryModal.classList.remove('active');
+      }
+    });
+
+    // NUEVO: Contador de años
+    function animateCounter() {
+      const counter = document.getElementById('experience-counter');
+      let count = 0;
+      const target = 8;
+      const interval = setInterval(() => {
+        if (count >= target) {
+          counter.textContent = target;
+          clearInterval(interval);
+        } else {
+          count++;
+          counter.textContent = count;
+        }
+      }, 300);
+    }
+
+    // NUEVO: Carrusel de opiniones
+    const opinionesSlider = document.getElementById('opiniones-slider');
+    const prevOpinionBtn = document.getElementById('prev-opinion');
+    const nextOpinionBtn = document.getElementById('next-opinion');
+    let opinionIndex = 0;
+
+    function updateSlider() {
+      const translateX = -opinionIndex * 100;
+      opinionesSlider.style.transform = `translateX(${translateX}%)`;
+    }
+
+    prevOpinionBtn.addEventListener('click', () => {
+      opinionIndex = (opinionIndex - 1 + 3) % 3;
+      updateSlider();
+    });
+
+    nextOpinionBtn.addEventListener('click', () => {
+      opinionIndex = (opinionIndex + 1) % 3;
+      updateSlider();
+    });
+
+    // Inicializar contador al cargar inicio
+    document.getElementById('inicio-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      setTimeout(animateCounter, 500);
+    });
+
+    // También al cargar la página si ya está en inicio
+    document.addEventListener('DOMContentLoaded', () => {
+      if (inicioContent.classList.contains('active')) {
+        setTimeout(animateCounter, 500);
       }
     });
    
@@ -1436,6 +1502,7 @@
       argentinaContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
+      setTimeout(animateCounter, 500);
     });
    
     // Event listeners para cerrar modales
@@ -1473,10 +1540,12 @@
     // Inicialización
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Página cargada responsivamente. Listo para dispositivos móviles y desktop.');
-      // Ocultar mensajes de carga al inicio
       document.querySelectorAll('.loading-properties').forEach(el => {
         el.classList.remove('active');
       });
+      if (inicioContent.classList.contains('active')) {
+        setTimeout(animateCounter, 500);
+      }
     });
   </script>
 </body>
