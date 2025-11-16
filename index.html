@@ -344,41 +344,56 @@
     }
 
     /* NUEVO: Contador de años */
-    .experience-counter {
-      font-size: 3em;
+    .experience-panel {
+      margin: 30px 0;
+      text-align: center;
+      font-size: 2em;
       font-weight: bold;
       color: #28a745;
-      margin: 20px 0;
     }
 
     /* NUEVO: Carrusel de opiniones */
-    .opiniones-container {
-      position: relative;
-      max-width: 800px;
-      margin: 30px auto;
-      overflow: hidden;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    .opiniones-section {
+      margin: 40px 0;
+      width: 100%;
+      max-width: 1000px;
+      padding: 0 20px;
     }
 
-    .opiniones-slider {
+    .opiniones-title {
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .opiniones-carousel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .opiniones-track {
       display: flex;
       transition: transform 0.5s ease;
     }
 
-    .opinion-slide {
+    .opinion-item {
       min-width: 100%;
+      padding: 20px;
       text-align: center;
+      background: #f9f9f9;
     }
 
-    .opinion-slide img {
+    .opinion-item img {
       width: 100%;
+      max-width: 600px;
       height: auto;
-      max-height: 500px;
-      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
 
-    .slider-btn {
+    .carousel-btn {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -391,26 +406,35 @@
       font-size: 1.5em;
       cursor: pointer;
       z-index: 10;
+      transition: background 0.3s;
     }
 
-    .slider-btn.prev { left: 10px; }
-    .slider-btn.next { right: 10px; }
+    .carousel-btn:hover {
+      background: rgba(0,0,0,0.8);
+    }
 
-    .opiniones-btn {
+    .carousel-btn.prev {
+      left: 10px;
+    }
+
+    .carousel-btn.next {
+      right: 10px;
+    }
+
+    .google-reviews-btn {
       display: inline-block;
       margin-top: 20px;
-      padding: 12px 30px;
-      background: #25D366;
+      background: #4285F4;
       color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
       text-decoration: none;
-      border-radius: 30px;
       font-weight: bold;
-      transition: 0.3s;
+      transition: background 0.3s;
     }
 
-    .opiniones-btn:hover {
-      background: #1ebe52;
-      transform: translateY(-2px);
+    .google-reviews-btn:hover {
+      background: #3367d6;
     }
    
     .compra-content {
@@ -484,6 +508,7 @@
       max-width: 400px;
       transition: all 0.3s;
       border: 1px solid #eee;
+      cursor: pointer;
     }
    
     .property-card:hover {
@@ -497,7 +522,6 @@
       object-fit: cover;
       border-radius: 15px;
       margin-bottom: 20px;
-      cursor: pointer;
     }
    
     .property-title {
@@ -617,16 +641,17 @@
       color: #000;
     }
 
-    /* NUEVO: Galería de imágenes */
-    .gallery-container {
+    /* NUEVO: Estilos de la galería */
+    .gallery-content {
       position: relative;
-      max-width: 90vw;
-      max-height: 90vh;
+      width: 90%;
+      max-width: 900px;
+      text-align: center;
     }
 
-    .gallery-image {
+    .gallery-img {
       width: 100%;
-      max-height: 80vh;
+      max-height: 70vh;
       object-fit: contain;
       border-radius: 15px;
     }
@@ -646,19 +671,16 @@
       z-index: 10;
     }
 
-    .gallery-nav.prev { left: 15px; }
-    .gallery-nav.next { right: 15px; }
+    .gallery-nav:hover {
+      background: rgba(0,0,0,0.9);
+    }
 
-    .gallery-counter {
-      position: absolute;
-      bottom: 15px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.9em;
+    .gallery-nav.prev {
+      left: 10px;
+    }
+
+    .gallery-nav.next {
+      right: 10px;
     }
    
     .pre-tasacion-form {
@@ -758,9 +780,7 @@
       }
      
       .logo img {
-        height: 80px;
-      }
-     
+        height: 80  {
       .hamburger {
         display: none;
       }
@@ -914,7 +934,7 @@
         padding: 12px;
       }
 
-      .slider-btn, .gallery-nav {
+      .carousel-btn {
         width: 40px;
         height: 40px;
         font-size: 1.2em;
@@ -934,7 +954,6 @@
     .property-card {
       animation: fadeIn 0.5s ease-out;
     }
-  </style>
   </style>
 </head>
 <body>
@@ -964,37 +983,39 @@
       <span class="loading-message">Sin contenido externo</span>
     </div>
    
-    <!-- INICIO -->
+    <!-- INICIO CON NUEVOS PANELES -->
     <div class="content-area active" id="inicio-content">
       <div class="imagen-adaptable"></div>
 
       <!-- Contador de años -->
-      <div class="experience-counter" id="experience-counter">0</div>
-      <p>Años de experiencia</p>
-
-      <!-- Opiniones -->
-      <h2>Esto es lo que comentan nuestros clientes</h2>
-      <div class="opiniones-container">
-        <button class="slider-btn prev" id="prev-opinion">‹</button>
-        <div class="opiniones-slider" id="opiniones-slider">
-          <div class="opinion-slide">
-            <img src="https://i.postimg.cc/SsPWF3nq/Captura-de-pantalla-2025-11-16-153636.png" alt="Opinión 1">
-          </div>
-          <div class="opinion-slide">
-            <img src="https://i.postimg.cc/jC0PCfQd/Captura-de-pantalla-2025-11-16-153655.png" alt="Opinión 2">
-          </div>
-          <div class="opinion-slide">
-            <img src="https://i.postimg.cc/yYcrjXG1/Captura-de-pantalla-2025-11-16-153715.png" alt="Opinión 3">
-          </div>
-        </div>
-        <button class="slider-btn next" id="next-opinion">›</button>
+      <div class="experience-panel">
+        <span id="years-counter">0</span> años de experiencia
       </div>
-      <a href="https://www.google.com/maps/place/Estudio+Inmobiliario+Agustin+Santos/@-28.5515538,-56.0436804,18z/data=!4m8!3m7!1s0x9455cfa10e7f7b65:0xf65e0d40c1ff613b!8m2!3d-28.5515538!4d-56.0430497!9m1!1b1!16s%2Fg%2F11j8g9lq_9?entry=ttu&g_ep=EgoyMDI1MTExMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="opiniones-btn">
-        Conocé todas las opiniones sobre nosotros
-      </a>
+
+      <!-- Opiniones de clientes -->
+      <div class="opiniones-section">
+        <h2 class="opiniones-title">Esto es lo que comentan nuestros clientes</h2>
+        <div class="opiniones-carousel">
+          <button class="carousel-btn prev" id="prev-opinion">‹</button>
+          <div class="opiniones-track" id="opiniones-track">
+            <div class="opinion-item">
+              <img src="https://i.postimg.cc/SsPWF3nq/Captura-de-pantalla-2025-11-16-153636.png" alt="Opinión 1" loading="lazy">
+            </div>
+            <div class="opinion-item">
+              <img src="https://i.postimg.cc/jC0PCfQd/Captura-de-pantalla-2025-11-16-153655.png" alt="Opinión 2" loading="lazy">
+            </div>
+            <div class="opinion-item">
+              <img src="https://i.postimg.cc/yYcrjXG1/Captura-de-pantalla-2025-11-16-153715.png" alt="Opinión 3" loading="lazy">
+            </div>
+          </div>
+          <button class="carousel-btn next" id="next-opinion">›</button>
+        </div>
+        <a href="https://www.google.com/maps/place/Estudio+Inmobiliario+Agustin+Santos/@-28.5515538,-56.0436804,18z/data=!4m8!3m7!1s0x9455cfa10e7f7b65:0xf65e0d40c1ff613b!8m2!3d-28.5515538!4d-56.0430497!9m1!1b1!16s%2Fg%2F11j8g9lq_9?entry=ttu&g_ep=EgoyMDI1MTExMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="google-reviews-btn">
+          Conocé todas las opiniones sobre nosotros
+        </a>
+      </div>
     </div>
    
-    <!-- VENDE -->
     <div class="content-area" id="vende-content">
       <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
       <div class="section-text">No solo lo vendemos, sino que también...</div>
@@ -1013,21 +1034,18 @@
       </div>
     </div>
    
-    <!-- ARGENTINA -->
     <div class="content-area compra-content" id="argentina-content">
       <div id="argentina-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Argentina...</div>
       </div>
     </div>
    
-    <!-- BRASIL -->
     <div class="content-area brasil-content" id="brasil-content">
       <div id="brasil-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
     </div>
    
-    <!-- ALQUILÁ -->
     <div class="content-area alquila-content" id="alquila-content">
       <div id="alquila-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades para alquilar...</div>
@@ -1037,7 +1055,7 @@
     <!-- Modal para detalle de Casa -->
     <div class="casa-detail" id="casa-detail">
       <div class="casa-detail-content">
-        <button class="close-btn" id="close-casa-detail">×</button>
+        <button class="close-btn" id="close-casa-detail">&times;</button>
         <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img" loading="lazy">
         <h3 id="casa-detail-title">Casa en Venta</h3>
       </div>
@@ -1046,7 +1064,7 @@
     <!-- Modal para Pre Tasación -->
     <div class="pre-tasacion-modal" id="pre-tasacion-modal">
       <div class="pre-tasacion-form">
-        <button class="close-btn" id="close-pre-tasacion-modal">×</button>
+        <button class="close-btn" id="close-pre-tasacion-modal">&times;</button>
         <h2>Pre Tasación Gratuita</h2>
         <form id="pre-tasacion-form">
           <label for="nombre">Nombre y Apellido:</label>
@@ -1071,14 +1089,13 @@
       </div>
     </div>
 
-    <!-- NUEVO: Modal de galería de imágenes -->
+    <!-- NUEVO: Modal de Galería de Imágenes -->
     <div class="image-gallery-modal" id="image-gallery-modal">
-      <div class="gallery-container">
-        <button class="close-btn" id="close-gallery">×</button>
-        <button class="gallery-nav prev" id="prev-image">‹</button>
-        <img src="" alt="Propiedad" class="gallery-image" id="gallery-image">
-        <button class="gallery-nav next" id="next-image">›</button>
-        <div class="gallery-counter" id="gallery-counter">1 / 1</div>
+      <div class="gallery-content">
+        <button class="close-btn" id="close-gallery">&times;</button>
+        <button class="gallery-nav prev" id="prev-img">‹</button>
+        <img src="" alt="Imagen de propiedad" class="gallery-img" id="gallery-img">
+        <button class="gallery-nav next" id="next-img">›</button>
       </div>
     </div>
   </div>
@@ -1119,13 +1136,12 @@
     const preTasacionModal = document.getElementById('pre-tasacion-modal');
     const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
     const preTasacionForm = document.getElementById('pre-tasacion-form');
-   
-    // NUEVO: Galería de imágenes
+
+    // NUEVO: Elementos de la galería
     const galleryModal = document.getElementById('image-gallery-modal');
-    const galleryImage = document.getElementById('gallery-image');
-    const galleryCounter = document.getElementById('gallery-counter');
-    const prevImageBtn = document.getElementById('prev-image');
-    const nextImageBtn = document.getElementById('next-image');
+    const galleryImg = document.getElementById('gallery-img');
+    const prevImgBtn = document.getElementById('prev-img');
+    const nextImgBtn = document.getElementById('next-img');
     const closeGalleryBtn = document.getElementById('close-gallery');
     let currentImages = [];
     let currentIndex = 0;
@@ -1195,7 +1211,6 @@
         const container = getActivePropertyContainer();
         if (!container) return;
        
-        // Mostrar mensaje de carga específico según la sección
         container.innerHTML = `
           <div class="loading-properties active">
             ${pais === 'argentina' ? 'Cargando propiedades de Argentina...' :
@@ -1211,7 +1226,7 @@
         });
        
         renderProperties(properties, container);
-      }-Ayuda adicional: 
+      } catch (error) {
         console.error('Error al filtrar propiedades:', error);
         showErrorMessage('Error al cargar propiedades. Por favor, intenta de nuevo más tarde.');
       }
@@ -1222,7 +1237,6 @@
       const targetContainer = container || getActivePropertyContainer();
       if (!targetContainer) return;
      
-      // Limpiar contenedor
       targetContainer.innerHTML = '';
      
       if (properties.length === 0) {
@@ -1258,7 +1272,7 @@
       card.innerHTML = `
         <img src="${primeraImagen}" alt="${property.titulo}"
              onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'"
-             loading="lazy">
+             loading="lazy" class="property-main-img">
         <div class="property-title">${property.titulo}</div>
         <div class="property-price">${precio}</div>
         <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
@@ -1266,103 +1280,87 @@
         <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
       `;
 
-      // Añadir evento de clic en la imagen
-      const img = card.querySelector('img');
+      // NUEVO: Evento para abrir galería al hacer clic en la imagen
+      const img = card.querySelector('.property-main-img');
       img.style.cursor = 'pointer';
-      img.addEventListener('click', () => {
-        openImageGallery(property.imagenes || []);
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (property.imagenes && property.imagenes.length > 0) {
+          currentImages = property.imagenes;
+          currentIndex = 0;
+          openGallery();
+        }
       });
      
       return card;
     }
 
-    // NUEVO: Abrir galería de imágenes
-    function openImageGallery(images) {
-      if (!images || images.length === 0) return;
-      currentImages = images.filter(img => img && img.trim() !== '');
-      if (currentImages.length === 0) return;
-
-      currentIndex = 0;
-      showGalleryImage();
+    // NUEVO: Funciones de la galería
+    function openGallery() {
+      galleryImg.src = currentImages[currentIndex];
       galleryModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
-    function showGalleryImage() {
-      if (currentImages.length === 0) return;
-      galleryImage.src = currentImages[currentIndex];
-      galleryCounter.textContent = `${currentIndex + 1} / ${currentImages.length}`;
-    }
-
-    prevImageBtn.addEventListener('click', () => {
-      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
-      showGalleryImage();
-    });
-
-    nextImageBtn.addEventListener('click', () => {
-      currentIndex = (currentIndex + 1) % currentImages.length;
-      showGalleryImage();
-    });
-
-    closeGalleryBtn.addEventListener('click', () => {
+    function closeGallery() {
       galleryModal.classList.remove('active');
-    });
+      document.body.style.overflow = 'auto';
+    }
 
+    function showPrevImage() {
+      currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+      galleryImg.src = currentImages[currentIndex];
+    }
+
+    function showNextImage() {
+      currentIndex = (currentIndex + 1) % currentImages.length;
+      galleryImg.src = currentImages[currentIndex];
+    }
+
+    prevImgBtn.addEventListener('click', showPrevImage);
+    nextImgBtn.addEventListener('click', showNextImage);
+    closeGalleryBtn.addEventListener('click', closeGallery);
     galleryModal.addEventListener('click', (e) => {
-      if (e.target === galleryModal) {
-        galleryModal.classList.remove('active');
-      }
+      if (e.target === galleryModal) closeGallery();
     });
 
-    // NUEVO: Contador de años
+    // NUEVO: Contador animado de años
     function animateCounter() {
-      const counter = document.getElementById('experience-counter');
-      let count = 0;
+      const counter = document.getElementById('years-counter');
+      let current = 0;
       const target = 8;
+      const increment = 1;
       const interval = setInterval(() => {
-        if (count >= target) {
-          counter.textContent = target;
+        current += increment;
+        counter.textContent = current;
+        if (current >= target) {
           clearInterval(interval);
-        } else {
-          count++;
-          counter.textContent = count;
+          counter.textContent = target;
         }
       }, 300);
     }
 
     // NUEVO: Carrusel de opiniones
-    const opinionesSlider = document.getElementById('opiniones-slider');
+    const opinionesTrack = document.getElementById('opiniones-track');
     const prevOpinionBtn = document.getElementById('prev-opinion');
     const nextOpinionBtn = document.getElementById('next-opinion');
     let opinionIndex = 0;
 
-    function updateSlider() {
-      const translateX = -opinionIndex * 100;
-      opinionesSlider.style.transform = `translateX(${translateX}%)`;
+    function updateCarousel() {
+      const offset = -opinionIndex * 100;
+      opinionesTrack.style.transform = `translateX(${offset}%)`;
     }
 
     prevOpinionBtn.addEventListener('click', () => {
       opinionIndex = (opinionIndex - 1 + 3) % 3;
-      updateSlider();
+      updateCarousel();
     });
 
     nextOpinionBtn.addEventListener('click', () => {
       opinionIndex = (opinionIndex + 1) % 3;
-      updateSlider();
+      updateCarousel();
     });
 
-    // Inicializar contador al cargar inicio
-    document.getElementById('inicio-link').addEventListener('click', (e) => {
-      e.preventDefault();
-      setTimeout(animateCounter, 500);
-    });
-
-    // También al cargar la página si ya está en inicio
-    document.addEventListener('DOMContentLoaded', () => {
-      if (inicioContent.classList.contains('active')) {
-        setTimeout(animateCounter, 500);
-      }
-    });
-   
     // Función para obtener el contenedor activo de propiedades
     function getActivePropertyContainer() {
       if (brasilContent.classList.contains('active')) return brasilProperties;
@@ -1380,16 +1378,13 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
      
-      // Limpiar propiedades de otros contenedores
       brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
       alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
      
-      // Cargar propiedades de Venta en Argentina directamente
       await showPropertiesByFilters('venta', 'argentina');
       argentinaProperties.style.display = 'grid';
     }
    
-    // Función para mostrar contenido de Brasil
     async function showBrasilContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1398,15 +1393,12 @@
       brasilContent.classList.add('active');
       alquilaContent.classList.remove('active');
      
-      // Limpiar propiedades de otros contenedores
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
      
-      // Cargar propiedades de Venta en Brasil
       await showPropertiesByFilters('venta', 'brasil');
     }
    
-    // Función para mostrar contenido de Alquilá
     async function showAlquilaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1415,15 +1407,12 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.add('active');
      
-      // Limpiar propiedades de otros contenedores
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
      
-      // Cargar propiedades de Alquiler
       await showPropertiesByFilters('alquiler');
     }
    
-    // Funcionalidad para el modal de Casa
     function showCasaDetail() {
       casaDetail.classList.add('active');
     }
@@ -1432,7 +1421,6 @@
       casaDetail.classList.remove('active');
     }
    
-    // Funcionalidad para el modal de Pre Tasación
     function showPreTasacionModal() {
       preTasacionModal.classList.add('active');
     }
@@ -1441,7 +1429,6 @@
       preTasacionModal.classList.remove('active');
     }
    
-    // Función para mostrar mensaje de error
     function showErrorMessage(message) {
       const containers = [brasilProperties, alquilaProperties, argentinaProperties];
       containers.forEach(container => {
@@ -1451,7 +1438,6 @@
       });
     }
    
-    // Enviar formulario de Pre Tasación a WhatsApp
     preTasacionForm.addEventListener('submit', function(e) {
       e.preventDefault();
       const nombre = document.getElementById('nombre').value;
@@ -1466,7 +1452,6 @@
       hidePreTasacionModal();
     });
    
-    // Event listeners principales
     document.getElementById('argentina-link').addEventListener('click', async function(e) {
       e.preventDefault();
       e.stopPropagation();
@@ -1502,10 +1487,9 @@
       argentinaContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
-      setTimeout(animateCounter, 500);
+      animateCounter(); // Animar contador al entrar
     });
    
-    // Event listeners para cerrar modales
     closeCasaDetail.addEventListener('click', hideCasaDetail);
     casaDetail.addEventListener('click', function(e) {
       if (e.target === casaDetail) {
@@ -1522,7 +1506,6 @@
    
     document.querySelector('.pre-tasacion-btn').addEventListener('click', showPreTasacionModal);
    
-    // Cerrar modal con tecla Escape
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         if (casaDetail.classList.contains('active')) {
@@ -1530,22 +1513,23 @@
         } else if (preTasacionModal.classList.contains('active')) {
           hidePreTasacionModal();
         } else if (galleryModal.classList.contains('active')) {
-          galleryModal.classList.remove('active');
+          closeGallery();
         }
         hamburger.classList.remove('active');
         menu.classList.remove('active');
       }
+      if (galleryModal.classList.contains('active')) {
+        if (e.key === 'ArrowLeft') showPrevImage();
+        if (e.key === 'ArrowRight') showNextImage();
+      }
     });
    
-    // Inicialización
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Página cargada responsivamente. Listo para dispositivos móviles y desktop.');
       document.querySelectorAll('.loading-properties').forEach(el => {
         el.classList.remove('active');
       });
-      if (inicioContent.classList.contains('active')) {
-        setTimeout(animateCounter, 500);
-      }
+      animateCounter(); // Iniciar contador al cargar
     });
   </script>
 </body>
