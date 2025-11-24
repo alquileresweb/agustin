@@ -63,32 +63,27 @@
       background: rgba(0,0,0,0.6);
       color: white;
       border: none;
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      font-size: 2em;
+      font-size: 2.5em;
       cursor: pointer;
       z-index: 10;
       transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .gallery-nav:hover { background: rgba(0,0,0,0.9); }
-    .prev-btn { left: 15px; }
-    .next-btn { right: 15px; }
-    .info {
-      padding: 30px;
+    .gallery-nav:hover {
+      background: rgba(0,0,0,0.9);
+      transform: translateY(-50%) scale(1.1);
     }
-    .title {
-      font-size: 2.2em;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 10px;
-    }
-    .price {
-      font-size: 2em;
-      color: #28a745;
-      font-weight: bold;
-      margin: 15px 0;
-    }
+    .prev-btn { left: 20px; }
+    .next-btn { right: 20px; }
+
+    .info { padding: 30px; }
+    .title { font-size: 2.2em; font-weight: bold; color: #333; margin-bottom: 10px; }
+    .price { font-size: 2em; color: #28a745; font-weight: bold; margin: 15px 0; }
     .details {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -98,14 +93,8 @@
       background: #f0f8f0;
       border-radius: 15px;
     }
-    .detail-item {
-      text-align: center;
-    }
-    .detail-item strong {
-      display: block;
-      font-size: 1.1em;
-      color: #28a745;
-    }
+    .detail-item { text-align: center; }
+    .detail-item strong { display: block; font-size: 1.1em; color: #28a745; }
     .description {
       font-size: 1.1em;
       line-height: 1.8;
@@ -177,6 +166,7 @@
       .info { padding: 20px; }
       .actions { flex-direction: column; align-items: center; }
       .btn { width: 90%; justify-content: center; }
+      .gallery-nav { width: 50px; height: 50px; font-size: 2em; }
     }
   </style>
 </head>
@@ -189,13 +179,16 @@
 
   <div class="container" id="property-container" style="display:none;">
     <div class="gallery" id="gallery">
-      <button class="gallery-nav prev-btn" id="prev-btn">Previous</button>
-      <button class="gallery-nav next-btn" id="next-btn">Next</button>
+      <!-- Flechas bonitas -->
+      <button class="gallery-nav prev-btn" id="prev-btn" aria-label="Imagen anterior"></button>
+      <button class="gallery-nav next-btn" id="next-btn" aria-label="Imagen siguiente"></button>
     </div>
 
     <div class="info">
       <h1 class="title" id="title">Cargando propiedad...</h1>
       <div class="price" id="price"></div>
+
+     AVISO: He cambiado los botones por flechas puras (izquierda y derecha), más elegantes y profesionales.
 
       <div class="details">
         <div class="detail-item">
@@ -266,17 +259,19 @@
               imagenes.forEach((src, index) => {
                 const img = document.createElement('img');
                 img.src = src;
-                img.alt = `Imagen ${index + 1}`;
+                img.alt = `Imagen ${index + 1} de la propiedad`;
                 if (index === 0) img.classList.add('active');
                 gallery.appendChild(img);
               });
             } else {
               const img = document.createElement('img');
               img.src = 'https://via.placeholder.com/1200x600?text=Sin+Imágenes';
+              img.alt = 'Sin imágenes disponibles';
               img.classList.add('active');
               gallery.appendChild(img);
             }
 
+            // Mensaje WhatsApp
             const mensaje = encodeURIComponent(
               `¡Hola! Mirá esta propiedad que encontré:\n\n` +
               `${p.titulo}\n` +
@@ -286,12 +281,12 @@
             );
             document.getElementById('whatsapp-btn').href = `https://wa.me/5493756505202?text=${mensaje}`;
 
-            // === NUEVO: BOTÓN COPIAR ENLACE ===
+            // Botón copiar enlace
             const copyBtn = document.getElementById('copy-btn');
             copyBtn.addEventListener('click', () => {
               navigator.clipboard.writeText(window.location.href).then(() => {
                 copyBtn.classList.add('copied');
-                copyBtn.innerHTML = `¡Enlace copiado!`;
+                copyBtn.innerHTML = `Enlace copiado`;
                 setTimeout(() => {
                   copyBtn.classList.remove('copied');
                   copyBtn.innerHTML = `Copiar enlace`;
@@ -301,14 +296,16 @@
               });
             });
 
-            // Galería
+            // Galería con flechas
             let currentIndex = 0;
             const imgs = gallery.querySelectorAll('img');
+
             document.getElementById('prev-btn').onclick = () => {
               imgs[currentIndex].classList.remove('active');
               currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
               imgs[currentIndex].classList.add('active');
             };
+
             document.getElementById('next-btn').onclick = () => {
               imgs[currentIndex].classList.remove('active');
               currentIndex = (currentIndex + 1) % imgs.length;
