@@ -498,7 +498,8 @@
       color: white;
       text-decoration: none;
     }
-    .share-btn {
+    /* NUEVO BOTÓN "VER DETALLES" */
+    .details-btn {
       background: linear-gradient(45deg, #0077b5, #00a0dc);
       color: white;
       padding: 12px 25px;
@@ -515,7 +516,7 @@
       max-width: 200px;
       text-align: center;
     }
-    .share-btn:hover {
+    .details-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(0,119,181,0.4);
     }
@@ -818,7 +819,7 @@
       .property-title {
         font-size: 1.3em;
       }
-      .whatsapp-btn, .share-btn {
+      .whatsapp-btn, .details-btn {
         padding: 10px 20px;
         font-size: 0.9em;
         max-width: none;
@@ -857,13 +858,13 @@
     <div class="logo">
       <img src="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Inmobiliaria Agustin Santos">
     </div>
-  
+ 
     <div class="hamburger" id="hamburger">
       <span></span>
       <span></span>
       <span></span>
     </div>
-  
+ 
     <div class="menu" id="menu">
       <a href="#" class="menu-link" id="inicio-link">Inicio</a>
       <a href="#" class="menu-link" id="vende-link">Vendé</a>
@@ -871,14 +872,14 @@
       <a href="#" class="menu-link" id="brasil-link">Propiedades Brasil</a>
       <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
     </div>
-  
+ 
     <a href="https://wa.me/5493756508620?text=Hola" class="contact-btn" target="_blank">Contactar</a>
   </div>
   <div class="main-container">
     <div class="sidebar" id="sidebar">
       <span class="loading-message">Sin contenido externo</span>
     </div>
-  
+ 
     <!-- INICIO -->
     <div class="content-area active" id="inicio-content">
       <div class="imagen-adaptable"></div>
@@ -907,7 +908,7 @@
         </a>
       </div>
     </div>
-  
+ 
     <div class="content-area" id="vende-content">
       <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
       <div class="section-text">No solo lo vendemos, sino que también...</div>
@@ -925,25 +926,25 @@
         <div class="benefit-box"><img src="https://i.postimg.cc/d3z31q8L/6.png" alt="Beneficio 6" loading="lazy"></div>
       </div>
     </div>
-  
+ 
     <div class="content-area compra-content" id="argentina-content">
       <div id="argentina-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Argentina...</div>
       </div>
     </div>
-  
+ 
     <div class="content-area brasil-content" id="brasil-content">
       <div id="brasil-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
     </div>
-  
+ 
     <div class="content-area alquila-content" id="alquila-content">
       <div id="alquila-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades para alquilar...</div>
       </div>
     </div>
-  
+ 
     <!-- Modal para detalle de Casa -->
     <div class="casa-detail" id="casa-detail">
       <div class="casa-detail-content">
@@ -952,7 +953,7 @@
         <h3 id="casa-detail-title">Casa en Venta</h3>
       </div>
     </div>
-  
+ 
     <!-- Modal para Pre Tasación -->
     <div class="pre-tasacion-modal" id="pre-tasacion-modal">
       <div class="pre-tasacion-form">
@@ -990,17 +991,16 @@
       </div>
     </div>
   </div>
-
   <script>
     // MENU HAMBURGUESA
     const hamburger = document.getElementById('hamburger');
     const menu = document.getElementById('menu');
-  
+ 
     hamburger.addEventListener('click', () => {
       hamburger.classList.toggle('active');
       menu.classList.toggle('active');
     });
-  
+ 
     // Cerrar menu al hacer click en un enlace
     document.querySelectorAll('.menu-link').forEach(link => {
       link.addEventListener('click', () => {
@@ -1017,11 +1017,11 @@
     const argentinaProperties = document.getElementById('argentina-properties');
     const brasilProperties = document.getElementById('brasil-properties');
     const alquilaProperties = document.getElementById('alquila-properties');
-  
+ 
     // Elementos del modal de Casa
     const casaDetail = document.getElementById('casa-detail');
     const closeCasaDetail = document.getElementById('close-casa-detail');
-  
+ 
     // Elementos del modal de Pre Tasación
     const preTasacionModal = document.getElementById('pre-tasacion-modal');
     const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
@@ -1036,13 +1036,13 @@
     let currentIndex = 0;
     // URL de tu Web App de Google Apps Script
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
-  
+ 
     // NÚMERO DE WHATSAPP PARA CONTACTAR PUBLICACIONES
     const WHATSAPP_PROPERTY_NUMBER = '5493756505202';
-  
+ 
     // Almacén global de propiedades cargadas
     let allProperties = [];
-  
+ 
     // Función para intentar la solicitud con reintentos
     async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
       for (let i = 0; i < retries; i++) {
@@ -1062,7 +1062,7 @@
         }
       }
     }
-  
+ 
     // Función actualizada para cargar propiedades desde Google Apps Script Web App
     async function loadPropertiesFromSheet(filters = {}) {
       try {
@@ -1071,16 +1071,16 @@
           pais: filters.pais || '',
           propiedad: filters.propiedad || ''
         });
-      
+     
         const response = await fetchWithRetry(`${WEB_APP_URL}?${params}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json'
           }
         });
-      
+     
         const result = await response.json();
-      
+     
         if (result.success) {
           allProperties = result.publicaciones || [];
           return allProperties;
@@ -1092,13 +1092,13 @@
         throw error;
       }
     }
-  
+ 
     // Función para mostrar propiedades por filtros específicos
     async function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
       try {
         const container = getActivePropertyContainer();
         if (!container) return;
-      
+     
         container.innerHTML = `
           <div class="loading-properties active">
             ${pais === 'argentina' ? 'Cargando propiedades de Argentina...' :
@@ -1106,27 +1106,27 @@
               'Cargando propiedades para alquilar...'}
           </div>
         `;
-      
+     
         const properties = await loadPropertiesFromSheet({
           operacion: tipoOperacion,
           pais: pais,
           propiedad: tipoPropiedad
         });
-      
+     
         renderProperties(properties, container);
       } catch (error) {
         console.error('Error al filtrar propiedades:', error);
         showErrorMessage('Error al cargar propiedades. Por favor, intenta de nuevo más tarde.');
       }
     }
-  
+ 
     // Función para renderizar propiedades en el DOM
     function renderProperties(properties, container = null) {
       const targetContainer = container || getActivePropertyContainer();
       if (!targetContainer) return;
-    
+   
       targetContainer.innerHTML = '';
-    
+   
       if (properties.length === 0) {
         targetContainer.innerHTML = `
           <div class="loading-properties active">
@@ -1135,30 +1135,29 @@
         `;
         return;
       }
-    
+   
       properties.forEach(property => {
         const card = createPropertyCard(property);
         targetContainer.appendChild(card);
       });
     }
-  
-    // === FUNCIÓN NUEVA Y COMPLETA: createPropertyCard con ID, enlace compartir y todo ===
+ 
+    // === FUNCIÓN ACTUALIZADA: ahora el botón dice "Ver detalles" ===
     function createPropertyCard(property) {
       const card = document.createElement('div');
       card.className = 'property-card';
-    
+   
       const id = property.id || 'sin-id';
       const primeraImagen = (property.imagenes && property.imagenes.length > 0) ?
         property.imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
-    
+   
       const precio = property.precio ? `$${parseFloat(property.precio).toLocaleString()}` : 'Precio consultar';
       const tipoOperacion = property.tipoOperacion || '';
       const tipoPropiedad = property.tipoPropiedad || '';
       const descripcion = property.descripcion || '';
-      const enlaceCompartir = property.enlaceCompartir || `propiedadinfo.html?id=${id}`;
-    
+   
       const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
-    
+   
       card.innerHTML = `
         <img src="${primeraImagen}" alt="${property.titulo}"
              onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'"
@@ -1169,16 +1168,15 @@
         ${descripcion ? `<p style="color: #555; margin-bottom: 15px; line-height: 1.5;">${descripcion.substring(0, 100)}...</p>` : ''}
         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
           <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
-          <a href="${enlaceCompartir}" target="_blank" class="share-btn">Compartir</a>
+          <a href="propiedadinfo.html?id=${id}" target="_blank" class="details-btn">Ver detalles</a>
         </div>
       `;
-
-      // Click en toda la tarjeta abre el detalle
+      // Click en toda la tarjeta también abre el detalle
       card.addEventListener('click', (e) => {
-        if (e.target.closest('a')) return; // Evita abrir si se hace click en botones
+        if (e.target.closest('a')) return;
         window.open(`propiedadinfo.html?id=${id}`, '_blank');
       });
-    
+   
       // Click en la imagen abre la galería
       const img = card.querySelector('.property-main-img');
       img.style.cursor = 'zoom-in';
@@ -1190,10 +1188,9 @@
           openGallery();
         }
       });
-    
+   
       return card;
     }
-
     // NUEVO: Funciones de la galería
     function openGallery() {
       galleryImg.src = currentImages[currentIndex];
@@ -1218,7 +1215,6 @@
     galleryModal.addEventListener('click', (e) => {
       if (e.target === galleryModal) closeGallery();
     });
-
     // NUEVO: Contador animado de años
     function animateCounter() {
       const counter = document.getElementById('years-counter');
@@ -1234,7 +1230,6 @@
         }
       }, 300);
     }
-
     // NUEVO: Carrusel de opiniones
     const opinionesTrack = document.getElementById('opiniones-track');
     const prevOpinionBtn = document.getElementById('prev-opinion');
@@ -1252,7 +1247,6 @@
       opinionIndex = (opinionIndex + 1) % 3;
       updateCarousel();
     });
-
     // Función para obtener el contenedor activo de propiedades
     function getActivePropertyContainer() {
       if (brasilContent.classList.contains('active')) return brasilProperties;
@@ -1260,7 +1254,7 @@
       if (argentinaContent.classList.contains('active')) return argentinaProperties;
       return null;
     }
-  
+ 
     // Función para mostrar contenido de Argentina
     async function showArgentinaContent() {
       sidebar.classList.remove('active');
@@ -1269,14 +1263,14 @@
       argentinaContent.classList.add('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
-    
+   
       brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
       alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
-    
+   
       await showPropertiesByFilters('venta', 'argentina');
       argentinaProperties.style.display = 'grid';
     }
-  
+ 
     async function showBrasilContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1284,13 +1278,13 @@
       argentinaContent.classList.remove('active');
       brasilContent.classList.add('active');
       alquilaContent.classList.remove('active');
-    
+   
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
-    
+   
       await showPropertiesByFilters('venta', 'brasil');
     }
-  
+ 
     async function showAlquilaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1298,29 +1292,29 @@
       argentinaContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.add('active');
-    
+   
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
-    
+   
       await showPropertiesByFilters('alquiler');
     }
-  
+ 
     function showCasaDetail() {
       casaDetail.classList.add('active');
     }
-  
+ 
     function hideCasaDetail() {
       casaDetail.classList.remove('active');
     }
-  
+ 
     function showPreTasacionModal() {
       preTasacionModal.classList.add('active');
     }
-  
+ 
     function hidePreTasacionModal() {
       preTasacionModal.classList.remove('active');
     }
-  
+ 
     function showErrorMessage(message) {
       const containers = [brasilProperties, alquilaProperties, argentinaProperties];
       containers.forEach(container => {
@@ -1329,7 +1323,7 @@
         }
       });
     }
-  
+ 
     preTasacionForm.addEventListener('submit', function(e) {
       e.preventDefault();
       const nombre = document.getElementById('nombre').value;
@@ -1343,24 +1337,24 @@
       preTasacionForm.reset();
       hidePreTasacionModal();
     });
-  
+ 
     document.getElementById('argentina-link').addEventListener('click', async function(e) {
       e.preventDefault();
       e.stopPropagation();
       await showArgentinaContent();
     });
-  
+ 
     document.getElementById('brasil-link').addEventListener('click', async function(e) {
       e.preventDefault();
       e.stopPropagation();
       await showBrasilContent();
     });
-  
+ 
     document.getElementById('alquila-link').addEventListener('click', async function(e) {
       e.preventDefault();
       await showAlquilaContent();
     });
-  
+ 
     document.getElementById('vende-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.remove('active');
@@ -1370,7 +1364,7 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
     });
-  
+ 
     document.getElementById('inicio-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.remove('active');
@@ -1381,23 +1375,23 @@
       alquilaContent.classList.remove('active');
       animateCounter();
     });
-  
+ 
     closeCasaDetail.addEventListener('click', hideCasaDetail);
     casaDetail.addEventListener('click', function(e) {
       if (e.target === casaDetail) {
         hideCasaDetail();
       }
     });
-  
+ 
     closePreTasacionModal.addEventListener('click', hidePreTasacionModal);
     preTasacionModal.addEventListener('click', function(e) {
       if (e.target === preTasacionModal) {
         hidePreTasacionModal();
       }
     });
-  
+ 
     document.querySelector('.pre-tasacion-btn').addEventListener('click', showPreTasacionModal);
-  
+ 
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         if (casaDetail.classList.contains('active')) {
@@ -1415,7 +1409,7 @@
         if (e.key === 'ArrowRight') showNextImage();
       }
     });
-  
+ 
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Página cargada responsivamente. Listo para dispositivos móviles y desktop.');
       document.querySelectorAll('.loading-properties').forEach(el => {
