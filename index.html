@@ -9,7 +9,7 @@
     * {
       box-sizing: border-box;
     }
-   
+  
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
@@ -17,7 +17,7 @@
       width: 100%;
       line-height: 1.6;
     }
-   
+  
     /* HEADER RESPONSIVO */
     .header {
       display: flex;
@@ -31,18 +31,18 @@
       top: 0;
       z-index: 1000;
     }
-   
+  
     .logo {
       position: relative;
       z-index: 1001;
     }
-   
+  
     .logo img {
       height: 60px;
       max-width: 150px;
       width: auto;
     }
-   
+  
     .menu {
       display: none;
       gap: 20px;
@@ -58,11 +58,11 @@
       padding: 10px 0;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-   
+  
     .menu.active {
       display: flex;
     }
-   
+  
     .menu a {
       text-decoration: none;
       color: #fff;
@@ -74,20 +74,20 @@
       text-align: center;
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-   
+  
     .menu a:hover {
       background-color: rgba(255,255,255,0.1);
     }
-   
+  
     .menu a:last-child {
       border-bottom: none;
     }
-   
+  
     .dropdown {
       position: relative;
       display: inline-block;
     }
-   
+  
     .dropdown-content {
       display: none;
       position: absolute;
@@ -100,7 +100,7 @@
       left: 50%;
       transform: translateX(-50%);
     }
-   
+  
     .dropdown-content a {
       color: #333;
       padding: 12px 16px;
@@ -110,19 +110,19 @@
       border-bottom: 1px solid #eee;
       text-align: center;
     }
-   
+  
     .dropdown-content a:last-child {
       border-bottom: none;
     }
-   
+  
     .dropdown-content a:hover {
       background-color: #f1f1f1;
     }
-   
+  
     .dropdown:hover .dropdown-content {
       display: block;
     }
-   
+  
     .contact-btn {
       background-color: #25D366;
       color: white;
@@ -137,11 +137,11 @@
       transition: background-color 0.3s;
       white-space: nowrap;
     }
-   
+  
     .contact-btn:hover {
       background-color: #1ebe52;
     }
-   
+  
     /* HAMBURGUESA MENU */
     .hamburger {
       display: block;
@@ -149,7 +149,7 @@
       padding: 10px;
       z-index: 1002;
     }
-   
+  
     .hamburger span {
       display: block;
       width: 25px;
@@ -159,19 +159,19 @@
       transition: 0.3s;
       border-radius: 2px;
     }
-   
+  
     .hamburger.active span:nth-child(1) {
       transform: rotate(-45deg) translate(-5px, 6px);
     }
-   
+  
     .hamburger.active span:nth-child(2) {
       opacity: 0;
     }
-   
+  
     .hamburger.active span:nth-child(3) {
       transform: rotate(45deg) translate(-5px, -6px);
     }
-   
+  
     /* MAIN CONTAINER */
     .main-container {
       min-height: calc(100vh - 80px);
@@ -181,7 +181,7 @@
       flex-direction: column;
       align-items: center;
     }
-   
+  
     .sidebar {
       width: 90%;
       max-width: 400px;
@@ -192,18 +192,18 @@
       display: none;
       margin: 20px auto;
     }
-   
+  
     .sidebar.active {
       display: block;
     }
-   
+  
     .sidebar iframe {
       width: 100%;
       height: 100%;
       border: none;
       border-radius: 10px;
     }
-   
+  
     .loading-message {
       position: absolute;
       font-size: 1.1em;
@@ -213,7 +213,7 @@
       transform: translate(-50%, -50%);
       text-align: center;
     }
-   
+  
     .content-area {
       flex: 1;
       padding: 20px;
@@ -227,11 +227,11 @@
       max-width: 1400px;
       margin: 0 auto;
     }
-   
+  
     .content-area.active {
       display: flex;
     }
-   
+  
     .pre-tasacion-btn {
       background: linear-gradient(45deg, #28a745, #20c997);
       color: white;
@@ -246,12 +246,12 @@
       transition: all 0.3s;
       width: fit-content;
     }
-   
+  
     .pre-tasacion-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
     }
-   
+  
     .section-text {
       font-size: 1.5em;
       margin: 20px 0;
@@ -259,7 +259,7 @@
       width: 100%;
       padding: 0 20px;
     }
-   
+  
     .boxes {
       display: flex;
       gap: 20px;
@@ -269,7 +269,7 @@
       width: 100%;
       padding: 0 20px;
     }
-   
+  
     .box {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -280,11 +280,11 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       transition: transform 0.3s;
     }
-   
+  
     .box:hover {
       transform: translateY(-5px);
     }
-   
+  
     .benefits-text {
       font-size: 1.4em;
       margin: 30px 0;
@@ -293,7 +293,7 @@
       padding: 0 20px;
       font-weight: bold;
     }
-   
+  
     .benefits-boxes {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -303,7 +303,7 @@
       padding: 0 20px;
       margin: 20px 0;
     }
-   
+  
     .benefit-box {
       width: 100%;
       max-width: 350px;
@@ -312,7 +312,7 @@
       align-items: center;
       text-align: center;
     }
-   
+  
     .benefit-box img {
       width: 100%;
       max-width: 300px;
@@ -322,11 +322,11 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       transition: transform 0.3s;
     }
-   
+  
     .benefit-box img:hover {
       transform: scale(1.05);
     }
-   
+  
     .inicio-content img {
       width: 100%;
       max-width: 1200px;
@@ -334,7 +334,7 @@
       border-radius: 15px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
-   
+  
     .imagen-adaptable {
       width: 100%;
       height: 300px;
@@ -342,7 +342,6 @@
       background-size: cover;
       background-position: center;
     }
-
     /* NUEVO: Contador de años */
     .experience-panel {
       margin: 30px 0;
@@ -351,7 +350,6 @@
       font-weight: bold;
       color: #28a745;
     }
-
     /* NUEVO: Carrusel de opiniones */
     .opiniones-section {
       margin: 40px 0;
@@ -359,32 +357,27 @@
       max-width: 1000px;
       padding: 0 20px;
     }
-
     .opiniones-title {
       font-size: 1.8em;
       margin-bottom: 20px;
       color: #333;
     }
-
     .opiniones-carousel {
       position: relative;
       overflow: hidden;
       border-radius: 15px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-
     .opiniones-track {
       display: flex;
       transition: transform 0.5s ease;
     }
-
     .opinion-item {
       min-width: 100%;
       padding: 20px;
       text-align: center;
       background: #f9f9f9;
     }
-
     .opinion-item img {
       width: 100%;
       max-width: 600px;
@@ -392,7 +385,6 @@
       border-radius: 10px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
-
     .carousel-btn {
       position: absolute;
       top: 50%;
@@ -408,19 +400,15 @@
       z-index: 10;
       transition: background 0.3s;
     }
-
     .carousel-btn:hover {
       background: rgba(0,0,0,0.8);
     }
-
     .carousel-btn.prev {
       left: 10px;
     }
-
     .carousel-btn.next {
       right: 10px;
     }
-
     .google-reviews-btn {
       display: inline-block;
       margin-top: 20px;
@@ -432,11 +420,10 @@
       font-weight: bold;
       transition: background 0.3s;
     }
-
     .google-reviews-btn:hover {
       background: #3367d6;
     }
-   
+  
     .compra-content {
       display: flex;
       flex-direction: column;
@@ -447,7 +434,7 @@
       width: 100%;
       box-sizing: border-box;
     }
-   
+  
     .image-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -458,7 +445,7 @@
       box-sizing: border-box;
       padding: 0 20px;
     }
-   
+  
     .image-item {
       text-align: center;
       cursor: pointer;
@@ -469,24 +456,24 @@
       flex-direction: column;
       align-items: center;
     }
-   
+  
     .image-item:hover {
       transform: scale(1.05);
     }
-   
+  
     .image-item img {
       width: 100%;
       max-width: 350px;
       height: auto;
       border-radius: 10px;
     }
-   
+  
     .image-item p {
       margin: 15px 0 0;
       font-size: 1.3em;
       font-weight: bold;
     }
-   
+  
     /* GRIDS RESPONSIVOS */
     .property-grid {
       display: grid;
@@ -498,7 +485,7 @@
       padding: 0 20px;
       margin: 30px 0;
     }
-   
+  
     .property-card {
       background: white;
       border-radius: 20px;
@@ -510,12 +497,12 @@
       border: 1px solid #eee;
       cursor: pointer;
     }
-   
+  
     .property-card:hover {
       transform: translateY(-10px);
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
-   
+  
     .property-card img {
       width: 100%;
       height: 250px;
@@ -523,7 +510,7 @@
       border-radius: 15px;
       margin-bottom: 20px;
     }
-   
+  
     .property-title {
       font-size: 1.5em;
       font-weight: bold;
@@ -531,20 +518,20 @@
       margin-bottom: 15px;
       line-height: 1.3;
     }
-   
+  
     .property-price {
       font-size: 1.4em;
       color: #28a745;
       font-weight: bold;
       margin-bottom: 15px;
     }
-   
+  
     .property-type {
       color: #666;
       margin-bottom: 15px;
       font-style: italic;
     }
-   
+  
     .whatsapp-btn {
       background: linear-gradient(45deg, #25D366, #128C7E);
       color: white;
@@ -561,14 +548,14 @@
       width: 100%;
       max-width: 200px;
     }
-   
+  
     .whatsapp-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(37,211,102,0.4);
       color: white;
       text-decoration: none;
     }
-   
+  
     /* MODALES RESPONSIVOS */
     .casa-detail,
     .pre-tasacion-modal,
@@ -585,13 +572,13 @@
       align-items: center;
       padding: 20px;
     }
-   
+  
     .casa-detail.active,
     .pre-tasacion-modal.active,
     .image-gallery-modal.active {
       display: flex;
     }
-   
+  
     .casa-detail-content {
       background-color: white;
       padding: 30px;
@@ -603,20 +590,20 @@
       position: relative;
       overflow-y: auto;
     }
-   
+  
     .casa-detail img {
       max-width: 100%;
       max-height: 50vh;
       border-radius: 15px;
       margin-bottom: 20px;
     }
-   
+  
     .casa-detail h3 {
       margin: 10px 0;
       color: #333;
       font-size: 1.8em;
     }
-   
+  
     .close-btn {
       position: absolute;
       top: 15px;
@@ -635,12 +622,11 @@
       transition: background-color 0.3s;
       z-index: 10;
     }
-   
+  
     .close-btn:hover {
       background-color: #f0f0f0;
       color: #000;
     }
-
     /* NUEVO: Estilos de la galería */
     .gallery-content {
       position: relative;
@@ -648,14 +634,12 @@
       max-width: 900px;
       text-align: center;
     }
-
     .gallery-img {
       width: 100%;
       max-height: 70vh;
       object-fit: contain;
       border-radius: 15px;
     }
-
     .gallery-nav {
       position: absolute;
       top: 50%;
@@ -670,19 +654,16 @@
       cursor: pointer;
       z-index: 10;
     }
-
     .gallery-nav:hover {
       background: rgba(0,0,0,0.9);
     }
-
     .gallery-nav.prev {
       left: 10px;
     }
-
     .gallery-nav.next {
       right: 10px;
     }
-   
+  
     .pre-tasacion-form {
       background-color: white;
       padding: 30px;
@@ -694,14 +675,14 @@
       overflow-y: auto;
       max-height: 90vh;
     }
-   
+  
     .pre-tasacion-form h2 {
       font-size: 1.6em;
       margin-bottom: 20px;
       text-align: center;
       color: #333;
     }
-   
+  
     .pre-tasacion-form label {
       display: block;
       margin-bottom: 5px;
@@ -711,7 +692,7 @@
       color: #333;
       margin-top: 15px;
     }
-   
+  
     .pre-tasacion-form input,
     .pre-tasacion-form textarea,
     .pre-tasacion-form select {
@@ -723,14 +704,14 @@
       font-size: 1em;
       transition: border-color 0.3s;
     }
-   
+  
     .pre-tasacion-form input:focus,
     .pre-tasacion-form textarea:focus,
     .pre-tasacion-form select:focus {
       outline: none;
       border-color: #28a745;
     }
-   
+  
     .pre-tasacion-form button {
       background: linear-gradient(45deg, #28a745, #20c997);
       color: white;
@@ -744,12 +725,12 @@
       margin-top: 20px;
       transition: all 0.3s;
     }
-   
+  
     .pre-tasacion-form button:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
     }
-   
+  
     .loading-properties {
       text-align: center;
       padding: 50px 20px;
@@ -762,29 +743,31 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
-   
+  
     .loading-properties.active {
       display: block;
     }
-   
+  
     /* Ocultar brasil-content y alquila-content cuando no están activos */
     .brasil-content:not(.active),
     .alquila-content:not(.active) {
       display: none !important;
     }
-   
+  
     /* MEDIA QUERIES PARA DESKTOP */
     @media (min-width: 1024px) {
       .header {
         padding: 20px 40px;
       }
-     
+    
       .logo img {
-        height: 80  {
+        height: 80px;
+      }
+    
       .hamburger {
         display: none;
       }
-     
+    
       .menu {
         display: flex !important;
         flex-direction: row;
@@ -793,164 +776,163 @@
         box-shadow: none;
         padding: 0;
       }
-     
+    
       .menu a {
         font-size: 1.2em;
         padding: 15px 20px;
         border-bottom: none;
       }
-     
+    
       .property-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 40px;
       }
-     
+    
       .benefits-boxes {
         grid-template-columns: repeat(3, 1fr);
         gap: 40px;
       }
-     
+    
       .boxes {
         gap: 40px;
       }
-     
+    
       .box {
         min-width: 250px;
         padding: 30px;
       }
-     
+    
       .section-text,
       .benefits-text {
         font-size: 1.8em;
         padding: 0 40px;
       }
-     
+    
       .property-card img {
         height: 300px;
       }
     }
-   
+  
     /* MEDIA QUERIES PARA TABLET */
     @media (min-width: 768px) and (max-width: 1023px) {
       .property-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
       }
-     
+    
       .benefits-boxes {
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
       }
-     
+    
       .header {
         padding: 15px 30px;
       }
-     
+    
       .logo img {
         height: 70px;
       }
     }
-   
+  
     /* MEDIA QUERIES PARA MOVIL */
     @media (max-width: 767px) {
       .header {
         padding: 15px 20px;
         position: relative;
       }
-     
+    
       .logo {
         position: static;
       }
-     
+    
       .logo img {
         height: 50px;
       }
-     
+    
       .contact-btn {
         position: static;
         margin-left: auto;
         padding: 10px 15px;
         font-size: 0.9em;
       }
-     
+    
       .property-grid {
         grid-template-columns: 1fr;
         gap: 20px;
         padding: 0 10px;
       }
-     
+    
       .benefits-boxes {
         grid-template-columns: 1fr;
         gap: 20px;
       }
-     
+    
       .boxes {
         flex-direction: column;
         align-items: center;
         gap: 15px;
       }
-     
+    
       .box {
         width: 90%;
         max-width: 300px;
       }
-     
+    
       .section-text,
       .benefits-text {
         font-size: 1.3em;
         padding: 0 15px;
       }
-     
+    
       .pre-tasacion-btn {
         font-size: 1.2em;
         padding: 12px 25px;
         width: 90%;
       }
-     
+    
       .property-card {
         padding: 20px;
         margin: 10px;
       }
-     
+    
       .property-title {
         font-size: 1.3em;
       }
-     
+    
       .whatsapp-btn {
         padding: 10px 20px;
         font-size: 0.9em;
         max-width: none;
       }
-     
+    
       .casa-detail-content,
       .pre-tasacion-form {
         padding: 20px;
         margin: 10px;
       }
-     
+    
       .pre-tasacion-form input,
       .pre-tasacion-form textarea,
       .pre-tasacion-form select {
         padding: 12px;
       }
-
       .carousel-btn {
         width: 40px;
         height: 40px;
         font-size: 1.2em;
       }
     }
-   
+  
     /* ANIMACIONES */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-   
+  
     .content-area.active {
       animation: fadeIn 0.6s ease-out;
     }
-   
+  
     .property-card {
       animation: fadeIn 0.5s ease-out;
     }
@@ -961,13 +943,13 @@
     <div class="logo">
       <img src="https://i.postimg.cc/kGCHpwT8/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Inmobiliaria Agustin Santos">
     </div>
-   
+  
     <div class="hamburger" id="hamburger">
       <span></span>
       <span></span>
       <span></span>
     </div>
-   
+  
     <div class="menu" id="menu">
       <a href="#" class="menu-link" id="inicio-link">Inicio</a>
       <a href="#" class="menu-link" id="vende-link">Vendé</a>
@@ -975,23 +957,21 @@
       <a href="#" class="menu-link" id="brasil-link">Propiedades Brasil</a>
       <a href="#" class="menu-link" id="alquila-link">Alquilá</a>
     </div>
-   
+  
     <a href="https://wa.me/5493756508620?text=Hola" class="contact-btn" target="_blank">Contactar</a>
   </div>
   <div class="main-container">
     <div class="sidebar" id="sidebar">
       <span class="loading-message">Sin contenido externo</span>
     </div>
-   
+  
     <!-- INICIO CON NUEVOS PANELES -->
     <div class="content-area active" id="inicio-content">
       <div class="imagen-adaptable"></div>
-
       <!-- Contador de años -->
       <div class="experience-panel">
         <span id="years-counter">0</span> años de experiencia
       </div>
-
       <!-- Opiniones de clientes -->
       <div class="opiniones-section">
         <h2 class="opiniones-title">Esto es lo que comentan nuestros clientes</h2>
@@ -999,13 +979,13 @@
           <button class="carousel-btn prev" id="prev-opinion">‹</button>
           <div class="opiniones-track" id="opiniones-track">
             <div class="opinion-item">
-              <img src="https://i.postimg.cc/SsPWF3nq/Captura-de-pantalla-2025-11-16-153636.png" alt="Opinión 1" loading="lazy">
+              <img src="https://i.postig.cc/SsPWF3nq/Captura-de-pantalla-2025-11-16-153636.png" alt="Opinión 1" loading="lazy">
             </div>
             <div class="opinion-item">
-              <img src="https://i.postimg.cc/jC0PCfQd/Captura-de-pantalla-2025-11-16-153655.png" alt="Opinión 2" loading="lazy">
+              <img src="https://i.postig.cc/jC0PCfQd/Captura-de-pantalla-2025-11-16-153655.png" alt="Opinión 2" loading="lazy">
             </div>
             <div class="opinion-item">
-              <img src="https://i.postimg.cc/yYcrjXG1/Captura-de-pantalla-2025-11-16-153715.png" alt="Opinión 3" loading="lazy">
+              <img src="https://i.postig.cc/yYcrjXG1/Captura-de-pantalla-2025-11-16-153715.png" alt="Opinión 3" loading="lazy">
             </div>
           </div>
           <button class="carousel-btn next" id="next-opinion">›</button>
@@ -1015,7 +995,7 @@
         </a>
       </div>
     </div>
-   
+  
     <div class="content-area" id="vende-content">
       <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
       <div class="section-text">No solo lo vendemos, sino que también...</div>
@@ -1033,38 +1013,38 @@
         <div class="benefit-box"><img src="https://i.postimg.cc/d3z31q8L/6.png" alt="Beneficio 6" loading="lazy"></div>
       </div>
     </div>
-   
+  
     <div class="content-area compra-content" id="argentina-content">
       <div id="argentina-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Argentina...</div>
       </div>
     </div>
-   
+  
     <div class="content-area brasil-content" id="brasil-content">
       <div id="brasil-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
     </div>
-   
+  
     <div class="content-area alquila-content" id="alquila-content">
       <div id="alquila-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades para alquilar...</div>
       </div>
     </div>
-   
+  
     <!-- Modal para detalle de Casa -->
     <div class="casa-detail" id="casa-detail">
       <div class="casa-detail-content">
-        <button class="close-btn" id="close-casa-detail">&times;</button>
+        <button class="close-btn" id="close-casa-detail">×</button>
         <img src="https://i.postimg.cc/7hKpbTZk/Screenshot-16-10-2025-112329-ar-fichapublica-com.jpg" alt="Casa en Venta" id="casa-detail-img" loading="lazy">
         <h3 id="casa-detail-title">Casa en Venta</h3>
       </div>
     </div>
-   
+  
     <!-- Modal para Pre Tasación -->
     <div class="pre-tasacion-modal" id="pre-tasacion-modal">
       <div class="pre-tasacion-form">
-        <button class="close-btn" id="close-pre-tasacion-modal">&times;</button>
+        <button class="close-btn" id="close-pre-tasacion-modal">×</button>
         <h2>Pre Tasación Gratuita</h2>
         <form id="pre-tasacion-form">
           <label for="nombre">Nombre y Apellido:</label>
@@ -1088,28 +1068,26 @@
         </form>
       </div>
     </div>
-
     <!-- NUEVO: Modal de Galería de Imágenes -->
     <div class="image-gallery-modal" id="image-gallery-modal">
       <div class="gallery-content">
-        <button class="close-btn" id="close-gallery">&times;</button>
+        <button class="close-btn" id="close-gallery">×</button>
         <button class="gallery-nav prev" id="prev-img">‹</button>
         <img src="" alt="Imagen de propiedad" class="gallery-img" id="gallery-img">
         <button class="gallery-nav next" id="next-img">›</button>
       </div>
     </div>
   </div>
-
   <script>
     // MENU HAMBURGUESA
     const hamburger = document.getElementById('hamburger');
     const menu = document.getElementById('menu');
-   
+  
     hamburger.addEventListener('click', () => {
       hamburger.classList.toggle('active');
       menu.classList.toggle('active');
     });
-   
+  
     // Cerrar menu al hacer click en un enlace
     document.querySelectorAll('.menu-link').forEach(link => {
       link.addEventListener('click', () => {
@@ -1117,7 +1095,6 @@
         menu.classList.remove('active');
       });
     });
-
     const sidebar = document.getElementById('sidebar');
     const vendeContent = document.getElementById('vende-content');
     const inicioContent = document.getElementById('inicio-content');
@@ -1127,16 +1104,15 @@
     const argentinaProperties = document.getElementById('argentina-properties');
     const brasilProperties = document.getElementById('brasil-properties');
     const alquilaProperties = document.getElementById('alquila-properties');
-   
+  
     // Elementos del modal de Casa
     const casaDetail = document.getElementById('casa-detail');
     const closeCasaDetail = document.getElementById('close-casa-detail');
-   
+  
     // Elementos del modal de Pre Tasación
     const preTasacionModal = document.getElementById('pre-tasacion-modal');
     const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
     const preTasacionForm = document.getElementById('pre-tasacion-form');
-
     // NUEVO: Elementos de la galería
     const galleryModal = document.getElementById('image-gallery-modal');
     const galleryImg = document.getElementById('gallery-img');
@@ -1145,16 +1121,15 @@
     const closeGalleryBtn = document.getElementById('close-gallery');
     let currentImages = [];
     let currentIndex = 0;
-
     // URL de tu Web App de Google Apps Script
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
-   
+  
     // NÚMERO DE WHATSAPP PARA CONTACTAR PUBLICACIONES
     const WHATSAPP_PROPERTY_NUMBER = '5493756505202';
-   
+  
     // Almacén global de propiedades cargadas
     let allProperties = [];
-   
+  
     // Función para intentar la solicitud con reintentos
     async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
       for (let i = 0; i < retries; i++) {
@@ -1174,7 +1149,7 @@
         }
       }
     }
-   
+  
     // Función actualizada para cargar propiedades desde Google Apps Script Web App
     async function loadPropertiesFromSheet(filters = {}) {
       try {
@@ -1183,16 +1158,16 @@
           pais: filters.pais || '',
           propiedad: filters.propiedad || ''
         });
-       
+      
         const response = await fetchWithRetry(`${WEB_APP_URL}?${params}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json'
           }
         });
-       
+      
         const result = await response.json();
-       
+      
         if (result.success) {
           allProperties = result.publicaciones || [];
           return allProperties;
@@ -1204,13 +1179,13 @@
         throw error;
       }
     }
-   
+  
     // Función para mostrar propiedades por filtros específicos
     async function showPropertiesByFilters(tipoOperacion, pais = null, tipoPropiedad = null) {
       try {
         const container = getActivePropertyContainer();
         if (!container) return;
-       
+      
         container.innerHTML = `
           <div class="loading-properties active">
             ${pais === 'argentina' ? 'Cargando propiedades de Argentina...' :
@@ -1218,27 +1193,27 @@
               'Cargando propiedades para alquilar...'}
           </div>
         `;
-       
+      
         const properties = await loadPropertiesFromSheet({
           operacion: tipoOperacion,
           pais: pais,
           propiedad: tipoPropiedad
         });
-       
+      
         renderProperties(properties, container);
       } catch (error) {
         console.error('Error al filtrar propiedades:', error);
         showErrorMessage('Error al cargar propiedades. Por favor, intenta de nuevo más tarde.');
       }
     }
-   
+  
     // Función para renderizar propiedades en el DOM
     function renderProperties(properties, container = null) {
       const targetContainer = container || getActivePropertyContainer();
       if (!targetContainer) return;
-     
+    
       targetContainer.innerHTML = '';
-     
+    
       if (properties.length === 0) {
         targetContainer.innerHTML = `
           <div class="loading-properties active">
@@ -1247,51 +1222,65 @@
         `;
         return;
       }
-     
+    
       properties.forEach(property => {
         const card = createPropertyCard(property);
         targetContainer.appendChild(card);
       });
     }
-   
-    // Función para crear tarjeta de propiedad
+  
+    // === FUNCIÓN MODIFICADA: createPropertyCard CON CLIC PARA DETALLE ===
     function createPropertyCard(property) {
       const card = document.createElement('div');
       card.className = 'property-card';
-     
-      const primeraImagen = (property.imagenes && property.imagenes.length > 0) ?
-        property.imagenes[0] : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
-     
-      const precio = property.precio ? `$${parseFloat(property.precio).toLocaleString()}` : 'Precio consultar';
+    
+      // Aseguramos que siempre exista un ID único
+      const id = property.id || 'sin-id';
+    
+      const primeraImagen = (property.imagenes && property.imagenes.length > 0)
+        ? property.imagenes[0]
+        : 'https://via.placeholder.com/400x250?text=Sin+Imagen';
+    
+      const precio = property.precio ? `$${parseFloat(property.precio).toLocaleString()}` : 'Consultar precio';
       const tipoOperacion = property.tipoOperacion || '';
       const tipoPropiedad = property.tipoPropiedad || '';
       const descripcion = property.descripcion || '';
-     
-      const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
-     
+    
+      const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad} - ${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
+    
       card.innerHTML = `
         <img src="${primeraImagen}" alt="${property.titulo}"
              onerror="this.src='https://via.placeholder.com/400x250?text=Sin+Imagen'"
-             loading="lazy" class="property-main-img">
+             loading="lazy">
         <div class="property-title">${property.titulo}</div>
         <div class="property-price">${precio}</div>
         <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
-        ${descripcion ? `<p style="color: #555; margin-bottom: 15px; line-height: 1.5;">${descripcion.substring(0, 100)}...</p>` : ''}
-        <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
+        ${descripcion ? `<p style="color:#555;margin:15px 0;line-height:1.5;">${descripcion.substring(0,120)}...</p>` : ''}
+        <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}"
+           target="_blank" class="whatsapp-btn">Contactar por WhatsApp</a>
       `;
 
-      // NUEVO: Evento para abrir galería al hacer clic en la imagen
-      const img = card.querySelector('.property-main-img');
-      img.style.cursor = 'pointer';
+      // === NUEVO: Click en toda la tarjeta abre propiedadinfo.html ===
+      card.addEventListener('click', (e) => {
+        // Evita que el clic en el botón de WhatsApp abra también el detalle
+        if (e.target.closest('.whatsapp-btn')) return;
+       
+        const url = `propiedadinfo.html?id=${id}`;
+        window.open(url, '_blank'); // abre en nueva pestaña
+      });
+      
+      // === Click en la imagen abre galería (funcionalidad anterior) ===
+      const img = card.querySelector('img');
+      img.style.cursor = 'zoom-in';
       img.addEventListener('click', (e) => {
-        e.stopPropagation();
+        e.stopPropagation(); // evita abrir propiedadinfo.html al hacer click en la foto
         if (property.imagenes && property.imagenes.length > 0) {
           currentImages = property.imagenes;
           currentIndex = 0;
           openGallery();
         }
       });
-     
+    
       return card;
     }
 
@@ -1301,29 +1290,24 @@
       galleryModal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
-
     function closeGallery() {
       galleryModal.classList.remove('active');
       document.body.style.overflow = 'auto';
     }
-
     function showPrevImage() {
       currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
       galleryImg.src = currentImages[currentIndex];
     }
-
     function showNextImage() {
       currentIndex = (currentIndex + 1) % currentImages.length;
       galleryImg.src = currentImages[currentIndex];
     }
-
     prevImgBtn.addEventListener('click', showPrevImage);
     nextImgBtn.addEventListener('click', showNextImage);
     closeGalleryBtn.addEventListener('click', closeGallery);
     galleryModal.addEventListener('click', (e) => {
       if (e.target === galleryModal) closeGallery();
     });
-
     // NUEVO: Contador animado de años
     function animateCounter() {
       const counter = document.getElementById('years-counter');
@@ -1339,28 +1323,23 @@
         }
       }, 300);
     }
-
     // NUEVO: Carrusel de opiniones
     const opinionesTrack = document.getElementById('opiniones-track');
     const prevOpinionBtn = document.getElementById('prev-opinion');
     const nextOpinionBtn = document.getElementById('next-opinion');
     let opinionIndex = 0;
-
     function updateCarousel() {
       const offset = -opinionIndex * 100;
       opinionesTrack.style.transform = `translateX(${offset}%)`;
     }
-
     prevOpinionBtn.addEventListener('click', () => {
       opinionIndex = (opinionIndex - 1 + 3) % 3;
       updateCarousel();
     });
-
     nextOpinionBtn.addEventListener('click', () => {
       opinionIndex = (opinionIndex + 1) % 3;
       updateCarousel();
     });
-
     // Función para obtener el contenedor activo de propiedades
     function getActivePropertyContainer() {
       if (brasilContent.classList.contains('active')) return brasilProperties;
@@ -1368,7 +1347,7 @@
       if (argentinaContent.classList.contains('active')) return argentinaProperties;
       return null;
     }
-   
+  
     // Función para mostrar contenido de Argentina
     async function showArgentinaContent() {
       sidebar.classList.remove('active');
@@ -1377,14 +1356,14 @@
       argentinaContent.classList.add('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
-     
+    
       brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
       alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
-     
+    
       await showPropertiesByFilters('venta', 'argentina');
       argentinaProperties.style.display = 'grid';
     }
-   
+  
     async function showBrasilContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1392,13 +1371,13 @@
       argentinaContent.classList.remove('active');
       brasilContent.classList.add('active');
       alquilaContent.classList.remove('active');
-     
+    
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
-     
+    
       await showPropertiesByFilters('venta', 'brasil');
     }
-   
+  
     async function showAlquilaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1406,29 +1385,29 @@
       argentinaContent.classList.remove('active');
       brasilContent.classList.remove('active');
       alquilaContent.classList.add('active');
-     
+    
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
-     
+    
       await showPropertiesByFilters('alquiler');
     }
-   
+  
     function showCasaDetail() {
       casaDetail.classList.add('active');
     }
-   
+  
     function hideCasaDetail() {
       casaDetail.classList.remove('active');
     }
-   
+  
     function showPreTasacionModal() {
       preTasacionModal.classList.add('active');
     }
-   
+  
     function hidePreTasacionModal() {
       preTasacionModal.classList.remove('active');
     }
-   
+  
     function showErrorMessage(message) {
       const containers = [brasilProperties, alquilaProperties, argentinaProperties];
       containers.forEach(container => {
@@ -1437,8 +1416,8 @@
         }
       });
     }
-   
-    preTasacionForm.addEventListener('submit', function(e) {
+  
+    preTasacionForm.addEventWindow('submit', function(e) {
       e.preventDefault();
       const nombre = document.getElementById('nombre').value;
       const telefono = document.getElementById('telefono').value;
@@ -1451,24 +1430,24 @@
       preTasacionForm.reset();
       hidePreTasacionModal();
     });
-   
+  
     document.getElementById('argentina-link').addEventListener('click', async function(e) {
       e.preventDefault();
       e.stopPropagation();
       await showArgentinaContent();
     });
-   
+  
     document.getElementById('brasil-link').addEventListener('click', async function(e) {
       e.preventDefault();
       e.stopPropagation();
       await showBrasilContent();
     });
-   
+  
     document.getElementById('alquila-link').addEventListener('click', async function(e) {
       e.preventDefault();
       await showAlquilaContent();
     });
-   
+  
     document.getElementById('vende-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.remove('active');
@@ -1478,7 +1457,7 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.remove('active');
     });
-   
+  
     document.getElementById('inicio-link').addEventListener('click', function(e) {
       e.preventDefault();
       sidebar.classList.remove('active');
@@ -1489,23 +1468,23 @@
       alquilaContent.classList.remove('active');
       animateCounter(); // Animar contador al entrar
     });
-   
+  
     closeCasaDetail.addEventListener('click', hideCasaDetail);
     casaDetail.addEventListener('click', function(e) {
       if (e.target === casaDetail) {
         hideCasaDetail();
       }
     });
-   
+  
     closePreTasacionModal.addEventListener('click', hidePreTasacionModal);
     preTasacionModal.addEventListener('click', function(e) {
       if (e.target === preTasacionModal) {
         hidePreTasacionModal();
       }
     });
-   
+  
     document.querySelector('.pre-tasacion-btn').addEventListener('click', showPreTasacionModal);
-   
+  
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         if (casaDetail.classList.contains('active')) {
@@ -1523,7 +1502,7 @@
         if (e.key === 'ArrowRight') showNextImage();
       }
     });
-   
+  
     document.addEventListener('DOMContentLoaded', function() {
       console.log('Página cargada responsivamente. Listo para dispositivos móviles y desktop.');
       document.querySelectorAll('.loading-properties').forEach(el => {
