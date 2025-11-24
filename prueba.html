@@ -9,7 +9,6 @@
     * {
       box-sizing: border-box;
     }
-  
     body {
       margin: 0;
       font-family: 'Arial', sans-serif;
@@ -17,7 +16,6 @@
       width: 100%;
       line-height: 1.6;
     }
-  
     /* HEADER RESPONSIVO */
     .header {
       display: flex;
@@ -31,18 +29,15 @@
       top: 0;
       z-index: 1000;
     }
-  
     .logo {
       position: relative;
       z-index: 1001;
     }
-  
     .logo img {
       height: 60px;
       max-width: 150px;
       width: auto;
     }
-  
     .menu {
       display: none;
       gap: 20px;
@@ -58,11 +53,9 @@
       padding: 10px 0;
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
-  
     .menu.active {
       display: flex;
     }
-  
     .menu a {
       text-decoration: none;
       color: #fff;
@@ -74,20 +67,16 @@
       text-align: center;
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-  
     .menu a:hover {
       background-color: rgba(255,255,255,0.1);
     }
-  
     .menu a:last-child {
       border-bottom: none;
     }
-  
     .dropdown {
       position: relative;
       display: inline-block;
     }
-  
     .dropdown-content {
       display: none;
       position: absolute;
@@ -100,7 +89,6 @@
       left: 50%;
       transform: translateX(-50%);
     }
-  
     .dropdown-content a {
       color: #333;
       padding: 12px 16px;
@@ -110,19 +98,15 @@
       border-bottom: 1px solid #eee;
       text-align: center;
     }
-  
     .dropdown-content a:last-child {
       border-bottom: none;
     }
-  
     .dropdown-content a:hover {
       background-color: #f1f1f1;
     }
-  
     .dropdown:hover .dropdown-content {
       display: block;
     }
-  
     .contact-btn {
       background-color: #25D366;
       color: white;
@@ -137,11 +121,9 @@
       transition: background-color 0.3s;
       white-space: nowrap;
     }
-  
     .contact-btn:hover {
       background-color: #1ebe52;
     }
-  
     /* HAMBURGUESA MENU */
     .hamburger {
       display: block;
@@ -149,7 +131,6 @@
       padding: 10px;
       z-index: 1002;
     }
-  
     .hamburger span {
       display: block;
       width: 25px;
@@ -159,19 +140,15 @@
       transition: 0.3s;
       border-radius: 2px;
     }
-  
     .hamburger.active span:nth-child(1) {
       transform: rotate(-45deg) translate(-5px, 6px);
     }
-  
     .hamburger.active span:nth-child(2) {
       opacity: 0;
     }
-  
     .hamburger.active span:nth-child(3) {
       transform: rotate(45deg) translate(-5px, -6px);
     }
-  
     /* MAIN CONTAINER */
     .main-container {
       min-height: calc(100vh - 80px);
@@ -181,7 +158,6 @@
       flex-direction: column;
       align-items: center;
     }
-  
     .sidebar {
       width: 90%;
       max-width: 400px;
@@ -192,18 +168,15 @@
       display: none;
       margin: 20px auto;
     }
-  
     .sidebar.active {
       display: block;
     }
-  
     .sidebar iframe {
       width: 100%;
       height: 100%;
       border: none;
       border-radius: 10px;
     }
-  
     .loading-message {
       position: absolute;
       font-size: 1.1em;
@@ -213,7 +186,6 @@
       transform: translate(-50%, -50%);
       text-align: center;
     }
-  
     .content-area {
       flex: 1;
       padding: 20px;
@@ -227,11 +199,9 @@
       max-width: 1400px;
       margin: 0 auto;
     }
-  
     .content-area.active {
       display: flex;
     }
-  
     .pre-tasacion-btn {
       background: linear-gradient(45deg, #28a745, #20c997);
       color: white;
@@ -246,12 +216,10 @@
       transition: all 0.3s;
       width: fit-content;
     }
-  
     .pre-tasacion-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
     }
-  
     .section-text {
       font-size: 1.5em;
       margin: 20px 0;
@@ -259,7 +227,6 @@
       width: 100%;
       padding: 0 20px;
     }
-  
     .boxes {
       display: flex;
       gap: 20px;
@@ -269,7 +236,6 @@
       width: 100%;
       padding: 0 20px;
     }
-  
     .box {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -280,11 +246,9 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       transition: transform 0.3s;
     }
-  
     .box:hover {
       transform: translateY(-5px);
     }
-  
     .benefits-text {
       font-size: 1.4em;
       margin: 30px 0;
@@ -293,7 +257,6 @@
       padding: 0 20px;
       font-weight: bold;
     }
-  
     .benefits-boxes {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -303,7 +266,6 @@
       padding: 0 20px;
       margin: 20px 0;
     }
-  
     .benefit-box {
       width: 100%;
       max-width: 350px;
@@ -312,7 +274,6 @@
       align-items: center;
       text-align: center;
     }
-  
     .benefit-box img {
       width: 100%;
       max-width: 300px;
@@ -322,11 +283,9 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       transition: transform 0.3s;
     }
-  
     .benefit-box img:hover {
       transform: scale(1.05);
     }
-  
     .inicio-content img {
       width: 100%;
       max-width: 1200px;
@@ -334,11 +293,10 @@
       border-radius: 15px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
-  
     .imagen-adaptable {
       width: 100%;
       height: 300px;
-      background-image: url('https://i.postimg.cc/jd61S0GD/Dise-o-sin-t-tulo-1.png');
+      background-image: url('https://i.postimg.cc/SNj63KFG/Diseno-sin-titulo-(2).png');
       background-size: cover;
       background-position: center;
     }
@@ -423,7 +381,6 @@
     .google-reviews-btn:hover {
       background: #3367d6;
     }
-  
     .compra-content {
       display: flex;
       flex-direction: column;
@@ -434,7 +391,6 @@
       width: 100%;
       box-sizing: border-box;
     }
-  
     .image-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -445,7 +401,6 @@
       box-sizing: border-box;
       padding: 0 20px;
     }
-  
     .image-item {
       text-align: center;
       cursor: pointer;
@@ -456,24 +411,20 @@
       flex-direction: column;
       align-items: center;
     }
-  
     .image-item:hover {
       transform: scale(1.05);
     }
-  
     .image-item img {
       width: 100%;
       max-width: 350px;
       height: auto;
       border-radius: 10px;
     }
-  
     .image-item p {
       margin: 15px 0 0;
       font-size: 1.3em;
       font-weight: bold;
     }
-  
     /* GRIDS RESPONSIVOS */
     .property-grid {
       display: grid;
@@ -485,7 +436,6 @@
       padding: 0 20px;
       margin: 30px 0;
     }
-  
     .property-card {
       background: white;
       border-radius: 20px;
@@ -497,12 +447,10 @@
       border: 1px solid #eee;
       cursor: pointer;
     }
-  
     .property-card:hover {
       transform: translateY(-10px);
       box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
-  
     .property-card img {
       width: 100%;
       height: 250px;
@@ -510,7 +458,6 @@
       border-radius: 15px;
       margin-bottom: 20px;
     }
-  
     .property-title {
       font-size: 1.5em;
       font-weight: bold;
@@ -518,20 +465,17 @@
       margin-bottom: 15px;
       line-height: 1.3;
     }
-  
     .property-price {
       font-size: 1.4em;
       color: #28a745;
       font-weight: bold;
       margin-bottom: 15px;
     }
-  
     .property-type {
       color: #666;
       margin-bottom: 15px;
       font-style: italic;
     }
-  
     .whatsapp-btn {
       background: linear-gradient(45deg, #25D366, #128C7E);
       color: white;
@@ -548,14 +492,33 @@
       width: 100%;
       max-width: 200px;
     }
-  
     .whatsapp-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(37,211,102,0.4);
       color: white;
       text-decoration: none;
     }
-  
+    .share-btn {
+      background: linear-gradient(45deg, #0077b5, #00a0dc);
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      margin: 5px;
+      transition: all 0.3s;
+      width: 100%;
+      max-width: 200px;
+      text-align: center;
+    }
+    .share-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,119,181,0.4);
+    }
     /* MODALES RESPONSIVOS */
     .casa-detail,
     .pre-tasacion-modal,
@@ -572,13 +535,11 @@
       align-items: center;
       padding: 20px;
     }
-  
     .casa-detail.active,
     .pre-tasacion-modal.active,
     .image-gallery-modal.active {
       display: flex;
     }
-  
     .casa-detail-content {
       background-color: white;
       padding: 30px;
@@ -590,20 +551,17 @@
       position: relative;
       overflow-y: auto;
     }
-  
     .casa-detail img {
       max-width: 100%;
       max-height: 50vh;
       border-radius: 15px;
       margin-bottom: 20px;
     }
-  
     .casa-detail h3 {
       margin: 10px 0;
       color: #333;
       font-size: 1.8em;
     }
-  
     .close-btn {
       position: absolute;
       top: 15px;
@@ -622,7 +580,6 @@
       transition: background-color 0.3s;
       z-index: 10;
     }
-  
     .close-btn:hover {
       background-color: #f0f0f0;
       color: #000;
@@ -663,7 +620,6 @@
     .gallery-nav.next {
       right: 10px;
     }
-  
     .pre-tasacion-form {
       background-color: white;
       padding: 30px;
@@ -675,14 +631,12 @@
       overflow-y: auto;
       max-height: 90vh;
     }
-  
     .pre-tasacion-form h2 {
       font-size: 1.6em;
       margin-bottom: 20px;
       text-align: center;
       color: #333;
     }
-  
     .pre-tasacion-form label {
       display: block;
       margin-bottom: 5px;
@@ -692,7 +646,6 @@
       color: #333;
       margin-top: 15px;
     }
-  
     .pre-tasacion-form input,
     .pre-tasacion-form textarea,
     .pre-tasacion-form select {
@@ -704,14 +657,12 @@
       font-size: 1em;
       transition: border-color 0.3s;
     }
-  
     .pre-tasacion-form input:focus,
     .pre-tasacion-form textarea:focus,
     .pre-tasacion-form select:focus {
       outline: none;
       border-color: #28a745;
     }
-  
     .pre-tasacion-form button {
       background: linear-gradient(45deg, #28a745, #20c997);
       color: white;
@@ -725,12 +676,10 @@
       margin-top: 20px;
       transition: all 0.3s;
     }
-  
     .pre-tasacion-form button:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
     }
-  
     .loading-properties {
       text-align: center;
       padding: 50px 20px;
@@ -743,31 +692,25 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
-  
     .loading-properties.active {
       display: block;
     }
-  
     /* Ocultar brasil-content y alquila-content cuando no están activos */
     .brasil-content:not(.active),
     .alquila-content:not(.active) {
       display: none !important;
     }
-  
     /* MEDIA QUERIES PARA DESKTOP */
     @media (min-width: 1024px) {
       .header {
         padding: 20px 40px;
       }
-    
       .logo img {
         height: 80px;
       }
-    
       .hamburger {
         display: none;
       }
-    
       .menu {
         display: flex !important;
         flex-direction: row;
@@ -776,141 +719,115 @@
         box-shadow: none;
         padding: 0;
       }
-    
       .menu a {
         font-size: 1.2em;
         padding: 15px 20px;
         border-bottom: none;
       }
-    
       .property-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 40px;
       }
-    
       .benefits-boxes {
         grid-template-columns: repeat(3, 1fr);
         gap: 40px;
       }
-    
       .boxes {
         gap: 40px;
       }
-    
       .box {
         min-width: 250px;
         padding: 30px;
       }
-    
       .section-text,
       .benefits-text {
         font-size: 1.8em;
         padding: 0 40px;
       }
-    
       .property-card img {
         height: 300px;
       }
     }
-  
     /* MEDIA QUERIES PARA TABLET */
     @media (min-width: 768px) and (max-width: 1023px) {
       .property-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
       }
-    
       .benefits-boxes {
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
       }
-    
       .header {
         padding: 15px 30px;
       }
-    
       .logo img {
         height: 70px;
       }
     }
-  
     /* MEDIA QUERIES PARA MOVIL */
     @media (max-width: 767px) {
       .header {
         padding: 15px 20px;
         position: relative;
       }
-    
       .logo {
         position: static;
       }
-    
       .logo img {
         height: 50px;
       }
-    
       .contact-btn {
         position: static;
         margin-left: auto;
         padding: 10px 15px;
         font-size: 0.9em;
       }
-    
       .property-grid {
         grid-template-columns: 1fr;
         gap: 20px;
         padding: 0 10px;
       }
-    
       .benefits-boxes {
         grid-template-columns: 1fr;
         gap: 20px;
       }
-    
       .boxes {
         flex-direction: column;
         align-items: center;
         gap: 15px;
       }
-    
       .box {
         width: 90%;
         max-width: 300px;
       }
-    
       .section-text,
       .benefits-text {
         font-size: 1.3em;
         padding: 0 15px;
       }
-    
       .pre-tasacion-btn {
         font-size: 1.2em;
         padding: 12px 25px;
         width: 90%;
       }
-    
       .property-card {
         padding: 20px;
         margin: 10px;
       }
-    
       .property-title {
         font-size: 1.3em;
       }
-    
-      .whatsapp-btn {
+      .whatsapp-btn, .share-btn {
         padding: 10px 20px;
         font-size: 0.9em;
         max-width: none;
       }
-    
       .casa-detail-content,
       .pre-tasacion-form {
         padding: 20px;
         margin: 10px;
       }
-    
       .pre-tasacion-form input,
       .pre-tasacion-form textarea,
       .pre-tasacion-form select {
@@ -922,17 +839,14 @@
         font-size: 1.2em;
       }
     }
-  
     /* ANIMACIONES */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-  
     .content-area.active {
       animation: fadeIn 0.6s ease-out;
     }
-  
     .property-card {
       animation: fadeIn 0.5s ease-out;
     }
@@ -965,14 +879,12 @@
       <span class="loading-message">Sin contenido externo</span>
     </div>
   
-    <!-- INICIO CON NUEVOS PANELES -->
+    <!-- INICIO -->
     <div class="content-area active" id="inicio-content">
       <div class="imagen-adaptable"></div>
-      <!-- Contador de años -->
       <div class="experience-panel">
         <span id="years-counter">0</span> años de experiencia
       </div>
-      <!-- Opiniones de clientes -->
       <div class="opiniones-section">
         <h2 class="opiniones-title">Esto es lo que comentan nuestros clientes</h2>
         <div class="opiniones-carousel">
@@ -990,7 +902,7 @@
           </div>
           <button class="carousel-btn next" id="next-opinion">›</button>
         </div>
-        <a href="https://www.google.com/maps/place/Estudio+Inmobiliario+Agustin+Santos/@-28.5515538,-56.0436804,18z/data=!4m8!3m7!1s0x9455cfa10e7f7b65:0xf65e0d40c1ff613b!8m2!3d-28.5515538!4d-56.0430497!9m1!1b1!16s%2Fg%2F11j8g9lq_9?entry=ttu&g_ep=EgoyMDI1MTExMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="google-reviews-btn">
+        <a href="https://www.google.com/maps/place/Estudio+Inmobiliario+Agustin+Santos/@-28.5515538,-56.0436804,18z/data=!4m8!3m7!1s0x9455cfa10e7f7b65:0xf65e0d40c1ff613b!8m2!3d-28.5515538!4d-56.0430497!9m1!1b1!16s%2Fg%2F11j8g9lq_9?entry=ttu" target="_blank" class="google-reviews-btn">
           Conocé todas las opiniones sobre nosotros
         </a>
       </div>
@@ -1230,7 +1142,7 @@
       });
     }
   
-    // === FUNCIÓN MODIFICADA: createPropertyCard (CON LA NUEVA FUNCIONALIDAD) ===
+    // === FUNCIÓN NUEVA Y COMPLETA: createPropertyCard con ID, enlace compartir y todo ===
     function createPropertyCard(property) {
       const card = document.createElement('div');
       card.className = 'property-card';
@@ -1243,6 +1155,7 @@
       const tipoOperacion = property.tipoOperacion || '';
       const tipoPropiedad = property.tipoPropiedad || '';
       const descripcion = property.descripcion || '';
+      const enlaceCompartir = property.enlaceCompartir || `propiedadinfo.html?id=${id}`;
     
       const whatsappMessage = encodeURIComponent(`Hola, me interesa la propiedad:\n${property.titulo}\n${tipoPropiedad}\n${tipoOperacion}\nPrecio: ${precio}\n${descripcion}`);
     
@@ -1254,17 +1167,19 @@
         <div class="property-price">${precio}</div>
         <div class="property-type">${tipoPropiedad} - ${tipoOperacion}</div>
         ${descripcion ? `<p style="color: #555; margin-bottom: 15px; line-height: 1.5;">${descripcion.substring(0, 100)}...</p>` : ''}
-        <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <a href="https://wa.me/${WHATSAPP_PROPERTY_NUMBER}?text=${whatsappMessage}" target="_blank" class="whatsapp-btn">Contactar</a>
+          <a href="${enlaceCompartir}" target="_blank" class="share-btn">Compartir</a>
+        </div>
       `;
 
-      // NUEVO: Click en toda la tarjeta abre propiedadinfo.html
+      // Click en toda la tarjeta abre el detalle
       card.addEventListener('click', (e) => {
-        if (e.target.closest('.whatsapp-btn')) return;
-        const url = `propiedadinfo.html?id=${id}`;
-        window.open(url, '_blank');
+        if (e.target.closest('a')) return; // Evita abrir si se hace click en botones
+        window.open(`propiedadinfo.html?id=${id}`, '_blank');
       });
     
-      // Click en la imagen abre galería (funcionalidad original)
+      // Click en la imagen abre la galería
       const img = card.querySelector('.property-main-img');
       img.style.cursor = 'zoom-in';
       img.addEventListener('click', (e) => {
@@ -1384,7 +1299,6 @@
       brasilContent.classList.remove('active');
       alquilaContent.classList.add('active');
     
- modernization: true,
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
     
