@@ -69,6 +69,7 @@
       font-size: 2em;
       cursor: pointer;
       z-index: 10;
+      transition: all 0.3s;
     }
     .gallery-nav:hover { background: rgba(0,0,0,0.9); }
     .prev-btn { left: 15px; }
@@ -110,28 +111,49 @@
       line-height: 1.8;
       margin: 25px 0;
       text-align: justify;
+      white-space: pre-wrap;
     }
     .actions {
       text-align: center;
       margin: 30px 0;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.2em;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
     .whatsapp-btn {
       background: linear-gradient(45deg, #25D366, #128C7E);
       color: white;
-      padding: 18px 40px;
-      border: none;
-      border-radius: 50px;
-      font-size: 1.3em;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: all 0.3s;
-      box-shadow: 0 8px 20px rgba(37,211,102,0.4);
     }
     .whatsapp-btn:hover {
       transform: translateY(-5px);
       box-shadow: 0 15px 30px rgba(37,211,102,0.6);
+    }
+    .copy-btn {
+      background: linear-gradient(45deg, #0077b5, #00a0dc);
+      color: white;
+    }
+    .copy-btn:hover, .copy-btn.copied {
+      background: linear-gradient(45deg, #28a745, #20c997);
+      transform: translateY(-5px);
+    }
+    .copy-btn.copied::after {
+      content: " ¡Enlace copiado!";
+      font-size: 0.9em;
     }
     .back-btn {
       display: inline-block;
@@ -139,6 +161,7 @@
       color: #666;
       text-decoration: none;
       font-weight: bold;
+      font-size: 1.1em;
     }
     .back-btn:hover { color: #28a745; }
     .loading {
@@ -152,6 +175,8 @@
       .title { font-size: 1.8em; }
       .price { font-size: 1.6em; }
       .info { padding: 20px; }
+      .actions { flex-direction: column; align-items: center; }
+      .btn { width: 90%; justify-content: center; }
     }
   </style>
 </head>
@@ -164,8 +189,8 @@
 
   <div class="container" id="property-container" style="display:none;">
     <div class="gallery" id="gallery">
-      <button class="gallery-nav prev-btn" id="prev-btn">‹</button>
-      <button class="gallery-nav next-btn" id="next-btn">›</button>
+      <button class="gallery-nav prev-btn" id="prev-btn">Previous</button>
+      <button class="gallery-nav next-btn" id="next-btn">Next</button>
     </div>
 
     <div class="info">
@@ -194,9 +219,12 @@
       <p class="description" id="description">Cargando descripción...</p>
 
       <div class="actions">
-        <a href="#" id="whatsapp-btn" class="whatsapp-btn" target="_blank">
+        <a href="#" id="whatsapp-btn" class="btn whatsapp-btn" target="_blank">
           Contactar por WhatsApp
         </a>
+        <button id="copy-btn" class="btn copy-btn">
+          Copiar enlace
+        </button>
       </div>
 
       <a href="index.html" class="back-btn">Volver al inicio</a>
@@ -208,10 +236,7 @@
   </div>
 
   <script>
-    // URL de tu Web App (la misma que usas en el index)
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
-
-    // Obtener ID de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
 
@@ -224,22 +249,17 @@
           if (data.success && data.publicacion) {
             const p = data.publicacion;
 
-            // Título y precio
             document.getElementById('title').textContent = p.titulo || 'Sin título';
             document.getElementById('price').textContent = p.precio 
               ? '$' + parseFloat(p.precio).toLocaleString('es-AR') 
               : 'Consultar precio';
 
-            // Detalles rápidos
             document.getElementById('tipo-propiedad').textContent = p.tipoPropiedad || '—';
             document.getElementById('operacion').textContent = p.tipoOperacion || '—';
-            document.getElementById('ubicacion').textContent = p.ubicacion || p.direccion || '—';
+            document.getElementById('ubicacion').textContent = p.ubicacion || p.direccion || p.pais || '—';
             document.getElementById('superficie').textContent = p.superficie ? p.superficie + ' m²' : '—';
-
-            // Descripción completa
             document.getElementById('description').textContent = p.descripcion || 'Sin descripción disponible.';
 
-            // Galería de imágenes
             const gallery = document.getElementById('gallery');
             const imagenes = p.imagenes || [];
             if (imagenes.length > 0) {
@@ -257,36 +277,46 @@
               gallery.appendChild(img);
             }
 
-            // Botón WhatsApp
             const mensaje = encodeURIComponent(
-              `¡Hola! Me interesa la propiedad:\n\n` +
+              `¡Hola! Mirá esta propiedad que encontré:\n\n` +
               `${p.titulo}\n` +
               `${p.tipoPropiedad} - ${p.tipoOperacion}\n` +
-              `Precio: ${p.precio ? '$' + parseFloat(p.precio).toLocaleString('es-AR') : 'Consultar'}\n` +
-              `${p.ubicacion || p.direccion || ''}\n\n` +
-              `Link: ${window.location.href}`
+              `Precio: ${p.precio ? '$' + parseFloat(p.precio).toLocaleString('es-AR') : 'Consultar'}\n\n` +
+              window.location.href
             );
             document.getElementById('whatsapp-btn').href = `https://wa.me/5493756505202?text=${mensaje}`;
 
-            // Mostrar contenedor
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('property-container').style.display = 'block';
+            // === NUEVO: BOTÓN COPIAR ENLACE ===
+            const copyBtn = document.getElementById('copy-btn');
+            copyBtn.addEventListener('click', () => {
+              navigator.clipboard.writeText(window.location.href).then(() => {
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = `¡Enlace copiado!`;
+                setTimeout(() => {
+                  copyBtn.classList.remove('copied');
+                  copyBtn.innerHTML = `Copiar enlace`;
+                }, 2000);
+              }).catch(() => {
+                alert('No se pudo copiar el enlace');
+              });
+            });
 
-            // Navegación de galería
+            // Galería
             let currentIndex = 0;
             const imgs = gallery.querySelectorAll('img');
-
             document.getElementById('prev-btn').onclick = () => {
               imgs[currentIndex].classList.remove('active');
               currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
               imgs[currentIndex].classList.add('active');
             };
-
             document.getElementById('next-btn').onclick = () => {
               imgs[currentIndex].classList.remove('active');
               currentIndex = (currentIndex + 1) % imgs.length;
               imgs[currentIndex].classList.add('active');
             };
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('property-container').style.display = 'block';
 
           } else {
             document.getElementById('loading').innerHTML = '<p style="color:red;">Propiedad no encontrada.</p>';
