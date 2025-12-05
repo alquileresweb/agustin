@@ -300,61 +300,43 @@
       background-size: cover;
       background-position: center;
     }
-    /* NUEVO PANEL DE EXPERIENCIA CON FONDO HERMOSO */
-    .experience-section {
-      margin: 50px auto;
-      max-width: 1000px;
+    /* === PANEL ROJO PARA EL CONTADOR DE EXPERIENCIA === */
+    .experience-panel-red {
+      margin: 40px auto;
       padding: 60px 30px;
       text-align: center;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      background: linear-gradient(135deg, #e50914, #b80710);
       border-radius: 25px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      max-width: 900px;
+      width: 90%;
+      box-shadow: 0 15px 40px rgba(229, 9, 20, 0.4);
       color: white;
-      position: relative;
-      overflow: hidden;
+      animation: pulse 4s infinite alternate;
     }
-    .experience-section::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(40,167,69,0.15) 0%, transparent 70%);
-      animation: float 20s infinite linear;
-    }
-    @keyframes float {
-      0% { transform: translate(0, 0) rotate(0deg); }
-      100% { transform: translate(50px, 50px) rotate(360deg); }
-    }
-    .experience-section h2 {
-      font-size: 2.4em;
+    .experience-panel-red h2 {
+      font-size: 2.8em;
       margin: 0 0 20px;
-      font-weight: 300;
-      letter-spacing: 1px;
+      font-weight: 900;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.5);
     }
-    .experience-counter {
+    #years-counter {
       font-size: 7em;
       font-weight: 900;
-      color: #28a745;
-      text-shadow: 0 0 30px rgba(40,167,69,0.6);
-      margin: 10px 0;
+      color: #fff;
+      text-shadow: 0 0 30px rgba(255,255,255,0.8),
+                   0 0 60px rgba(255,255,255,0.5);
       line-height: 1;
     }
-    .experience-text {
-      font-size: 2.2em;
-      font-weight: 600;
+    .experience-panel-red span {
+      font-size: 2.5em;
+      font-weight: bold;
+      display: block;
       margin-top: 10px;
     }
 
-    @media (max-width: 767px) {
-      .experience-section {
-        margin: 40px 15px;
-        padding: 50px 20px;
-      }
-      .experience-section h2 { font-size: 2em; }
-      .experience-counter { font-size: 5em; }
-      .experience-text { font-size: 1.8em; }
+    @keyframes pulse {
+      from { box-shadow: 0 15px 40px rgba(229, 9, 20, 0.4); }
+      to { box-shadow: 0 20px 60px rgba(229, 9, 20, 0.6); }
     }
 
     /* === NUESTRO EQUIPO === */
