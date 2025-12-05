@@ -1439,36 +1439,20 @@
     galleryModal.addEventListener('click', (e) => {
       if (e.target === galleryModal) closeGallery();
     });
-    // NUEVO: Contador animado de años
-    function animateCounter() {
-      const counter = document.getElementById('years-counter');
-      let current = 0;
-      const target = 8;
-      const increment = 1;
-      const interval = setInterval(() => {
-        current += increment;
-        counter.textContent = current;
-        if (current >= target) {
-          clearInterval(interval);
-          counter.textContent = target;
-        }
-      }, 300);
-    }
-
-    // Contador animado de años (máximo 8)
+    // CONTADOR ANIMADO HASTA 8 AÑOS (con efecto brutal en rojo)
     function animateCounter() {
       const counter = document.getElementById('years-counter');
       let num = 0;
-      const target = 8;
       const timer = setInterval(() => {
         num++;
         counter.textContent = num;
-        if (num >= target) clearInterval(timer);
+        if (num >= 8) clearInterval(timer);
       }, 250);
     }
 
-    // Ejecutar cuando se carga la página o al volver a Inicio
     document.addEventListener('DOMContentLoaded', animateCounter);
+
+    // Volver a animar cuando se hace click en "Inicio"
     document.getElementById('inicio-link').addEventListener('click', (e) => {
       e.preventDefault();
       document.querySelectorAll('.content-area').forEach(el => el.classList.remove('active'));
