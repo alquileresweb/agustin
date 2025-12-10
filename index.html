@@ -308,6 +308,93 @@
       font-weight: bold;
       color: #28a745;
     }
+
+    /* NUEVA SECCIÓN SERVICIOS - ESTILO BONITO Y RESPONSIVE */
+    .services-section {
+      margin: 80px 20px 60px;
+      text-align: center;
+    }
+    .services-section h2 {
+      font-size: 2.6em;
+      margin-bottom: 50px;
+      color: #1e3c72;
+      font-weight: 700;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+    .service-item {
+      background: white;
+      border-radius: 20px;
+      padding: 35px 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .service-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    .service-item strong {
+      font-size: 1.7em;
+      color: #28a745;
+      margin-bottom: 15px;
+      display: block;
+    }
+    .service-item p {
+      font-size: 1.15em;
+      color: #444;
+      margin: 0;
+      line-height: 1.6;
+    }
+    .service-item a img {
+      margin-top: 20px;
+      width: 180px;
+      height: auto;
+      transition: transform 0.3s;
+    }
+    .service-item a img:hover {
+      transform: scale(1.08);
+    }
+    @media (max-width: 767px) {
+      .services-section h2 { font-size: 2.1em; }
+      .service-item { padding: 25px 20px; }
+      .service-item strong { font-size: 1.5em; }
+    }
+
+    <!-- ==== NUEVA SECCIÓN: NUESTROS SERVICIOS ==== -->
+      <div class="services-section">
+        <h2>Nuestros Servicios</h2>
+        <div class="services-grid">
+
+          <div class="service-item">
+            <strong>Tasamos tu propiedad</strong>
+            <p>Visitamos tu propiedad y realizamos una tasación profesional y acorde a la actualidad del mercado inmobiliario</p>
+          </div>
+
+          <div class="service-item">
+            <strong>Promocionamos tu inmueble</strong>
+            <p>Publicamos tu inmueble en nuestras redes y en AlquiYa para lograr la mayor visualización y captación de posibles compradores en Santo Tomé.</p>
+            <a href="https://www.alquiya.com.ar" target="_blank">
+              <img src="https://i.postimg.cc/5NW0WCMN/logo-Alqui-Ya-fondo-blanco-Photoroom-Photoroom.jpg" alt="AlquiYa">
+            </a>
+          </div>
+
+          <div class="service-item">
+            <strong>Te ayudamos a vender, comprar o alquilar</strong>
+            <p>Serás asesorado por profesionales durante todo el proceso. Tanto en la parte inmobiliaria, contable, legal, impositiva o comercial. Para lograr la mejor experiencia en la compra/venta/alquiler de inmuebles.</p>
+          </div>
+
+        </div>
+      </div>
+    
     /* === NUESTRO EQUIPO - TOTALMENTE RESPONSIVE Y BONITO EN CELULAR === */
     .team-section {
       margin: 70px 20px 50px;
