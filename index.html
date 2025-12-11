@@ -1729,28 +1729,38 @@
     });
   </script>
 
-  <!-- POP-UP 2: NUEVO BANNER “CON AIRE ACONDICIONADO” -->
-  <div id="torresbrasil-popup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center; animation:fadeIn 0.6s ease;">
-    <div style="background:white; border-radius:20px; overflow:hidden; max-width:90%; width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.4); position:relative; animation:popUp 0.6s ease;">
-      <!-- Botón cerrar -->
-      <button onclick="cerrarTorresBrasilPopup()" style="position:absolute; top:12px; right:12px; background:#e74c3c; color:white; border:none; width:36px; height:36px; border-radius:50%; font-size:20px; font-weight:bold; cursor:pointer; z-index:10;">
-        ×
+    <!-- POP-UP 1: TORRES BRASIL (aparece primero) -->
+  <div id="torresbrasil-popup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; 
+       display:flex; align-items:center; justify-content:center; animation:fadeIn 0.6s ease;">
+    <div style="background:white; border-radius:20px; overflow:hidden; max-width:90%; width:420px; 
+              box-shadow:0 20px 60px rgba(0,0,0,0.4); position:relative; animation:popUp 0.6s ease;">
+      <button onclick="cerrarTorresBrasilPopup()" style="position:absolute; top:12px; right:12px; 
+           background:#e74c3c; color:white; border:none; width:36px; height:36px; border-radius:50%; 
+           font-size:20px; font-weight:bold; cursor:pointer; z-index:10;">
+        X
       </button>
-      <!-- Imagen que abre WhatsApp con texto personalizado -->
       <a href="https://wa.me/5493756508620?text=Quiero%20consultar%20por%20departamentos%20en%20Torres%20Brasil" target="_blank">
-        <img src="https://i.postimg.cc/mksLBbsP/Con-aire-acondicionado.png" alt="Departamentos con aire acondicionado - Torres Brasil" style="width:100%; height:auto; display:block;">
+        <img src="https://i.postimg.cc/mksLBbsP/Con-aire-acondicionado.png" 
+             alt="Departamentos con aire acondicionado - Torres Brasil" 
+             style="width:100%; height:auto; display:block;">
       </a>
     </div>
   </div>
-  
-  <!-- POP-UP 1: RAPICLEAN (ya existía) -->
-  <div id="rapiclean-popup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9998; align-items:center; justify-content:center; animation:fadeIn 0.6s ease;">
-    <div style="background:white; border-radius:20px; overflow:hidden; max-width:90%; width:380px; box-shadow:0 20px 60px rgba(0,0,0.4); position:relative; animation:popUp 0.6s ease;">
-      <button onclick="cerrarRapicleanPopup()" style="position:absolute; top:12px; right:12px; background:#e74c3c; color:white; border:none; width:36px; height:36px; border-radius:50%; font-size:20px; font-weight:bold; cursor:pointer; z-index:10;">
-        ×
+
+  <!-- POP-UP 2: RAPICLEAN (aparece después) -->
+  <div id="rapiclean-popup" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9998; 
+       align-items:center; justify-content:center; animation:fadeIn 0.6s ease;">
+    <div style="background:white; border-radius:20px; overflow:hidden; max-width:90%; width:380px; 
+              box-shadow:0 20px 60px rgba(0,0,0,0.4); position:relative; animation:popUp 0.6s ease;">
+      <button onclick="cerrarRapicleanPopup()" style="position:absolute; top:12px; right:12px; 
+           background:#e74c3c; color:white; border:none; width:36px; height:36px; border-radius:50%; 
+           font-size:20px; font-weight:bold; cursor:pointer; z-index:10;">
+        X
       </button>
       <a href="https://wa.me/5493764391885" target="_blank">
-        <img src="https://i.postimg.cc/43C34LFX/POST-Rapiclean-(2).png" alt="Rapiclean" style="width:100%; height:auto; display:block;">
+        <img src="https://i.postimg.cc/43C34LFX/POST-Rapiclean-(2).png" 
+             alt="Rapiclean - Limpieza para estudiantes" 
+             style="width:100%; height:auto; display:block;">
       </a>
     </div>
   </div>
