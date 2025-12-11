@@ -1767,34 +1767,35 @@
 </style>
 
 <script>
-// Mostrar el pop-up solo si no fue cerrado en esta sesión
+// === POP-UP TORRES BRASIL (primero) ===
 window.addEventListener('load', function() {
-  if (!sessionStorage.getItem('rapicleanPopupCerrado')) {
+  // Aparece a los 2 segundos de cargar la página
+  if (!sessionStorage.getItem('torresBrasilPopupCerrado')) {
     setTimeout(() => {
-      document.getElementById('rapiclean-popup').style.display = 'flex';
-    }, 1500); // Aparece después de 1.5 segundos
+      document.getElementById('torresbrasil-popup').style.display = 'flex';
+    }, 2000);
   }
 });
 
+function cerrarTorresBrasilPopup() {
+  document.getElementById('torresbrasil-popup').style.display = 'none';
+  sessionStorage.setItem('torresBrasilPopupCerrado', 'true');
+
+  // Cuando cierran el de Torres Brasil, mostramos el de Rapiclean después de 3 segundos
+  if (!sessionStorage.getItem('rapicleanPopupCerrado')) {
+    setTimeout(() => {
+      document.getElementById('rapiclean-popup').style.display = 'flex';
+    }, 3000);
+  }
+}
+
+// === POP-UP RAPICLEAN (segundo) ===
 function cerrarRapicleanPopup() {
   document.getElementById('rapiclean-popup').style.display = 'none';
-  // Guardamos que ya lo cerró para no volver a mostrarlo en esta sesión
   sessionStorage.setItem('rapicleanPopupCerrado', 'true');
 }
-  
-    window.addEventListener('load', function() {
-      // Mostramos este pop-up 4 segundos después del Rapiclean para no solaparlos
-      if (!sessionStorage.getItem('torresBrasilPopupCerrado')) {
-        setTimeout(() => {
-          document.getElementById('torresbrasil-popup').style.display = 'flex';
-        }, 5500); // aparece 4 segundos después del primero
-      }
-    });
 
-    function cerrarTorresBrasilPopup() {
-      document.getElementById('torresbrasil-popup').style.display = 'none';
-      sessionStorage.setItem('torresBrasilPopupCerrado', 'true');
-    }
+// Si el usuario cierra la página y vuelve en la misma sesión, ninguno vuelve a aparecer
 </script>
   
 </body>
