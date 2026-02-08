@@ -124,49 +124,6 @@
     .contact-btn:hover {
       background-color: #1ebe52;
     }
-
-    /* Estilos base para todos los botones cerrar */
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;               /* Hace que sea circular */
-  border: none;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  z-index: 10;
-  line-height: 1;
-}
-
-/* Variante roja para modal de interés y pop-ups */
-.close-red {
-  background-color: #e74c3c;        /* Rojo característico */
-  color: white;
-}
-
-/* Hover para el rojo */
-.close-red:hover {
-  background-color: #c0392b;        /* Rojo más oscuro en hover */
-  transform: scale(1.1);            /* Pequeño efecto de agrandado */
-}
-
-/* Para los otros modales (gris por defecto) */
-.close-btn:not(.close-red) {
-  background: none;
-  color: #666;
-}
-
-.close-btn:not(.close-red):hover {
-  background-color: #f0f0f0;
-  color: #000;
-}
     
     /* HAMBURGUESA MENU */
     .hamburger {
@@ -1344,44 +1301,49 @@
       </div>
     </div>
     <!-- NUEVO: Modal para Formulario de Interés -->
-    <div class="interes-modal" id="interes-modal">
-      <div class="interes-form">
-        <button class="close-btn close-red" id="close-interes-modal">×</button>
-        <h2>Formulario de Interés</h2>
-        <form id="interes-form">
-          <label for="interes-nombre">Nombre y Apellido:</label>
-          <input type="text" id="interes-nombre" required>
-          <label for="interes-telefono">Teléfono / WhatsApp:</label>
-          <input type="tel" id="interes-telefono" required>
-          <label for="interes-email">Email (opcional):</label>
-          <input type="email" id="interes-email">
-          <label for="interes-operacion">Tipo de Operación:</label>
-          <select id="interes-operacion" required>
-            <option value="">Seleccione</option>
-            <option value="Compra">Compra</option>
-            <option value="Alquiler">Alquiler</option>
-            <option value="Venta">Venta</option>
-            <option value="Tasación">Tasación</option>
-          </select>
-          <label for="interes-propiedad">Tipo de Propiedad:</label>
-          <select id="interes-propiedad" required>
-            <option value="">Seleccione</option>
-            <option value="Casa">Casa</option>
-            <option value="Departamento">Departamento</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Local Comercial">Local Comercial</option>
-            <option value="Otro">Otro</option>
-          </select>
-          <label for="interes-ubicacion">Ubicación / Barrio / Ciudad:</label>
-          <input type="text" id="interes-ubicacion" required>
-          <label for="interes-presupuesto">Presupuesto / Rango de Precio:</label>
-          <input type="text" id="interes-presupuesto" required placeholder="Ej: $50.000 - $100.000">
-          <label for="interes-notas">Notas / Intereses adicionales:</label>
-          <textarea id="interes-notas" rows="3"></textarea>
-          <button type="submit">Enviar</button>
-        </form>
-      </div>
-    </div>
+<div class="interes-modal" id="interes-modal">
+  <div class="interes-form">
+    <!-- Botón cerrar rojo circular, igual que los pop-ups -->
+    <button onclick="hideInteresModal()" style="position:absolute; top:12px; right:12px;
+         background:#e74c3c; color:white; border:none; width:36px; height:36px; border-radius:50%;
+         font-size:20px; font-weight:bold; cursor:pointer; z-index:10;">
+      ×
+    </button>
+    <h2>Formulario de Interés</h2>
+    <form id="interes-form">
+      <label for="interes-nombre">Nombre y Apellido:</label>
+      <input type="text" id="interes-nombre" required>
+      <label for="interes-telefono">Teléfono / WhatsApp:</label>
+      <input type="tel" id="interes-telefono" required>
+      <label for="interes-email">Email (opcional):</label>
+      <input type="email" id="interes-email">
+      <label for="interes-operacion">Tipo de Operación:</label>
+      <select id="interes-operacion" required>
+        <option value="">Seleccione</option>
+        <option value="Compra">Compra</option>
+        <option value="Alquiler">Alquiler</option>
+        <option value="Venta">Venta</option>
+        <option value="Tasación">Tasación</option>
+      </select>
+      <label for="interes-propiedad">Tipo de Propiedad:</label>
+      <select id="interes-propiedad" required>
+        <option value="">Seleccione</option>
+        <option value="Casa">Casa</option>
+        <option value="Departamento">Departamento</option>
+        <option value="Terreno">Terreno</option>
+        <option value="Local Comercial">Local Comercial</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <label for="interes-ubicacion">Ubicación / Barrio / Ciudad:</label>
+      <input type="text" id="interes-ubicacion" required>
+      <label for="interes-presupuesto">Presupuesto / Rango de Precio:</label>
+      <input type="text" id="interes-presupuesto" required placeholder="Ej: $50.000 - $100.000">
+      <label for="interes-notas">Notas / Intereses adicionales:</label>
+      <textarea id="interes-notas" rows="3"></textarea>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+</div>
     <!-- NUEVO: Modal de Galería de Imágenes -->
     <div class="image-gallery-modal" id="image-gallery-modal">
       <div class="gallery-content">
