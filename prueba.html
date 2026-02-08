@@ -1305,121 +1305,57 @@
         </form>
       </div>
     </div>
-    <!-- NUEVO: Modal de Interés para Vendé -->
-    <div class="interest-modal" id="interest-vende-modal">
-      <div class="interest-form">
-        <button class="close-btn" onclick="hideInterestVendeModal()">×</button>
-        <h2>Expresar Interés en Vender</h2>
-        <form id="interest-vende-form">
-          <label for="vende-nombre">Nombre y Apellido:</label>
-          <input type="text" id="vende-nombre" required>
-          <label for="vende-telefono">Teléfono / WhatsApp:</label>
-          <input type="tel" id="vende-telefono" required>
-          <label for="vende-email">Email:</label>
-          <input type="email" id="vende-email">
-          <label for="vende-tipo-operacion">Tipo de Operación:</label>
-          <select id="vende-tipo-operacion" required>
-            <option value="">Seleccione</option>
-            <option value="Venta">Venta</option>
-            <option value="Tasación">Tasación</option>
-          </select>
-          <label for="vende-tipo-propiedad">Tipo de Propiedad:</label>
-          <select id="vende-tipo-propiedad" required>
-            <option value="">Seleccione</option>
-            <option value="Casa">Casa</option>
-            <option value="Departamento">Departamento</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Local Comercial">Local Comercial</option>
-            <option value="Otro">Otro</option>
-          </select>
-          <label for="vende-ubicacion">Ubicación / Barrio / Ciudad:</label>
-          <input type="text" id="vende-ubicacion" required>
-          <label for="vende-presupuesto">Presupuesto / Rango Precio:</label>
-          <input type="text" id="vende-presupuesto">
-          <label for="vende-notas">Notas:</label>
-          <textarea id="vende-notas" rows="3"></textarea>
-          <button type="submit">Enviar Interés</button>
-        </form>
-      </div>
-    </div>
-    <!-- NUEVO: Modal de Interés para Propiedades (común Argentina/Brasil) -->
-    <div class="interest-modal" id="interest-propiedades-modal">
-      <div class="interest-form">
-        <button class="close-btn" onclick="hideInterestPropiedadesModal()">×</button>
-        <h2>Expresar Interés en Propiedades</h2>
-        <form id="interest-propiedades-form">
-          <label for="prop-nombre">Nombre y Apellido:</label>
-          <input type="text" id="prop-nombre" required>
-          <label for="prop-telefono">Teléfono / WhatsApp:</label>
-          <input type="tel" id="prop-telefono" required>
-          <label for="prop-email">Email:</label>
-          <input type="email" id="prop-email">
-          <label for="prop-tipo-operacion">Tipo de Operación:</label>
-          <select id="prop-tipo-operacion" required>
-            <option value="">Seleccione</option>
-            <option value="Compra">Compra</option>
-            <option value="Inversión">Inversión</option>
-          </select>
-          <label for="prop-tipo-propiedad">Tipo de Propiedad:</label>
-          <select id="prop-tipo-propiedad" required>
-            <option value="">Seleccione</option>
-            <option value="Casa">Casa</option>
-            <option value="Departamento">Departamento</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Local Comercial">Local Comercial</option>
-            <option value="Otro">Otro</option>
-          </select>
-          <label for="prop-ubicacion">Ubicación / País / Barrio / Ciudad:</label>
-          <select id="prop-ubicacion" required>
-            <option value="">Seleccione País</option>
-            <option value="Argentina">Argentina</option>
-            <option value="Brasil">Brasil</option>
-          </select>
-          <input type="text" id="prop-ubicacion-detalle" placeholder="Barrio / Ciudad (opcional)" style="margin-top: 10px;">
-          <label for="prop-presupuesto">Presupuesto / Rango Precio:</label>
-          <input type="text" id="prop-presupuesto" required>
-          <label for="prop-notas">Notas:</label>
-          <textarea id="prop-notas" rows="3"></textarea>
-          <button type="submit">Enviar Interés</button>
-        </form>
-      </div>
-    </div>
-    <!-- NUEVO: Modal de Interés para Alquilá -->
-    <div class="interest-modal" id="interest-alquila-modal">
-      <div class="interest-form">
-        <button class="close-btn" onclick="hideInterestAlquilaModal()">×</button>
-        <h2>Expresar Interés en Alquilar</h2>
-        <form id="interest-alquila-form">
-          <label for="alquila-nombre">Nombre y Apellido:</label>
-          <input type="text" id="alquila-nombre" required>
-          <label for="alquila-telefono">Teléfono / WhatsApp:</label>
-          <input type="tel" id="alquila-telefono" required>
-          <label for="alquila-email">Email:</label>
-          <input type="email" id="alquila-email">
-          <label for="alquila-tipo-operacion">Tipo de Operación:</label>
-          <select id="alquila-tipo-operacion" required>
-            <option value="">Seleccione</option>
-            <option value="Alquiler">Alquiler</option>
-          </select>
-          <label for="alquila-tipo-propiedad">Tipo de Propiedad:</label>
-          <select id="alquila-tipo-propiedad" required>
-            <option value="">Seleccione</option>
-            <option value="Casa">Casa</option>
-            <option value="Departamento">Departamento</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Local Comercial">Local Comercial</option>
-            <option value="Otro">Otro</option>
-          </select>
-          <label for="alquila-ubicacion">Ubicación / Barrio / Ciudad:</label>
-          <input type="text" id="alquila-ubicacion" required>
-          <label for="alquila-presupuesto">Presupuesto / Rango Precio:</label>
-          <input type="text" id="alquila-presupuesto" required>
-          <label for="alquila-notas">Notas:</label>
-          <textarea id="alquila-notas" rows="3"></textarea>
-          <button type="submit">Enviar Interés</button>
-        </form>
-      </div>
-    </div>
+
+    <!-- Modal único de Interés -->
+<div class="interest-modal" id="interest-modal">
+  <div class="interest-form">
+    <button class="close-btn" onclick="closeInterestModal()">×</button>
+    <h2 id="interest-title">Expresar Interés</h2>
+    <form id="interest-form">
+      <label for="int-nombre">Nombre y Apellido:</label>
+      <input type="text" id="int-nombre" required>
+
+      <label for="int-telefono">Teléfono / WhatsApp:</label>
+      <input type="tel" id="int-telefono" required>
+
+      <label for="int-email">Email:</label>
+      <input type="email" id="int-email">
+
+      <label for="int-tipo-operacion">Tipo de operación:</label>
+      <select id="int-tipo-operacion" required>
+        <option value="">Seleccione</option>
+        <option value="Compra">Compra</option>
+        <option value="Inversión">Inversión</option>
+        <option value="Alquiler">Alquiler</option>
+        <option value="Venta">Venta</option>
+        <option value="Tasación">Tasación</option>
+      </select>
+
+      <label for="int-tipo-propiedad">Tipo de Propiedad:</label>
+      <select id="int-tipo-propiedad" required>
+        <option value="">Seleccione</option>
+        <option value="Casa">Casa</option>
+        <option value="Departamento">Departamento</option>
+        <option value="Terreno">Terreno</option>
+        <option value="Local Comercial">Local Comercial</option>
+        <option value="Otro">Otro</option>
+      </select>
+
+      <label for="int-ubicacion">Ubicación / País / Barrio / Ciudad:</label>
+      <input type="text" id="int-ubicacion" required placeholder="Ej: Santo Tomé, Posadas, Oberá, Brasil...">
+
+      <label for="int-presupuesto">Presupuesto / Rango Precio:</label>
+      <input type="text" id="int-presupuesto" required placeholder="Ej: $50.000 - $80.000 USD">
+
+      <label for="int-notas">Notas / comentarios:</label>
+      <textarea id="int-notas" rows="3"></textarea>
+
+      <input type="hidden" id="int-fuente">
+
+      <button type="submit">Enviar Interés</button>
+    </form>
+  </div>
+</div>
     <!-- NUEVO: Modal de Galería de Imágenes -->
     <div class="image-gallery-modal" id="image-gallery-modal">
       <div class="gallery-content">
@@ -2062,6 +1998,62 @@
     document.getElementById('rapiclean-popup').addEventListener('click', function(e) {
       if (e.target === this) cerrarRapicleanPopup();
     });
+
+    // Abrir modal genérico según sección
+function openInterestModal(section) {
+  const titleElement = document.getElementById('interest-title');
+  const fuenteInput = document.getElementById('int-fuente');
+  let title = '';
+
+  if (section === 'vende') {
+    title = 'Expresar Interés en Vender mi Propiedad';
+    fuenteInput.value = 'Sitio Web - Vendé';
+  } else if (section === 'argentina') {
+    title = 'Estoy interesado en propiedades en Argentina';
+    fuenteInput.value = 'Sitio Web - Propiedades Argentina';
+  } else if (section === 'brasil') {
+    title = 'Estoy interesado en propiedades en Brasil';
+    fuenteInput.value = 'Sitio Web - Propiedades Brasil';
+  } else if (section === 'alquila') {
+    title = 'Expresar Interés en Alquilar';
+    fuenteInput.value = 'Sitio Web - Alquilá';
+  }
+
+  titleElement.textContent = title;
+  document.getElementById('interest-modal').classList.add('active');
+}
+
+// Cerrar modal
+function closeInterestModal() {
+  document.getElementById('interest-modal').classList.remove('active');
+  document.getElementById('interest-form').reset();
+}
+
+// Enviar al CRM
+document.getElementById('interest-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const data = {
+    idLead: 'LEAD-' + Date.now(),
+    fechaIngreso: new Date().toISOString().slice(0, 10),
+    nombre: document.getElementById('int-nombre').value,
+    telefono: document.getElementById('int-telefono').value,
+    email: document.getElementById('int-email').value,
+    etapa: 'Nuevo',
+    responsable: '',
+    fuente: document.getElementById('int-fuente').value,
+    tipoOperacion: document.getElementById('int-tipo-operacion').value,
+    tipoPropiedad: document.getElementById('int-tipo-propiedad').value,
+    ubicacion: document.getElementById('int-ubicacion').value,
+    presupuesto: document.getElementById('int-presupuesto').value,
+    notas: document.getElementById('int-notas').value
+  };
+
+  await sendToCRM(data);
+
+  document.getElementById('interest-form').reset();
+  closeInterestModal();
+});
   </script>
 </body>
 </html>
