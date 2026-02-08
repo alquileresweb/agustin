@@ -202,7 +202,7 @@
     .content-area.active {
       display: flex;
     }
-    .pre-tasacion-btn {
+    .pre-tasacion-btn, .interes-btn {
       background: linear-gradient(45deg, #28a745, #20c997);
       color: white;
       padding: 15px 30px;
@@ -216,7 +216,7 @@
       transition: all 0.3s;
       width: fit-content;
     }
-    .pre-tasacion-btn:hover {
+    .pre-tasacion-btn:hover, .interes-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
     }
@@ -747,8 +747,8 @@
     /* MODALES RESPONSIVOS */
     .casa-detail,
     .pre-tasacion-modal,
-    .image-gallery-modal,
-    .interest-modal {
+    .interes-modal,
+    .image-gallery-modal {
       display: none;
       position: fixed;
       top: 0;
@@ -763,8 +763,8 @@
     }
     .casa-detail.active,
     .pre-tasacion-modal.active,
-    .image-gallery-modal.active,
-    .interest-modal.active {
+    .interes-modal.active,
+    .image-gallery-modal.active {
       display: flex;
     }
     .casa-detail-content {
@@ -847,8 +847,7 @@
     .gallery-nav.next {
       right: 10px;
     }
-    .pre-tasacion-form,
-    .interest-form {
+    .pre-tasacion-form, .interes-form {
       background-color: white;
       padding: 30px;
       border-radius: 20px;
@@ -859,15 +858,13 @@
       overflow-y: auto;
       max-height: 90vh;
     }
-    .pre-tasacion-form h2,
-    .interest-form h2 {
+    .pre-tasacion-form h2, .interes-form h2 {
       font-size: 1.6em;
       margin-bottom: 20px;
       text-align: center;
       color: #333;
     }
-    .pre-tasacion-form label,
-    .interest-form label {
+    .pre-tasacion-form label, .interes-form label {
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
@@ -879,9 +876,9 @@
     .pre-tasacion-form input,
     .pre-tasacion-form textarea,
     .pre-tasacion-form select,
-    .interest-form input,
-    .interest-form textarea,
-    .interest-form select {
+    .interes-form input,
+    .interes-form textarea,
+    .interes-form select {
       width: 100%;
       padding: 15px;
       margin-bottom: 15px;
@@ -893,14 +890,13 @@
     .pre-tasacion-form input:focus,
     .pre-tasacion-form textarea:focus,
     .pre-tasacion-form select:focus,
-    .interest-form input:focus,
-    .interest-form textarea:focus,
-    .interest-form select:focus {
+    .interes-form input:focus,
+    .interes-form textarea:focus,
+    .interes-form select:focus {
       outline: none;
       border-color: #28a745;
     }
-    .pre-tasacion-form button,
-    .interest-form button {
+    .pre-tasacion-form button, .interes-form button {
       background: linear-gradient(45deg, #28a745, #20c997);
       color: white;
       padding: 15px 30px;
@@ -913,8 +909,7 @@
       margin-top: 20px;
       transition: all 0.3s;
     }
-    .pre-tasacion-form button:hover,
-    .interest-form button:hover {
+    .pre-tasacion-form button:hover, .interes-form button:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
     }
@@ -955,24 +950,6 @@
     }
     .final-banner img:hover {
       transform: scale(1.02);
-    }
-    /* Botón para abrir modal de interés */
-    .interest-btn {
-      background: linear-gradient(45deg, #ffc107, #ff9800);
-      color: white;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 1.1em;
-      font-weight: bold;
-      margin: 20px 0;
-      transition: all 0.3s;
-      width: fit-content;
-    }
-    .interest-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
     }
     /* MEDIA QUERIES PARA DESKTOP */
     @media (min-width: 1024px) {
@@ -1236,7 +1213,6 @@
     </div>
     <div class="content-area" id="vende-content">
       <button class="pre-tasacion-btn">Pre Tasación GRATUITA</button>
-      <button class="interest-btn" onclick="showInterestVendeModal()">Expresar Interés en Vender</button>
       <div class="section-text">No solo lo vendemos, sino que también...</div>
       <div class="boxes">
         <div class="box">Lo Promocionamos</div>
@@ -1253,19 +1229,19 @@
       </div>
     </div>
     <div class="content-area compra-content" id="argentina-content">
-      <button class="interest-btn" onclick="showInterestPropiedadesModal()">Expresar Interés en Propiedades</button>
+      <button class="interes-btn">Expresar Interés</button>
       <div id="argentina-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Argentina...</div>
       </div>
     </div>
     <div class="content-area brasil-content" id="brasil-content">
-      <button class="interest-btn" onclick="showInterestPropiedadesModal()">Expresar Interés en Propiedades</button>
+      <button class="interes-btn">Expresar Interés</button>
       <div id="brasil-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades de Brasil...</div>
       </div>
     </div>
     <div class="content-area alquila-content" id="alquila-content">
-      <button class="interest-btn" onclick="showInterestAlquilaModal()">Expresar Interés en Alquilar</button>
+      <button class="interes-btn">Expresar Interés</button>
       <div id="alquila-properties" class="property-grid">
         <div class="loading-properties">Cargando propiedades para alquilar...</div>
       </div>
@@ -1278,7 +1254,7 @@
         <h3 id="casa-detail-title">Casa en Venta</h3>
       </div>
     </div>
-    <!-- Modal para Pre Tasación -->
+    <!-- Modal para Pre Tasación (Vendé) -->
     <div class="pre-tasacion-modal" id="pre-tasacion-modal">
       <div class="pre-tasacion-form">
         <button class="close-btn" id="close-pre-tasacion-modal">×</button>
@@ -1288,7 +1264,9 @@
           <input type="text" id="nombre" name="nombre" required>
           <label for="telefono">Teléfono:</label>
           <input type="tel" id="telefono" name="telefono" required>
-          <label for="direccion">Dirección de la Propiedad:</label>
+          <label for="email">Email (opcional):</label>
+          <input type="email" id="email" name="email">
+          <label for="direccion">Dirección de la Propiedad / Ubicación:</label>
           <textarea id="direccion" name="direccion" rows="3" required></textarea>
           <label for="metros">Metros Cuadrados:</label>
           <input type="number" id="metros" name="metros" required>
@@ -1301,61 +1279,45 @@
             <option value="Local Comercial">Local Comercial</option>
             <option value="Otro">Otro</option>
           </select>
+          <label for="presupuesto">Presupuesto estimado (opcional):</label>
+          <input type="text" id="presupuesto" name="presupuesto">
+          <label for="notas">Notas adicionales:</label>
+          <textarea id="notas" name="notas" rows="3"></textarea>
           <button type="submit">Enviar</button>
         </form>
       </div>
     </div>
-
-    <!-- Modal único de Interés -->
-<div class="interest-modal" id="interest-modal">
-  <div class="interest-form">
-    <button class="close-btn" onclick="closeInterestModal()">×</button>
-    <h2 id="interest-title">Expresar Interés</h2>
-    <form id="interest-form">
-      <label for="int-nombre">Nombre y Apellido:</label>
-      <input type="text" id="int-nombre" required>
-
-      <label for="int-telefono">Teléfono / WhatsApp:</label>
-      <input type="tel" id="int-telefono" required>
-
-      <label for="int-email">Email:</label>
-      <input type="email" id="int-email">
-
-      <label for="int-tipo-operacion">Tipo de operación:</label>
-      <select id="int-tipo-operacion" required>
-        <option value="">Seleccione</option>
-        <option value="Compra">Compra</option>
-        <option value="Inversión">Inversión</option>
-        <option value="Alquiler">Alquiler</option>
-        <option value="Venta">Venta</option>
-        <option value="Tasación">Tasación</option>
-      </select>
-
-      <label for="int-tipo-propiedad">Tipo de Propiedad:</label>
-      <select id="int-tipo-propiedad" required>
-        <option value="">Seleccione</option>
-        <option value="Casa">Casa</option>
-        <option value="Departamento">Departamento</option>
-        <option value="Terreno">Terreno</option>
-        <option value="Local Comercial">Local Comercial</option>
-        <option value="Otro">Otro</option>
-      </select>
-
-      <label for="int-ubicacion">Ubicación / País / Barrio / Ciudad:</label>
-      <input type="text" id="int-ubicacion" required placeholder="Ej: Santo Tomé, Posadas, Oberá, Brasil...">
-
-      <label for="int-presupuesto">Presupuesto / Rango Precio:</label>
-      <input type="text" id="int-presupuesto" required placeholder="Ej: $50.000 - $80.000 USD">
-
-      <label for="int-notas">Notas / comentarios:</label>
-      <textarea id="int-notas" rows="3"></textarea>
-
-      <input type="hidden" id="int-fuente">
-
-      <button type="submit">Enviar Interés</button>
-    </form>
-  </div>
-</div>
+    <!-- Modal para Interés (Argentina, Brasil, Alquilá) -->
+    <div class="interes-modal" id="interes-modal">
+      <div class="interes-form">
+        <button class="close-btn" id="close-interes-modal">×</button>
+        <h2 id="interes-title">Expresá tu Interés</h2>
+        <form id="interes-form">
+          <label for="interes-nombre">Nombre y Apellido:</label>
+          <input type="text" id="interes-nombre" name="nombre" required>
+          <label for="interes-telefono">Teléfono / WhatsApp:</label>
+          <input type="tel" id="interes-telefono" name="telefono" required>
+          <label for="interes-email">Email (opcional):</label>
+          <input type="email" id="interes-email" name="email">
+          <label for="interes-tipo-propiedad">Tipo de Propiedad:</label>
+          <select id="interes-tipo-propiedad" name="tipo-propiedad" required>
+            <option value="">Seleccione una opción</option>
+            <option value="Casa">Casa</option>
+            <option value="Departamento">Departamento</option>
+            <option value="Terreno">Terreno</option>
+            <option value="Local Comercial">Local Comercial</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <label for="interes-ubicacion">Ubicación / Barrio / Ciudad preferida:</label>
+          <input type="text" id="interes-ubicacion" name="ubicacion" required>
+          <label for="interes-presupuesto">Presupuesto / Rango de precio:</label>
+          <input type="text" id="interes-presupuesto" name="presupuesto" required>
+          <label for="interes-notas">Notas / Intereses adicionales:</label>
+          <textarea id="interes-notas" name="notas" rows="3"></textarea>
+          <button type="submit">Enviar</button>
+        </form>
+      </div>
+    </div>
     <!-- NUEVO: Modal de Galería de Imágenes -->
     <div class="image-gallery-modal" id="image-gallery-modal">
       <div class="gallery-content">
@@ -1434,13 +1396,11 @@
     const preTasacionModal = document.getElementById('pre-tasacion-modal');
     const closePreTasacionModal = document.getElementById('close-pre-tasacion-modal');
     const preTasacionForm = document.getElementById('pre-tasacion-form');
-    // NUEVOS: Elementos de modales de interés
-    const interestVendeModal = document.getElementById('interest-vende-modal');
-    const interestPropiedadesModal = document.getElementById('interest-propiedades-modal');
-    const interestAlquilaModal = document.getElementById('interest-alquila-modal');
-    const interestVendeForm = document.getElementById('interest-vende-form');
-    const interestPropiedadesForm = document.getElementById('interest-propiedades-form');
-    const interestAlquilaForm = document.getElementById('interest-alquila-form');
+    // Elementos del modal de Interés
+    const interesModal = document.getElementById('interes-modal');
+    const closeInteresModal = document.getElementById('close-interes-modal');
+    const interesForm = document.getElementById('interes-form');
+    const interesTitle = document.getElementById('interes-title');
     // NUEVO: Elementos de la galería
     const galleryModal = document.getElementById('image-gallery-modal');
     const galleryImg = document.getElementById('gallery-img');
@@ -1449,6 +1409,7 @@
     const closeGalleryBtn = document.getElementById('close-gallery');
     let currentImages = [];
     let currentIndex = 0;
+    let currentSection = ''; // Para rastrear sección actual en interés
     // URL de tu Web App de Google Apps Script
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
     // NÚMERO DE WHATSAPP PARA CONTACTAR PUBLICACIONES
@@ -1472,30 +1433,6 @@
           }
           throw error;
         }
-      }
-    }
-    // Función para enviar datos al CRM en Sheets
-    async function sendToCRM(data) {
-      try {
-        const response = await fetchWithRetry(WEB_APP_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            action: 'addLead',
-            data: data
-          })
-        });
-        const result = await response.json();
-        if (result.success) {
-          alert('¡Tu interés ha sido registrado con éxito! Nos pondremos en contacto pronto.');
-        } else {
-          throw new Error(result.message || 'Error al registrar');
-        }
-      } catch (error) {
-        console.error('Error enviando al CRM:', error);
-        alert('Hubo un error al registrar tu interés. Por favor, intenta nuevamente o contáctanos directamente.');
       }
     }
     // Función actualizada para cargar propiedades desde Google Apps Script Web App
@@ -1683,17 +1620,7 @@
       if (argentinaContent.classList.contains('active')) return argentinaProperties;
       return null;
     }
-    // Función para mostrar contenido de Vende con modal auto
-    function showVendeContent() {
-      sidebar.classList.remove('active');
-      vendeContent.classList.add('active');
-      inicioContent.classList.remove('active');
-      argentinaContent.classList.remove('active');
-      brasilContent.classList.remove('active');
-      alquilaContent.classList.remove('active');
-      setTimeout(showInterestVendeModal, 3000); // Auto después de 3s
-    }
-    // Función para mostrar contenido de Argentina con modal auto
+    // Función para mostrar contenido de Argentina
     async function showArgentinaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1705,9 +1632,8 @@
       alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
       await showPropertiesByFilters('venta', 'argentina');
       argentinaProperties.style.display = 'grid';
-      setTimeout(showInterestPropiedadesModal, 3000); // Auto después de 3s
+      autoOpenInteresModal('argentina');
     }
-    // Función para mostrar contenido de Brasil con modal auto
     async function showBrasilContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1718,9 +1644,8 @@
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
       await showPropertiesByFilters('venta', 'brasil');
-      setTimeout(showInterestPropiedadesModal, 3000); // Auto después de 3s
+      autoOpenInteresModal('brasil');
     }
-    // Función para mostrar contenido de Alquila con modal auto
     async function showAlquilaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1731,7 +1656,7 @@
       argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
       brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
       await showPropertiesByFilters('alquiler');
-      setTimeout(showInterestAlquilaModal, 3000); // Auto después de 3s
+      autoOpenInteresModal('alquila');
     }
     function showCasaDetail() {
       casaDetail.classList.add('active');
@@ -1741,28 +1666,33 @@
     }
     function showPreTasacionModal() {
       preTasacionModal.classList.add('active');
+      sessionStorage.setItem('vendeModalClosed', 'true'); // Marca como cerrado para no auto-abrir
     }
     function hidePreTasacionModal() {
       preTasacionModal.classList.remove('active');
     }
-    // NUEVAS FUNCIONES PARA MODALES DE INTERÉS
-    function showInterestVendeModal() {
-      interestVendeModal.classList.add('active');
+    function showInteresModal(section) {
+      currentSection = section;
+      interesTitle.textContent = `Expresá tu Interés en ${section.charAt(0).toUpperCase() + section.slice(1)}`;
+      interesModal.classList.add('active');
+      sessionStorage.setItem(`${section}ModalClosed`, 'true'); // Marca como cerrado
     }
-    function hideInterestVendeModal() {
-      interestVendeModal.classList.remove('active');
+    function hideInteresModal() {
+      interesModal.classList.remove('active');
     }
-    function showInterestPropiedadesModal() {
-      interestPropiedadesModal.classList.add('active');
+    // Auto-abrir modal de interés después de delay
+    function autoOpenInteresModal(section) {
+      if (!sessionStorage.getItem(`${section}ModalClosed`)) {
+        setTimeout(() => {
+          showInteresModal(section);
+        }, 3000);
+      }
     }
-    function hideInterestPropiedadesModal() {
-      interestPropiedadesModal.classList.remove('active');
-    }
-    function showInterestAlquilaModal() {
-      interestAlquilaModal.classList.add('active');
-    }
-    function hideInterestAlquilaModal() {
-      interestAlquilaModal.classList.remove('active');
+    // Auto-abrir pre-tasación en Vendé
+    function autoOpenPreTasacion() {
+      if (!sessionStorage.getItem('vendeModalClosed')) {
+        setTimeout(showPreTasacionModal, 3000);
+      }
     }
     function showErrorMessage(message) {
       const containers = [brasilProperties, alquilaProperties, argentinaProperties];
@@ -1772,88 +1702,70 @@
         }
       });
     }
-    // Evento para form pre-tasación (mantiene WhatsApp)
-    preTasacionForm.addEventListener('submit', function(e) {
+    // Función genérica para enviar lead al Sheet
+    async function sendLeadToSheet(leadData) {
+      try {
+        const response = await fetchWithRetry(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'addLead', data: leadData })
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert('¡Gracias! Nos contactaremos pronto.');
+        } else {
+          throw new Error(result.message || 'Error al guardar');
+        }
+      } catch (error) {
+        console.error('Error enviando lead:', error);
+        alert('Error al enviar. Por favor, contacta por WhatsApp.');
+      }
+    }
+    // Submit Pre-Tasación (Vendé)
+    preTasacionForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-      const nombre = document.getElementById('nombre').value;
-      const telefono = document.getElementById('telefono').value;
-      const direccion = document.getElementById('direccion').value;
-      const metros = document.getElementById('metros').value;
-      const tipoPropiedad = document.getElementById('tipo-propiedad').value;
-      const mensaje = `Solicitud de Pre Tasación\nNombre: ${nombre}\nTeléfono: ${telefono}\nDirección: ${direccion}\nMetros Cuadrados: ${metros}\nTipo de Propiedad: ${tipoPropiedad}\nFecha: ${new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })}`;
-      const whatsappURL = `https://wa.me/5493756508620?text=${encodeURIComponent(mensaje)}`;
-      window.open(whatsappURL, '_blank');
+      const leadData = {
+        idLead: 'LEAD-' + Date.now(),
+        fechaIngreso: new Date().toLocaleString('es-AR'),
+        nombre: document.getElementById('nombre').value,
+        telefono: document.getElementById('telefono').value,
+        email: document.getElementById('email').value,
+        etapa: 'Nuevo',
+        propietario: '',
+        fuente: 'Sitio Web - Vendé',
+        tipoOperacion: 'Tasación/Venta',
+        tipoPropiedad: document.getElementById('tipo-propiedad').value,
+        ubicacion: document.getElementById('direccion').value,
+        presupuesto: document.getElementById('presupuesto').value,
+        notas: `Metros: ${document.getElementById('metros').value}\n${document.getElementById('notas').value}`
+      };
+      await sendLeadToSheet(leadData);
       preTasacionForm.reset();
       hidePreTasacionModal();
     });
-    // NUEVO: Evento para form interés Vendé
-    interestVendeForm.addEventListener('submit', async function(e) {
+    // Submit Interés (otras secciones)
+    interesForm.addEventListener('submit', async function(e) {
       e.preventDefault();
-      const data = {
+      const tipoOperacion = currentSection === 'alquila' ? 'Alquiler' : 'Compra';
+      const fuente = `Sitio Web - ${currentSection.charAt(0).toUpperCase() + currentSection.slice(1)}`;
+      const leadData = {
         idLead: 'LEAD-' + Date.now(),
-        fechaIngreso: new Date().toISOString().slice(0, 10),
-        nombre: document.getElementById('vende-nombre').value,
-        telefono: document.getElementById('vende-telefono').value,
-        email: document.getElementById('vende-email').value,
+        fechaIngreso: new Date().toLocaleString('es-AR'),
+        nombre: document.getElementById('interes-nombre').value,
+        telefono: document.getElementById('interes-telefono').value,
+        email: document.getElementById('interes-email').value,
         etapa: 'Nuevo',
-        responsable: '', // Pendiente de asignar
-        fuente: 'Sitio Web - Vendé',
-        tipoOperacion: document.getElementById('vende-tipo-operacion').value,
-        tipoPropiedad: document.getElementById('vende-tipo-propiedad').value,
-        ubicacion: document.getElementById('vende-ubicacion').value,
-        presupuesto: document.getElementById('vende-presupuesto').value,
-        notas: document.getElementById('vende-notas').value
+        propietario: '',
+        fuente: fuente,
+        tipoOperacion: tipoOperacion,
+        tipoPropiedad: document.getElementById('interes-tipo-propiedad').value,
+        ubicacion: document.getElementById('interes-ubicacion').value,
+        presupuesto: document.getElementById('interes-presupuesto').value,
+        notas: document.getElementById('interes-notas').value
       };
-      await sendToCRM(data);
-      interestVendeForm.reset();
-      hideInterestVendeModal();
-    });
-    // NUEVO: Evento para form interés Propiedades
-    interestPropiedadesForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const pais = document.getElementById('prop-ubicacion').value;
-      const detalleUbicacion = document.getElementById('prop-ubicacion-detalle').value;
-      const ubicacion = `${pais}${detalleUbicacion ? ' - ' + detalleUbicacion : ''}`;
-      const data = {
-        idLead: 'LEAD-' + Date.now(),
-        fechaIngreso: new Date().toISOString().slice(0, 10),
-        nombre: document.getElementById('prop-nombre').value,
-        telefono: document.getElementById('prop-telefono').value,
-        email: document.getElementById('prop-email').value,
-        etapa: 'Nuevo',
-        responsable: '', // Pendiente de asignar
-        fuente: 'Sitio Web - Propiedades',
-        tipoOperacion: document.getElementById('prop-tipo-operacion').value,
-        tipoPropiedad: document.getElementById('prop-tipo-propiedad').value,
-        ubicacion: ubicacion,
-        presupuesto: document.getElementById('prop-presupuesto').value,
-        notas: document.getElementById('prop-notas').value
-      };
-      await sendToCRM(data);
-      interestPropiedadesForm.reset();
-      hideInterestPropiedadesModal();
-    });
-    // NUEVO: Evento para form interés Alquilá
-    interestAlquilaForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const data = {
-        idLead: 'LEAD-' + Date.now(),
-        fechaIngreso: new Date().toISOString().slice(0, 10),
-        nombre: document.getElementById('alquila-nombre').value,
-        telefono: document.getElementById('alquila-telefono').value,
-        email: document.getElementById('alquila-email').value,
-        etapa: 'Nuevo',
-        responsable: '', // Pendiente de asignar
-        fuente: 'Sitio Web - Alquilá',
-        tipoOperacion: document.getElementById('alquila-tipo-operacion').value,
-        tipoPropiedad: document.getElementById('alquila-tipo-propiedad').value,
-        ubicacion: document.getElementById('alquila-ubicacion').value,
-        presupuesto: document.getElementById('alquila-presupuesto').value,
-        notas: document.getElementById('alquila-notas').value
-      };
-      await sendToCRM(data);
-      interestAlquilaForm.reset();
-      hideInterestAlquilaModal();
+      await sendLeadToSheet(leadData);
+      interesForm.reset();
+      hideInteresModal();
     });
     document.getElementById('argentina-link').addEventListener('click', async function(e) {
       e.preventDefault();
@@ -1871,7 +1783,13 @@
     });
     document.getElementById('vende-link').addEventListener('click', function(e) {
       e.preventDefault();
-      showVendeContent();
+      sidebar.classList.remove('active');
+      vendeContent.classList.add('active');
+      inicioContent.classList.remove('active');
+      argentinaContent.classList.remove('active');
+      brasilContent.classList.remove('active');
+      alquilaContent.classList.remove('active');
+      autoOpenPreTasacion();
     });
     document.getElementById('inicio-link').addEventListener('click', function(e) {
       e.preventDefault();
@@ -1895,21 +1813,30 @@
         hidePreTasacionModal();
       }
     });
+    closeInteresModal.addEventListener('click', hideInteresModal);
+    interesModal.addEventListener('click', function(e) {
+      if (e.target === interesModal) {
+        hideInteresModal();
+      }
+    });
+    // Botones manuales para abrir
     document.querySelector('.pre-tasacion-btn').addEventListener('click', showPreTasacionModal);
+    document.querySelectorAll('.interes-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const section = btn.parentElement.id.replace('-content', '');
+        showInteresModal(section);
+      });
+    });
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         if (casaDetail.classList.contains('active')) {
           hideCasaDetail();
         } else if (preTasacionModal.classList.contains('active')) {
           hidePreTasacionModal();
+        } else if (interesModal.classList.contains('active')) {
+          hideInteresModal();
         } else if (galleryModal.classList.contains('active')) {
           closeGallery();
-        } else if (interestVendeModal.classList.contains('active')) {
-          hideInterestVendeModal();
-        } else if (interestPropiedadesModal.classList.contains('active')) {
-          hideInterestPropiedadesModal();
-        } else if (interestAlquilaModal.classList.contains('active')) {
-          hideInterestAlquilaModal();
         }
         hamburger.classList.remove('active');
         menu.classList.remove('active');
@@ -1998,62 +1925,6 @@
     document.getElementById('rapiclean-popup').addEventListener('click', function(e) {
       if (e.target === this) cerrarRapicleanPopup();
     });
-
-    // Abrir modal genérico según sección
-function openInterestModal(section) {
-  const titleElement = document.getElementById('interest-title');
-  const fuenteInput = document.getElementById('int-fuente');
-  let title = '';
-
-  if (section === 'vende') {
-    title = 'Expresar Interés en Vender mi Propiedad';
-    fuenteInput.value = 'Sitio Web - Vendé';
-  } else if (section === 'argentina') {
-    title = 'Estoy interesado en propiedades en Argentina';
-    fuenteInput.value = 'Sitio Web - Propiedades Argentina';
-  } else if (section === 'brasil') {
-    title = 'Estoy interesado en propiedades en Brasil';
-    fuenteInput.value = 'Sitio Web - Propiedades Brasil';
-  } else if (section === 'alquila') {
-    title = 'Expresar Interés en Alquilar';
-    fuenteInput.value = 'Sitio Web - Alquilá';
-  }
-
-  titleElement.textContent = title;
-  document.getElementById('interest-modal').classList.add('active');
-}
-
-// Cerrar modal
-function closeInterestModal() {
-  document.getElementById('interest-modal').classList.remove('active');
-  document.getElementById('interest-form').reset();
-}
-
-// Enviar al CRM
-document.getElementById('interest-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  const data = {
-    idLead: 'LEAD-' + Date.now(),
-    fechaIngreso: new Date().toISOString().slice(0, 10),
-    nombre: document.getElementById('int-nombre').value,
-    telefono: document.getElementById('int-telefono').value,
-    email: document.getElementById('int-email').value,
-    etapa: 'Nuevo',
-    responsable: '',
-    fuente: document.getElementById('int-fuente').value,
-    tipoOperacion: document.getElementById('int-tipo-operacion').value,
-    tipoPropiedad: document.getElementById('int-tipo-propiedad').value,
-    ubicacion: document.getElementById('int-ubicacion').value,
-    presupuesto: document.getElementById('int-presupuesto').value,
-    notas: document.getElementById('int-notas').value
-  };
-
-  await sendToCRM(data);
-
-  document.getElementById('interest-form').reset();
-  closeInterestModal();
-});
   </script>
 </body>
 </html>
