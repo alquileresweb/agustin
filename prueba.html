@@ -1332,68 +1332,49 @@
         </form>
       </div>
     </div>
-    <!-- Argentina Interest -->
-    <div class="interest-modal" id="argentina-interest-modal">
-      <div class="interest-form">
-        <button class="close-btn" id="close-argentina-interest">×</button>
-        <h2>Interés en Comprar en Argentina</h2>
-        <form id="argentina-interest-form">
-          <label for="arg-nombre">Nombre y Apellido:</label>
-          <input type="text" id="arg-nombre" required>
-          <label for="arg-telefono">Teléfono / WhatsApp:</label>
-          <input type="tel" id="arg-telefono" required>
-          <label for="arg-email">Email (opcional):</label>
-          <input type="email" id="arg-email">
-          <label for="arg-tipo-propiedad">Tipo de Propiedad:</label>
-          <select id="arg-tipo-propiedad" required>
-            <option value="">Seleccione</option>
-            <option value="Casa">Casa</option>
-            <option value="Departamento">Departamento</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Local Comercial">Local Comercial</option>
-            <option value="Otro">Otro</option>
-          </select>
-          <label for="arg-ubicacion">Ubicación / Barrio / Ciudad (en Argentina):</label>
-          <input type="text" id="arg-ubicacion" value="Argentina" required>
-          <label for="arg-presupuesto">Presupuesto (rango):</label>
-          <input type="text" id="arg-presupuesto" placeholder="Ej: $80.000 - $120.000" required>
-          <label for="arg-notas">Notas / Detalles:</label>
-          <textarea id="arg-notas" rows="3"></textarea>
-          <button type="submit">Enviar Interés</button>
-        </form>
-      </div>
-    </div>
-    <!-- Brasil Interest -->
-    <div class="interest-modal" id="brasil-interest-modal">
-      <div class="interest-form">
-        <button class="close-btn" id="close-brasil-interest">×</button>
-        <h2>Interés en Comprar en Brasil</h2>
-        <form id="brasil-interest-form">
-          <label for="bra-nombre">Nombre y Apellido:</label>
-          <input type="text" id="bra-nombre" required>
-          <label for="bra-telefono">Teléfono / WhatsApp:</label>
-          <input type="tel" id="bra-telefono" required>
-          <label for="bra-email">Email (opcional):</label>
-          <input type="email" id="bra-email">
-          <label for="bra-tipo-propiedad">Tipo de Propiedad:</label>
-          <select id="bra-tipo-propiedad" required>
-            <option value="">Seleccione</option>
-            <option value="Casa">Casa</option>
-            <option value="Departamento">Departamento</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Local Comercial">Local Comercial</option>
-            <option value="Otro">Otro</option>
-          </select>
-          <label for="bra-ubicacion">Ubicación / Barrio / Ciudad (en Brasil):</label>
-          <input type="text" id="bra-ubicacion" value="Brasil" required>
-          <label for="bra-presupuesto">Presupuesto (rango):</label>
-          <input type="text" id="bra-presupuesto" placeholder="Ej: $80.000 - $120.000" required>
-          <label for="bra-notas">Notas / Detalles:</label>
-          <textarea id="bra-notas" rows="3"></textarea>
-          <button type="submit">Enviar Interés</button>
-        </form>
-      </div>
-    </div>
+    <!-- NUEVO: Modal ÚNICO para Comprar (Argentina o Brasil) -->
+<div class="interest-modal" id="compra-interest-modal">
+  <div class="interest-form">
+    <button class="close-btn" id="close-compra-interest">×</button>
+    <h2>Interés en Comprar</h2>
+    <form id="compra-interest-form">
+      <label for="compra-nombre">Nombre y Apellido:</label>
+      <input type="text" id="compra-nombre" required>
+
+      <label for="compra-telefono">Teléfono / WhatsApp:</label>
+      <input type="tel" id="compra-telefono" required>
+
+      <label for="compra-email">Email (opcional):</label>
+      <input type="email" id="compra-email">
+
+      <label for="compra-tipo-propiedad">Tipo de Propiedad:</label>
+      <select id="compra-tipo-propiedad" required>
+        <option value="">Seleccione</option>
+        <option value="Casa">Casa</option>
+        <option value="Departamento">Departamento</option>
+        <option value="Terreno">Terreno</option>
+        <option value="Local Comercial">Local Comercial</option>
+        <option value="Otro">Otro</option>
+      </select>
+
+      <label for="compra-ubicacion">País y Ubicación / Barrio / Ciudad:</label>
+      <select id="compra-pais" required>
+        <option value="">Seleccione país</option>
+        <option value="Argentina">Argentina</option>
+        <option value="Brasil">Brasil</option>
+      </select>
+      <input type="text" id="compra-ubicacion-detalle" placeholder="Barrio / Ciudad / Detalles" style="margin-top: 8px;">
+
+      <label for="compra-presupuesto">Presupuesto (rango):</label>
+      <input type="text" id="compra-presupuesto" placeholder="Ej: $80.000 - $120.000" required>
+
+      <label for="compra-notas">Notas / Detalles:</label>
+      <textarea id="compra-notas" rows="3"></textarea>
+
+      <button type="submit">Enviar Interés</button>
+    </form>
+  </div>
+</div>
     <!-- Alquilá Interest -->
     <div class="interest-modal" id="alquila-interest-modal">
       <div class="interest-form">
@@ -1734,38 +1715,73 @@
       if (argentinaContent.classList.contains('active')) return argentinaProperties;
       return null;
     }
-    // Función para mostrar contenido de Argentina
-    async function showArgentinaContent() {
-      sidebar.classList.remove('active');
-      vendeContent.classList.remove('active');
-      inicioContent.classList.remove('active');
-      argentinaContent.classList.add('active');
-      brasilContent.classList.remove('active');
-      alquilaContent.classList.remove('active');
-      brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
-      alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
-      await showPropertiesByFilters('venta', 'argentina');
-      argentinaProperties.style.display = 'grid';
-      // Aparición automática del modal
-      if (!sessionStorage.getItem('argentinaInterestClosed')) {
-        setTimeout(showArgentinaInterestModal, 3000);
-      }
-    }
-    async function showBrasilContent() {
-      sidebar.classList.remove('active');
-      vendeContent.classList.remove('active');
-      inicioContent.classList.remove('active');
-      argentinaContent.classList.remove('active');
-      brasilContent.classList.add('active');
-      alquilaContent.classList.remove('active');
-      argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
-      alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
-      await showPropertiesByFilters('venta', 'brasil');
-      // Aparición automática
-      if (!sessionStorage.getItem('brasilInterestClosed')) {
-        setTimeout(showBrasilInterestModal, 3000);
-      }
-    }
+    // Función para mostrar contenido de Argentina (Propiedades en venta en Argentina)
+async function showArgentinaContent() {
+  // Ocultar otros contenidos y limpiar sidebar
+  sidebar.classList.remove('active');
+  vendeContent.classList.remove('active');
+  inicioContent.classList.remove('active');
+  brasilContent.classList.remove('active');
+  alquilaContent.classList.remove('active');
+
+  // Mostrar sección Argentina
+  argentinaContent.classList.add('active');
+
+  // Limpiar contenedores de otras secciones para evitar que queden datos viejos
+  brasilProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Brasil...</div>';
+  alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
+
+  // Cargar propiedades de Argentina (venta)
+  try {
+    await showPropertiesByFilters('venta', 'argentina');
+    argentinaProperties.style.display = 'grid';
+  } catch (error) {
+    console.error('Error al cargar propiedades Argentina:', error);
+    showErrorMessage('Error al cargar propiedades de Argentina. Intenta de nuevo.');
+  }
+
+  // Opcional: Mostrar automáticamente el modal de interés en compra después de 3 segundos
+  // Si lo querés activar, descomenta las siguientes líneas:
+  /*
+  if (!sessionStorage.getItem('compraInterestClosed')) {
+    setTimeout(showCompraInterestModal, 3000);
+  }
+  */
+}
+
+// Función para mostrar contenido de Brasil (Propiedades en venta en Brasil)
+async function showBrasilContent() {
+  // Ocultar otros contenidos y limpiar sidebar
+  sidebar.classList.remove('active');
+  vendeContent.classList.remove('active');
+  inicioContent.classList.remove('active');
+  argentinaContent.classList.remove('active');
+  alquilaContent.classList.remove('active');
+
+  // Mostrar sección Brasil
+  brasilContent.classList.add('active');
+
+  // Limpiar contenedores de otras secciones
+  argentinaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades de Argentina...</div>';
+  alquilaProperties.innerHTML = '<div class="loading-properties">Cargando propiedades para alquilar...</div>';
+
+  // Cargar propiedades de Brasil (venta)
+  try {
+    await showPropertiesByFilters('venta', 'brasil');
+    brasilProperties.style.display = 'grid';
+  } catch (error) {
+    console.error('Error al cargar propiedades Brasil:', error);
+    showErrorMessage('Error al cargar propiedades de Brasil. Intenta de nuevo.');
+  }
+
+  // Opcional: Mostrar automáticamente el modal de interés en compra después de 3 segundos
+  // Si lo querés activar, descomenta las siguientes líneas:
+  /*
+  if (!sessionStorage.getItem('compraInterestClosed')) {
+    setTimeout(showCompraInterestModal, 3000);
+  }
+  */
+}
     async function showAlquilaContent() {
       sidebar.classList.remove('active');
       vendeContent.classList.remove('active');
@@ -1830,6 +1846,61 @@
         }
       });
     }
+
+    // NUEVO: Funciones para modal de compra unificado
+function showCompraInterestModal() {
+  compraInterestModal.classList.add('active');
+}
+function hideCompraInterestModal() {
+  compraInterestModal.classList.remove('active');
+  // Opcional: limpiar sessionStorage si quieres que vuelva a aparecer
+  // sessionStorage.removeItem('compraInterestClosed');
+}
+
+// Envío para Compra (Argentina o Brasil)
+const compraInterestForm = document.getElementById('compra-interest-form');
+compraInterestForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const now = new Date();
+  const idLead = `LEAD-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}`;
+
+  const paisSeleccionado = document.getElementById('compra-pais').value;
+  const ubicacionDetalle = document.getElementById('compra-ubicacion-detalle').value.trim();
+  const ubicacionFinal = paisSeleccionado + (ubicacionDetalle ? ' - ' + ubicacionDetalle : '');
+
+  const data = {
+    idLead,
+    fechaIngreso: now.toLocaleString('es-AR'),
+    nombreApellido: document.getElementById('compra-nombre').value,
+    telefonoWhatsapp: document.getElementById('compra-telefono').value,
+    email: document.getElementById('compra-email').value,
+    etapaProceso: 'Nuevo',
+    propietarioResponsable: '',
+    fuenteLead: 'Sitio Comprar',
+    tipoOperacionInteresada: 'Compra',
+    tipoPropiedad: document.getElementById('compra-tipo-propiedad').value,
+    ubicacionBarrioCiudad: ubicacionFinal,
+    presupuestoRangoPrecio: document.getElementById('compra-presupuesto').value,
+    notas: document.getElementById('compra-notas').value
+  };
+
+  await sendLeadToSheets(data);
+  compraInterestForm.reset();
+  hideCompraInterestModal();
+});
+
+// Cierre del modal compra
+const closeCompraInterest = document.getElementById('close-compra-interest');
+const compraInterestModal = document.getElementById('compra-interest-modal');
+
+closeCompraInterest.addEventListener('click', hideCompraInterestModal);
+compraInterestModal.addEventListener('click', function(e) {
+  if (e.target === compraInterestModal) hideCompraInterestModal();
+});
+
+// Botones que abren el mismo modal de compra
+document.getElementById('open-argentina-interest').addEventListener('click', showCompraInterestModal);
+document.getElementById('open-brasil-interest').addEventListener('click', showCompraInterestModal);
     // Función general para enviar lead a Sheets
     async function sendLeadToSheets(data) {
       try {
@@ -2126,9 +2197,9 @@
   <script>
     // Aparece Torres Brasil a los 2 segundos
     window.addEventListener('load', function() {
-      if (!sessionStorage.getItem('torresBrasilPopupCerrado')) {
+      if (!sessionStorage.getItem('rapicleanPopupCerrado')) {
         setTimeout(function() {
-          document.getElementById('torresbrasil-popup').style.display = 'flex';
+          document.getElementById('rapiclean-popup').style.display = 'flex';
         }, 2000);
       }
     });
