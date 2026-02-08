@@ -1287,37 +1287,60 @@
         </form>
       </div>
     </div>
-    <!-- Modal para Interés (Argentina, Brasil, Alquilá) -->
-    <div class="interes-modal" id="interes-modal">
-      <div class="interes-form">
-        <button class="close-btn" id="close-interes-modal">×</button>
-        <h2 id="interes-title">Expresá tu Interés</h2>
-        <form id="interes-form">
-          <label for="interes-nombre">Nombre y Apellido:</label>
-          <input type="text" id="interes-nombre" name="nombre" required>
-          <label for="interes-telefono">Teléfono / WhatsApp:</label>
-          <input type="tel" id="interes-telefono" name="telefono" required>
-          <label for="interes-email">Email (opcional):</label>
-          <input type="email" id="interes-email" name="email">
-          <label for="interes-tipo-propiedad">Tipo de Propiedad:</label>
-          <select id="interes-tipo-propiedad" name="tipo-propiedad" required>
-            <option value="">Seleccione una opción</option>
-            <option value="Casa">Casa</option>
-            <option value="Departamento">Departamento</option>
-            <option value="Terreno">Terreno</option>
-            <option value="Local Comercial">Local Comercial</option>
-            <option value="Otro">Otro</option>
-          </select>
-          <label for="interes-ubicacion">Ubicación / Barrio / Ciudad preferida:</label>
-          <input type="text" id="interes-ubicacion" name="ubicacion" required>
-          <label for="interes-presupuesto">Presupuesto / Rango de precio:</label>
-          <input type="text" id="interes-presupuesto" name="presupuesto" required>
-          <label for="interes-notas">Notas / Intereses adicionales:</label>
-          <textarea id="interes-notas" name="notas" rows="3"></textarea>
-          <button type="submit">Enviar</button>
-        </form>
-      </div>
+    <!-- Secciones con botón corregido (solo uno por sección) -->
+  <div class="content-area compra-content" id="argentina-content">
+    <button class="interes-btn">Me interesa una propiedad</button>
+    <div id="argentina-properties" class="property-grid">
+      <div class="loading-properties">Cargando propiedades de Argentina...</div>
     </div>
+  </div>
+
+  <div class="content-area brasil-content" id="brasil-content">
+    <button class="interes-btn">Me interesa una propiedad</button>
+    <div id="brasil-properties" class="property-grid">
+      <div class="loading-properties">Cargando propiedades de Brasil...</div>
+    </div>
+  </div>
+
+  <div class="content-area alquila-content" id="alquila-content">
+    <button class="interes-btn">Me interesa una propiedad</button>
+    <div id="alquila-properties" class="property-grid">
+      <div class="loading-properties">Cargando propiedades para alquilar...</div>
+    </div>
+  </div>
+
+  <!-- Modal para Interés (Argentina, Brasil, Alquilá) -->
+  <div class="interes-modal" id="interes-modal">
+    <div class="interes-form">
+      <!-- Botón cerrar ahora rojo y circular -->
+      <button class="close-btn" id="close-interes-modal">×</button>
+      <h2 id="interes-title">Expresá tu Interés</h2>
+      <form id="interes-form">
+        <label for="interes-nombre">Nombre y Apellido:</label>
+        <input type="text" id="interes-nombre" name="nombre" required>
+        <label for="interes-telefono">Teléfono / WhatsApp:</label>
+        <input type="tel" id="interes-telefono" name="telefono" required>
+        <label for="interes-email">Email (opcional):</label>
+        <input type="email" id="interes-email" name="email">
+        <label for="interes-tipo-propiedad">Tipo de Propiedad:</label>
+        <select id="interes-tipo-propiedad" name="tipo-propiedad" required>
+          <option value="">Seleccione una opción</option>
+          <option value="Casa">Casa</option>
+          <option value="Departamento">Departamento</option>
+          <option value="Terreno">Terreno</option>
+          <option value="Local Comercial">Local Comercial</option>
+          <option value="Otro">Otro</option>
+        </select>
+        <label for="interes-ubicacion">Ubicación / Barrio / Ciudad preferida:</label>
+        <input type="text" id="interes-ubicacion" name="ubicacion" required>
+        <label for="interes-presupuesto">Presupuesto / Rango de precio:</label>
+        <input type="text" id="interes-presupuesto" name="presupuesto" required>
+        <label for="interes-notas">Notas / Intereses adicionales:</label>
+        <textarea id="interes-notas" name="notas" rows="3"></textarea>
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+  </div>
     <!-- NUEVO: Modal de Galería de Imágenes -->
     <div class="image-gallery-modal" id="image-gallery-modal">
       <div class="gallery-content">
@@ -1673,10 +1696,22 @@
     }
     function showInteresModal(section) {
       currentSection = section;
-      interesTitle.textContent = `Expresá tu Interés en ${section.charAt(0).toUpperCase() + section.slice(1)}`;
+      let titulo = 'Me interesa una propiedad';
+      if (section === 'argentina') titulo += ' en Argentina';
+      if (section === 'brasil') titulo += ' en Brasil';
+      if (section === 'alquila') titulo += ' para alquilar';
+      interesTitle.textContent = titulo;
       interesModal.classList.add('active');
-      sessionStorage.setItem(`${section}ModalClosed`, 'true'); // Marca como cerrado
+      sessionStorage.setItem(`${section}ModalClosed`, 'true');
     }
+
+    // Botones manuales (ya no se duplican porque están en el HTML)
+    document.querySelectorAll('.interes-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const section = btn.parentElement.id.replace('-content', '');
+        showInteresModal(section);
+      });
+    });
     function hideInteresModal() {
       interesModal.classList.remove('active');
     }
