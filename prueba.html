@@ -1738,8 +1738,8 @@
       else if (currentFuente.includes('Propiedades')) operacionSelect.value = 'Compra';
     }
     function hideInteresModal() {
-      interesModal.classList.remove('active');
-    }
+  document.getElementById('interes-modal').classList.remove('active');
+}
     function showErrorMessage(message) {
       const containers = [brasilProperties, alquilaProperties, argentinaProperties];
       containers.forEach(container => {
@@ -1850,10 +1850,10 @@
     // NUEVO: Eventos para interés
     closeInteresModal.addEventListener('click', hideInteresModal);
     interesModal.addEventListener('click', function(e) {
-      if (e.target === interesModal) {
-        hideInteresModal();
-      }
-    });
+  if (e.target === interesModal) {
+    hideInteresModal();
+  }
+});
     interesTab.addEventListener('click', showInteresModal);
     document.querySelector('.pre-tasacion-btn').addEventListener('click', showPreTasacionModal);
     document.addEventListener('keydown', function(e) {
