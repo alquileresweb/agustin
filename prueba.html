@@ -1287,28 +1287,31 @@
         </form>
       </div>
     </div>
-    <!-- Secciones con botón corregido (solo uno por sección) -->
-  <div class="content-area compra-content" id="argentina-content">
-    <button class="interes-btn">Me interesa una propiedad</button>
-    <div id="argentina-properties" class="property-grid">
-      <div class="loading-properties">Cargando propiedades de Argentina...</div>
-    </div>
-  </div>
 
-  <div class="content-area brasil-content" id="brasil-content">
-    <button class="interes-btn">Me interesa una propiedad</button>
-    <div id="brasil-properties" class="property-grid">
-      <div class="loading-properties">Cargando propiedades de Brasil...</div>
+<!-- ARGENTINA (solo UN botón) -->
+    <div class="content-area compra-content" id="argentina-content">
+      <button class="interes-btn">Me interesa una propiedad</button>
+      <div id="argentina-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades de Argentina...</div>
+      </div>
     </div>
-  </div>
 
-  <div class="content-area alquila-content" id="alquila-content">
-    <button class="interes-btn">Me interesa una propiedad</button>
-    <div id="alquila-properties" class="property-grid">
-      <div class="loading-properties">Cargando propiedades para alquilar...</div>
+    <!-- BRASIL (solo UN botón) -->
+    <div class="content-area brasil-content" id="brasil-content">
+      <button class="interes-btn">Me interesa una propiedad</button>
+      <div id="brasil-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades de Brasil...</div>
+      </div>
     </div>
-  </div>
 
+    <!-- ALQUILÁ (solo UN botón) -->
+    <div class="content-area alquila-content" id="alquila-content">
+      <button class="interes-btn">Me interesa una propiedad</button>
+      <div id="alquila-properties" class="property-grid">
+        <div class="loading-properties">Cargando propiedades para alquilar...</div>
+      </div>
+    </div>
+    
   <!-- Modal para Interés (Argentina, Brasil, Alquilá) -->
   <div class="interes-modal" id="interes-modal">
     <div class="interes-form">
@@ -1705,13 +1708,14 @@
       sessionStorage.setItem(`${section}ModalClosed`, 'true');
     }
 
-    // Botones manuales (ya no se duplican porque están en el HTML)
+    // Aseguramos que los event listeners de los botones se asignen solo una vez
     document.querySelectorAll('.interes-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const section = btn.parentElement.id.replace('-content', '');
         showInteresModal(section);
       });
     });
+    
     function hideInteresModal() {
       interesModal.classList.remove('active');
     }
