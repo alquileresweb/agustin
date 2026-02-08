@@ -124,6 +124,50 @@
     .contact-btn:hover {
       background-color: #1ebe52;
     }
+
+    /* Estilos base para todos los botones cerrar */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;               /* Hace que sea circular */
+  border: none;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+  line-height: 1;
+}
+
+/* Variante roja para modal de interés y pop-ups */
+.close-red {
+  background-color: #e74c3c;        /* Rojo característico */
+  color: white;
+}
+
+/* Hover para el rojo */
+.close-red:hover {
+  background-color: #c0392b;        /* Rojo más oscuro en hover */
+  transform: scale(1.1);            /* Pequeño efecto de agrandado */
+}
+
+/* Para los otros modales (gris por defecto) */
+.close-btn:not(.close-red) {
+  background: none;
+  color: #666;
+}
+
+.close-btn:not(.close-red):hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+    
     /* HAMBURGUESA MENU */
     .hamburger {
       display: block;
