@@ -1737,8 +1737,59 @@
       if (currentFuente === 'Alquilá') operacionSelect.value = 'Alquiler';
       else if (currentFuente.includes('Propiedades')) operacionSelect.value = 'Compra';
     }
-    function hideInteresModal() {
-  document.getElementById('interes-modal').classList.remove('active');
+    
+    // NUEVO: Eventos robustos para el botón solapa y modal de interés
+document.addEventListener('DOMContentLoaded', function() {
+  const interesTab = document.getElementById('interes-tab');
+  const interesModal = document.getElementById('interes-modal');
+
+  if (!interesTab) {
+    console.error('No se encontró el botón #interes-tab');
+    return;
+  }
+
+  if (!interesModal) {
+    console.error('No se encontró el modal #interes-modal');
+    return;
+  }
+
+  // Abrir modal al hacer clic en el botón solapa
+  interesTab.addEventListener('click', function() {
+    console.log('Clic en botón ¡Consultá! → abriendo modal');
+    interesModal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // Evita scroll detrás del modal
+  });
+
+  // Cerrar al hacer clic en el botón × (reforzamos el inline)
+  const closeInteresBtn = interesModal.querySelector('button[onclick*="hideInteresModal"]');
+  if (closeInteresBtn) {
+    closeInteresBtn.addEventListener('click', hideInteresModal);
+  }
+
+  // Cerrar al clic fuera del contenido (fondo)
+  interesModal.addEventListener('click', function(e) {
+    if (e.target === interesModal) {
+      console.log('Clic fuera del modal → cerrando');
+      hideInteresModal();
+    }
+  });
+
+  // Cerrar con Escape (reforzamos)
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && interesModal.classList.contains('active')) {
+      hideInteresModal();
+    }
+  });
+});
+
+// Asegurarse de que la función hideInteresModal esté definida (si ya la tenés, no dupliques)
+function hideInteresModal() {
+  const modal = document.getElementById('interes-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = ''; // Restaurar scroll
+    console.log('Modal de interés cerrado');
+  }
 }
     function showErrorMessage(message) {
       const containers = [brasilProperties, alquilaProperties, argentinaProperties];
