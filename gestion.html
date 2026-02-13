@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Gestión - Inmobiliaria</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Header con logo y título */
+        .dashboard-header {
+            background: linear-gradient(135deg, #4c51bf 0%, #667eea 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 20px rgba(76, 81, 191, 0.25);
+        }
+        .logo-container img {
+            height: 70px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .header-text h1 {
+            font-size: 2.1rem;
+            margin-bottom: 0.25rem;
+        }
+        .header-text p {
+            opacity: 0.9;
+            font-size: 1.05rem;
+        }
+        /* Sección de acciones rápidas */
+        .quick-actions {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .quick-actions h2 {
+            margin-bottom: 1.5rem;
+            color: #4a5568;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1.1rem 2.8rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(102, 126, 234, 0.35);
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.45);
+        }
+        /* Formulario (inicialmente oculto) */
+        #form-section {
+            display: none;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 1.6rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .image-preview img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            transition: transform 0.2s;
+        }
+        .image-preview img:hover {
+            transform: scale(1.04);
+        }
+        .btn-submit {
+            margin-top: 1.5rem;
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1.15rem;
+        }
+        .btn-back {
+            margin-top: 1rem;
+            background: #718096;
+            width: 100%;
+        }
+        .btn-back:hover {
+            background: #5a7184;
+        }
+        .success, .error-message, .loading {
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .success {
+            background: #e6fffa;
+            color: #0c8599;
+            border: 1px solid #99e9f2;
+            display: none;
+        }
+        .error-message {
+            background: #fff5f5;
+            color: #c92a2a;
+            border: 1px solid #ffcccc;
+            display: none;
+        }
+        .loading {
+            display: none;
+            background: #f8f9fa;
+            color: #495057;
+        }
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .dashboard-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .quick-actions {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <div class="dashboard-header">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/cCHxWd0g/Whats-App-Image-2025-10-02-at-14-31.png" alt="Logo Inmobiliaria">
+        </div>
+        <div class="header-text">
+            <h1>Panel de Gestión</h1>
+            <p>Administración de anuncios inmobiliarios</p>
+        </div>
+    </div>
+
+    <div class="quick-actions" id="actionsPanel">
+        <h2>¿Qué deseas hacer?</h2>
+        <button class="btn-primary" id="btnPublicar">
+            Publicar Nuevo Anuncio
+        </button>
+        <!-- Aquí podrías agregar más botones en el futuro:
+        <button class="btn-primary" style="background: linear-gradient(135deg, #38a169, #48bb78);">Ver/Anuncios Publicados</button>
+        -->
+    </div>
+
+    <div id="form-section">
+        <div class="success" id="successMessage"></div>
+        <div class="error-message" id="errorMessage"></div>
+        <div class="loading" id="loadingMessage">Procesando publicación...</div>
+
+        <form id="publicationForm">
+            <!-- Aquí va exactamente el mismo formulario que tenías antes -->
+            <div class="form-group">
+                <label for="titulo">Título de la Publicación *</label>
+                <input type="text" id="titulo" name="titulo" required placeholder="Ej: Hermoso departamento 3 ambientes en Palermo" maxlength="100">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tipo">Tipo de Operación *</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="">Seleccionar tipo</option>
+                        <option value="venta">Venta</option>
+                        <option value="alquiler">Alquiler</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subtipo">Tipo de Propiedad *</label>
+                    <select id="subtipo" name="subtipo" required>
+                        <option value="">Seleccionar subtipo</option>
+                        <option value="departamento">Departamento</option>
+                        <option value="casa">Casa</option>
+                        <option value="terreno">Terreno</option>
+                        <option value="local">Local Comercial</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="precio">Precio *</label>
+                    <input type="number" id="precio" name="precio" required placeholder="Ej: 250000" step="1000" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="pais">País *</label>
+                    <select id="pais" name="pais" required>
+                        <option value="">Seleccionar país</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Brasil">Brasil</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="imagenes">Imágenes * (múltiples permitidas)</label>
+                <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple required>
+                <small style="color:#718096;">Formatos: JPG, PNG, WebP · máx. 10MB por imagen</small>
+                <div class="image-preview" id="imagePreview"></div>
+                <div class="upload-progress" id="uploadProgress" style="display:none; margin-top:10px;">
+                    <div style="height:6px; background:#667eea; width:0%;" id="uploadProgressBar"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción Detallada *</label>
+                <textarea id="descripcion" name="descripcion" required rows="6" maxlength="1000" placeholder="Describe la propiedad, características, ubicación, etc..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary btn-submit">Publicar Anuncio</button>
+            <button type="button" class="btn-primary btn-back" id="btnVolver">← Volver al Panel</button>
+        </form>
+    </div>
+
+</div>
+
