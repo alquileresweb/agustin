@@ -300,16 +300,16 @@
 
 <script>
 // ============================================================================
-//  CONTROL DE VISIBILIDAD DE SECCIONES
+// CONTROL DE VISIBILIDAD DE SECCIONES
 // ============================================================================
-const actionsPanel          = document.getElementById('actionsPanel');
-const formSection           = document.getElementById('form-section');
+const actionsPanel = document.getElementById('actionsPanel');
+const formSection = document.getElementById('form-section');
 const misPropiedadesSection = document.getElementById('mis-propiedades-section');
 
-const btnPublicar           = document.getElementById('btnPublicar');
-const btnMisPropiedades     = document.getElementById('btnMisPropiedades');
-const btnVolverForm         = document.getElementById('btnVolverForm');
-const btnVolverPropiedades  = document.getElementById('btnVolverPropiedades');
+const btnPublicar = document.getElementById('btnPublicar');
+const btnMisPropiedades = document.getElementById('btnMisPropiedades');
+const btnVolverForm = document.getElementById('btnVolverForm');
+const btnVolverPropiedades = document.getElementById('btnVolverPropiedades');
 
 function showSection(sectionToShow) {
     [actionsPanel, formSection, misPropiedadesSection].forEach(s => {
@@ -322,47 +322,43 @@ function showSection(sectionToShow) {
 btnPublicar.addEventListener('click', () => showSection(formSection));
 btnMisPropiedades.addEventListener('click', () => {
     showSection(misPropiedadesSection);
-    loadMisPropiedades();   // Carga al entrar en la sección
+    loadMisPropiedades();
 });
 btnVolverForm.addEventListener('click', () => showSection(actionsPanel));
 btnVolverPropiedades.addEventListener('click', () => showSection(actionsPanel));
 
 // ============================================================================
-//  CONFIGURACIÓN GLOBAL
+// CONFIGURACIÓN GLOBAL
 // ============================================================================
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
 const ORIGIN = 'https://inmobiliariaagustinsantos.com.ar';
 
 // Elementos del formulario
-const publicationForm       = document.getElementById('publicationForm');
-const submitBtn             = document.querySelector('.btn-submit');
-const successMessage        = document.getElementById('successMessage');
-const errorMessage          = document.getElementById('errorMessage');
-const loadingMessage        = document.getElementById('loadingMessage');
-const imagePreview          = document.getElementById('imagePreview');
-const imagenesInput         = document.getElementById('imagenes');
-const uploadProgress        = document.getElementById('uploadProgress');
-const uploadProgressBar     = document.getElementById('uploadProgressBar');
+const publicationForm = document.getElementById('publicationForm');
+const submitBtn = document.querySelector('.btn-submit');
+const successMessage = document.getElementById('successMessage');
+const errorMessage = document.getElementById('errorMessage');
+const loadingMessage = document.getElementById('loadingMessage');
+const imagePreview = document.getElementById('imagePreview');
+const imagenesInput = document.getElementById('imagenes');
+const uploadProgress = document.getElementById('uploadProgress');
+const uploadProgressBar = document.getElementById('uploadProgressBar');
 
 let uploadedImageUrls = [];
 
 // ============================================================================
-//  CLOUDINARY CONFIGURACIÓN
+// CLOUDINARY CONFIGURACIÓN Y FUNCIONES
 // ============================================================================
 const CLOUDINARY_CONFIG = {
     CLOUD_NAME: 'dn4tjz4ck',
     UPLOAD_PRESET: 'preset_alquileres',
     API_KEY: '742759356638557',
     API_URL: 'https://api.cloudinary.com/v1_1/dn4tjz4ck/image/upload',
-    MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+    MAX_FILE_SIZE: 10 * 1024 * 1024,
     ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
     MAX_RETRIES: 3,
     TIMEOUT: 30000
 };
-
-// ============================================================================
-//  FUNCIONES CLOUDINARY
-// ============================================================================
 
 async function subirImagenesCloudinary(files, options = {}) {
     const {
@@ -370,8 +366,7 @@ async function subirImagenesCloudinary(files, options = {}) {
         onSuccess = null,
         onError = null,
         maxFiles = 50,
-        folder = 'alquileres',
-        transformation = 'q_auto,f_auto,w_1200'
+        folder = 'alquileres'
     } = options;
 
     const urls = [];
@@ -401,26 +396,12 @@ async function subirImagenesCloudinary(files, options = {}) {
 
             if (result.status === 'fulfilled' && result.value) {
                 urls.push(result.value);
-                onProgress?.({
-                    status: 'success',
-                    file: files[globalIdx],
-                    url: result.value,
-                    progress: (processed / total) * 100,
-                    total,
-                    current: processed
-                });
+                onProgress?.({ status: 'success', file: files[globalIdx], url: result.value, progress: (processed / total) * 100 });
                 onSuccess?.(result.value);
             } else {
                 const err = result.reason || new Error('Upload falló');
                 errors.push({ file: files[globalIdx], error: err });
-                onProgress?.({
-                    status: 'error',
-                    file: files[globalIdx],
-                    error: err,
-                    progress: (processed / total) * 100,
-                    total,
-                    current: processed
-                });
+                onProgress?.({ status: 'error', file: files[globalIdx], error: err, progress: (processed / total) * 100 });
                 onError?.(err, files[globalIdx]);
             }
         });
@@ -432,7 +413,7 @@ async function subirImagenesCloudinary(files, options = {}) {
 }
 
 async function procesarArchivoIndividual(file, options) {
-    const { retryCount = 0, totalFiles, globalIndex } = options;
+    const { retryCount = 0 } = options;
 
     if (!validarArchivo(file)) throw new Error(`Archivo inválido: ${file.name}`);
 
@@ -448,19 +429,13 @@ async function procesarArchivoIndividual(file, options) {
             signal: AbortSignal.timeout(CLOUDINARY_CONFIG.TIMEOUT)
         });
 
-        if (!res.ok) {
-            const text = await res.text();
-            throw new Error(`HTTP ${res.status}: ${text}`);
-        }
-
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        if (json.secure_url && json.resource_type === 'image') {
-            return json.secure_url;
-        }
-        throw new Error(`Respuesta inválida: ${JSON.stringify(json)}`);
+
+        if (json.secure_url && json.resource_type === 'image') return json.secure_url;
+        throw new Error('Respuesta inválida de Cloudinary');
     } catch (err) {
-        if (retryCount < CLOUDINARY_CONFIG.MAX_RETRIES &&
-            (err.name === 'TimeoutError' || err.message.includes('network'))) {
+        if (retryCount < CLOUDINARY_CONFIG.MAX_RETRIES && (err.name === 'TimeoutError' || err.message.includes('network'))) {
             await new Promise(r => setTimeout(r, 2000 * (retryCount + 1)));
             return procesarArchivoIndividual(file, { ...options, retryCount: retryCount + 1 });
         }
@@ -470,33 +445,25 @@ async function procesarArchivoIndividual(file, options) {
 
 async function verificarCorsCloudinary() {
     try {
-        await fetch(`https://res.cloudinary.com/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload/w_1,h_1,c_fill/v1/test-cors.jpg`, {
-            method: 'HEAD',
-            mode: 'cors'
-        });
-    } catch (e) {
-        console.warn('Verificación CORS Cloudinary falló:', e);
-    }
+        await fetch(`https://res.cloudinary.com/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload/w_1,h_1,c_fill/v1/test-cors.jpg`, { method: 'HEAD', mode: 'cors' });
+    } catch (e) {}
 }
 
 function validarArchivo(file) {
     if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) throw new Error('Archivo demasiado grande');
-    if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) throw new Error('Tipo de archivo no permitido');
+    if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) throw new Error('Tipo no permitido');
     return file.type.startsWith('image/');
 }
 
-function crearFormData(file, options) {
+function crearFormData(file) {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
-    if (options.folder) fd.append('folder', options.folder);
     return fd;
 }
 
 async function subirImagenesMultiples(files) {
     uploadedImageUrls = [];
-    const errores = [];
-
     uploadProgress.style.display = 'block';
     uploadProgressBar.style.width = '0%';
 
@@ -504,152 +471,103 @@ async function subirImagenesMultiples(files) {
         const resultado = await subirImagenesCloudinary(files, {
             maxFiles: 50,
             folder: `alquileres/${Date.now()}`,
-            onProgress: (p) => {
+            onProgress: p => {
                 uploadProgressBar.style.width = `${p.progress}%`;
-                if (p.status === 'success') {
-                    const img = imagePreview.querySelector(`img[title="${p.file.name}"]`);
-                    if (img) img.classList.add('uploaded');
-                }
             },
-            onSuccess: url => uploadedImageUrls.push(url),
-            onError: (err, file) => errores.push({ archivo: file.name, error: err.message })
+            onSuccess: url => uploadedImageUrls.push(url)
         });
 
-        if (errores.length > 0) {
-            alert(`${errores.length} imagen(es) fallaron. Se guardaron ${uploadedImageUrls.length} exitosas.`);
+        if (!resultado.success) {
+            alert(`${resultado.errors.length} imágenes fallaron`);
         }
     } catch (err) {
-        console.error('Error subida masiva:', err);
         alert('Error al subir imágenes');
         uploadedImageUrls = [];
     } finally {
         uploadProgress.style.display = 'none';
-        uploadProgressBar.style.width = '0%';
     }
-
-    return uploadedImageUrls;
 }
 
 // ============================================================================
-//  ENVÍO A GOOGLE APPS SCRIPT
+// ENVÍO A GOOGLE SHEETS
 // ============================================================================
+async function enviarPublicacionCompleta(datos) {
+    const payload = {
+        action: 'procesarPublicacionCompleta',
+        titulo: datos.titulo,
+        tipo: datos.tipo,
+        subtipo: datos.subtipo,
+        precio: datos.precio,
+        pais: datos.pais,
+        descripcion: datos.descripcion,
+        imagenes: uploadedImageUrls.join(','),
+        timestamp: new Date().toISOString(),
+        origin: ORIGIN,
+        hoja: 'Publicar'
+    };
 
-async function enviarPublicacionCompleta(datosPublicacion) {
     try {
-        const payload = {
-            action: 'procesarPublicacionCompleta',
-            titulo: datosPublicacion.titulo,
-            tipo: datosPublicacion.tipo,
-            subtipo: datosPublicacion.subtipo,
-            precio: datosPublicacion.precio,
-            pais: datosPublicacion.pais,
-            descripcion: datosPublicacion.descripcion,
-            imagenes: uploadedImageUrls.join(','),
-            timestamp: new Date().toISOString(),
-            origin: ORIGIN,
-            hoja: 'Publicar'
-        };
-
-        // Intento 1: no-cors
-        let response = await fetch(WEB_APP_URL, {
+        let res = await fetch(WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
-            cache: 'no-cache',
-            credentials: 'omit',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        if (response.type === 'opaque') {
-            return {
-                success: true,
-                message: 'Enviado (respuesta opaca/no-cors)',
-                publicacion: { id: 'PUB-' + Date.now(), fila: 'pendiente' },
-                imagenes: { total: uploadedImageUrls.length, links: uploadedImageUrls }
-            };
+        if (res.type === 'opaque') {
+            return { success: true, message: 'Enviado (no-cors)' };
         }
 
-        // Intento 2: cors
-        response = await fetch(WEB_APP_URL, {
+        res = await fetch(WEB_APP_URL, {
             method: 'POST',
             mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'omit',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
 
-        if (response.ok) {
-            return await response.json();
-        }
-
-        throw new Error('Fallo en ambos modos');
+        if (res.ok) return await res.json();
+        throw new Error('Fallo en envío');
     } catch (err) {
-        console.error('Error envío publicación:', err);
         return { success: false, error: err.message };
     }
 }
 
 // ============================================================================
-//  VALIDACIÓN Y UI DEL FORMULARIO
+// VALIDACIÓN Y UI FORMULARIO
 // ============================================================================
-
 function validateForm() {
     let valid = true;
-    const fields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
-
-    fields.forEach(f => {
-        const el = document.getElementById(f);
-        const errEl = document.getElementById(f + 'Error');
-        if (errEl) errEl.style.display = 'none';
-
-        if (!el.value.trim()) {
-            if (errEl) errEl.style.display = 'block';
-            valid = false;
-        }
+    ['titulo','tipo','subtipo','precio','pais','descripcion'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el?.value?.trim()) valid = false;
     });
 
-    const titulo = document.getElementById('titulo')?.value.trim() || '';
-    if (titulo.length < 5 || titulo.length > 100) valid = false;
-
-    const precioVal = parseFloat(document.getElementById('precio')?.value);
-    if (isNaN(precioVal) || precioVal < 1000) valid = false;
-
-    const desc = document.getElementById('descripcion')?.value.trim() || '';
-    if (desc.length < 10 || desc.length > 1000) valid = false;
+    const precio = parseFloat(document.getElementById('precio')?.value);
+    if (isNaN(precio) || precio < 1000) valid = false;
 
     return valid;
 }
 
-function showSuccess(result) {
-    const titulo = document.getElementById('titulo')?.value || 'Anuncio';
-    successMessage.innerHTML = `
-        ¡${titulo} publicado exitosamente!<br>
-        Imágenes: ${uploadedImageUrls.length}<br>
-        ${result.message || 'Guardado en Google Sheets'}
-    `;
+function showSuccess() {
+    successMessage.textContent = '¡Publicación exitosa!';
     successMessage.style.display = 'block';
 }
 
 function showError(msg) {
-    errorMessage.innerHTML = `Error: ${msg}`;
+    errorMessage.textContent = msg;
     errorMessage.style.display = 'block';
 }
 
 function showLoading() {
     loadingMessage.style.display = 'block';
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Procesando...';
-    }
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Procesando...';
 }
 
 function hideLoading() {
     loadingMessage.style.display = 'none';
-    if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Publicar Anuncio';
-    }
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Publicar Anuncio';
 }
 
 function hideMessages() {
@@ -661,25 +579,23 @@ function resetForm() {
     publicationForm.reset();
     imagePreview.innerHTML = '';
     uploadedImageUrls = [];
-    uploadProgress.style.display = 'none';
 }
 
 // ============================================================================
-//  MIS PROPIEDADES – CARGA Y RENDER
+// CARGA DE MIS PROPIEDADES (versión robusta y compatible con index.html)
 // ============================================================================
-
 async function loadMisPropiedades() {
     const container = document.getElementById('propiedades-list');
     if (!container) return;
 
-    container.innerHTML = '<div class="loading">Cargando propiedades publicadas...</div>';
+    container.innerHTML = '<div class="loading-msg">Cargando propiedades publicadas...</div>';
 
     try {
         const response = await fetch(`${WEB_APP_URL}?action=getPublicar&hoja=Publicar`);
         const data = await response.json();
 
         if (!data.success || !Array.isArray(data.publicaciones)) {
-            container.innerHTML = '<div class="no-data">No se encontraron propiedades publicadas.</div>';
+            container.innerHTML = '<div class="no-data-msg">No hay propiedades publicadas aún.</div>';
             return;
         }
 
@@ -689,66 +605,73 @@ async function loadMisPropiedades() {
             const card = document.createElement('div');
             card.className = 'property-card';
 
-            const primeraImg = prop.imagenes ? prop.imagenes.split(',')[0].trim() : 'https://via.placeholder.com/400x220?text=Sin+Imagen';
-            const precioFmt = prop.precio ? '$' + Number(prop.precio).toLocaleString('es-AR') : 'Consultar precio';
+            // ────────────────────── Protección ultra robusta contra imagenes inválida ──────────────────────
+            let primeraImagen = 'https://via.placeholder.com/400x220?text=Sin+Imagen';
+
+            if (prop.imagenes) {
+                if (typeof prop.imagenes === 'string' && prop.imagenes.trim()) {
+                    const partes = prop.imagenes.split(',');
+                    if (partes.length > 0 && partes[0].trim().startsWith('http')) {
+                        primeraImagen = partes[0].trim();
+                    }
+                } else if (Array.isArray(prop.imagenes) && prop.imagenes.length > 0) {
+                    primeraImagen = prop.imagenes[0];
+                }
+            }
+
+            const precio = prop.precio 
+                ? `$${Number(prop.precio).toLocaleString('es-AR')}` 
+                : 'Consultar precio';
 
             card.innerHTML = `
-                <img src="${primeraImg}" alt="${prop.titulo || 'Propiedad'}" loading="lazy"
+                <img src="$$   {primeraImagen}" alt="   $${prop.titulo || 'Propiedad'}" loading="lazy"
                      onerror="this.src='https://via.placeholder.com/400x220?text=Sin+Imagen'">
                 <div class="property-info">
                     <div class="property-title">${prop.titulo || 'Sin título'}</div>
-                    <div class="property-price">${precioFmt}</div>
+                    <div class="property-price">${precio}</div>
                     <div class="property-type">
                         ${prop.subtipo || ''} • ${prop.tipo || ''} • ${prop.pais || ''}
                     </div>
                     <div class="action-row">
-                        <button class="btn-action btn-edit" data-id="${prop.id || ''}">Editar</button>
-                        <button class="btn-action btn-delete" data-id="${prop.id || ''}">Eliminar</button>
+                        <button class="btn-action btn-edit">Editar</button>
+                        <button class="btn-action btn-delete">Eliminar</button>
                     </div>
                 </div>
             `;
 
-            card.querySelector('.btn-edit').addEventListener('click', () => {
-                alert(`Función editar aún no implementada.\nID: ${prop.id || 'sin-id'}\nTítulo: ${prop.titulo}`);
-                // Futuro: window.location = `editar.html?id=${prop.id}`
-            });
+            card.querySelector('.btn-edit').onclick = () => {
+                alert(`Editar (pendiente de implementar)\nID: ${prop.id || prop.fila || '?'}\n${prop.titulo}`);
+            };
 
-            card.querySelector('.btn-delete').addEventListener('click', async () => {
-                if (!confirm(`¿Realmente eliminar "${prop.titulo || 'esta propiedad'}"?`)) return;
-
-                alert(`Función eliminar aún no implementada.\nID: ${prop.id || 'sin-id'}`);
-                console.log('Solicitud DELETE para ID:', prop.id);
-                // Futuro: await fetch(`${WEB_APP_URL}?action=deletePublicar&id=${prop.id}&hoja=Publicar`, {method:'POST'})
-                // Luego: loadMisPropiedades();
-            });
+            card.querySelector('.btn-delete').onclick = () => {
+                if (confirm(`¿Eliminar "${prop.titulo || 'esta propiedad'}"?`)) {
+                    alert('Función eliminar pendiente de implementar en el backend');
+                    // Aquí iría la llamada real a eliminar
+                }
+            };
 
             container.appendChild(card);
         });
+
     } catch (err) {
         console.error('Error al cargar propiedades:', err);
-        container.innerHTML = '<div class="no-data">Error al cargar las propiedades. Intenta nuevamente.</div>';
+        container.innerHTML = '<div class="no-data-msg">Error al cargar propiedades</div>';
     }
 }
 
 // ============================================================================
-//  EVENTOS DEL FORMULARIO
+// EVENTOS FORMULARIO
 // ============================================================================
-
-// Subida automática de imágenes al seleccionar
-imagenesInput.addEventListener('change', async (e) => {
+imagenesInput.addEventListener('change', async e => {
     const files = Array.from(e.target.files);
     imagePreview.innerHTML = '';
     uploadedImageUrls = [];
 
-    let totalSize = 0;
     const validFiles = [];
-
     for (const file of files) {
         try {
             validarArchivo(file);
-            totalSize += file.size;
             validFiles.push(file);
-
             const reader = new FileReader();
             reader.onload = ev => {
                 const img = document.createElement('img');
@@ -758,32 +681,20 @@ imagenesInput.addEventListener('change', async (e) => {
             };
             reader.readAsDataURL(file);
         } catch (err) {
-            alert(`${file.name}: ${err.message}`);
-            imagenesInput.value = '';
-            return;
+            alert(err.message);
         }
     }
 
-    if (totalSize > 100 * 1024 * 1024) {
-        alert('Tamaño total excede 100MB');
-        imagenesInput.value = '';
-        return;
-    }
-
-    if (validFiles.length > 0) {
-        await subirImagenesMultiples(validFiles);
-    }
+    if (validFiles.length) await subirImagenesMultiples(validFiles);
 });
 
-// Envío del formulario
-publicationForm.addEventListener('submit', async (e) => {
+publicationForm.addEventListener('submit', async e => {
     e.preventDefault();
     hideMessages();
 
     if (!validateForm()) return;
-
-    if (uploadedImageUrls.length === 0) {
-        showError('Debes subir al menos una imagen correctamente');
+    if (!uploadedImageUrls.length) {
+        showError('Sube al menos una imagen');
         return;
     }
 
@@ -800,26 +711,26 @@ publicationForm.addEventListener('submit', async (e) => {
             timestamp: new Date().toISOString()
         };
 
-        const resultado = await enviarPublicacionCompleta(datos);
+        const res = await enviarPublicacionCompleta(datos);
 
-        if (resultado.success) {
-            showSuccess(resultado);
+        if (res.success) {
+            showSuccess();
             resetForm();
         } else {
-            showError(resultado.error || 'Error desconocido al publicar');
+            showError(res.error || 'Error al publicar');
         }
     } catch (err) {
-        showError(`Error de conexión: ${err.message}`);
+        showError(err.message);
     } finally {
         hideLoading();
     }
 });
 
 // ============================================================================
-//  INICIALIZACIÓN
+// INICIO
 // ============================================================================
-console.log('Panel de Gestión cargado completamente');
-console.log('Web App URL:', WEB_APP_URL);
+console.log('Panel de Gestión cargado - versión robusta 2025');
+</script>
 </script>
 </body>
 </html>
