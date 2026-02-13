@@ -185,6 +185,92 @@
             .form-row { grid-template-columns: 1fr; }
             .property-grid { grid-template-columns: 1fr; }
         }
+
+        /* Nuevos estilos para sección Interesados */
+        #interesados-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .interested-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .interested-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .interested-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-color: #cbd5e1;
+        }
+
+        .interested-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .interested-info {
+            font-size: 0.98rem;
+            color: #4a5568;
+            margin: 0.4rem 0;
+        }
+
+        .interested-info strong {
+            color: #2d3748;
+        }
+
+        .interested-message {
+            margin-top: 1rem;
+            padding: 0.9rem;
+            background: #edf2f7;
+            border-radius: 8px;
+            font-size: 0.97rem;
+            white-space: pre-wrap;
+        }
+
+        .btn-whatsapp {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #25D366;
+            color: white;
+            padding: 0.7rem 1.4rem;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-whatsapp:hover {
+            background: #20b058;
+            transform: translateY(-2px);
+        }
+
+        .no-interesados {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #718096;
+            font-size: 1.15rem;
+        }
+
+        @media (max-width: 768px) {
+            .interested-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
