@@ -401,38 +401,73 @@
 
 <script>
 // ============================================================================
-// CONTROL DE VISIBILIDAD DE SECCIONES
+// CONTROL DE VISIBILIDAD DE SECCIONES - versión más segura
 // ============================================================================
-const actionsPanel = document.getElementById('actionsPanel');
-const formSection = document.getElementById('form-section');
-const misPropiedadesSection = document.getElementById('mis-propiedades-section');
+const sections = {
+    actions:     document.getElementById('actionsPanel'),
+    form:        document.getElementById('form-section'),
+    propiedades: document.getElementById('mis-propiedades-section'),
+    interesados: document.getElementById('interesados-section')
+};
 
-const btnPublicar = document.getElementById('btnPublicar');
-const btnMisPropiedades = document.getElementById('btnMisPropiedades');
-const btnVolverForm = document.getElementById('btnVolverForm');
-const btnVolverPropiedades = document.getElementById('btnVolverPropiedades');
+const buttons = {
+    publicar:       document.getElementById('btnPublicar'),
+    misPropiedades: document.getElementById('btnMisPropiedades'),
+    interesados:    document.getElementById('btnInteresados'),
+    volverForm:     document.getElementById('btnVolverForm'),
+    volverProp:     document.getElementById('btnVolverPropiedades'),
+    volverInteresados: document.getElementById('btnVolverInteresados')
+};
 
 function showSection(sectionToShow) {
-    [actionsPanel, formSection, misPropiedadesSection].forEach(s => {
+    Object.values(sections).forEach(s => {
         if (s) s.style.display = 'none';
     });
-    if (sectionToShow) sectionToShow.style.display = 'block';
+    if (sectionToShow && sections[sectionToShow]) {
+        sections[sectionToShow].style.display = 'block';
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-btnPublicar.addEventListener('click', () => {
-    document.getElementById('editId').value = '';
-    document.querySelector('.btn-submit').textContent = 'Publicar Anuncio';
-    showSection(formSection);
-});
+// Asignar eventos solo si los elementos existen
+if (buttons.publicar) {
+    buttons.publicar.addEventListener('click', () => {
+        document.getElementById('editId').value = '';
+        document.querySelector('.btn-submit').textContent = 'Publicar Anuncio';
+        showSection('form');
+    });
+}
 
-btnMisPropiedades.addEventListener('click', () => {
-    showSection(misPropiedadesSection);
-    loadMisPropiedades();
-});
+if (buttons.misPropiedades) {
+    buttons.misPropiedades.addEventListener('click', () => {
+        showSection('propiedades');
+        if (typeof loadMisPropiedades === 'function') loadMisPropiedades();
+    });
+}
 
-btnVolverForm.addEventListener('click', () => showSection(actionsPanel));
-btnVolverPropiedades.addEventListener('click', () => showSection(actionsPanel));
+if (buttons.interesados) {
+    buttons.interesados.addEventListener('click', () => {
+        showSection('interesados');
+        if (typeof loadInteresados === 'function') loadInteresados();
+    });
+}
+
+if (buttons.volverForm) {
+    buttons.volverForm.addEventListener('click', () => showSection('actions'));
+}
+
+if (buttons.volverProp) {
+    buttons.volverProp.addEventListener('click', () => showSection('actions'));
+}
+
+if (buttons.volverInteresados) {
+    buttons.volverInteresados.addEventListener('click', () => showSection('actions'));
+}
+
+// Para debug inicial
+console.log('Elementos encontrados:');
+console.log('btnInteresados:', !!buttons.interesados);
+console.log('interesados-section:', !!sections.interesados);
 
 // ============================================================================
 // CONFIGURACIÓN GLOBAL
