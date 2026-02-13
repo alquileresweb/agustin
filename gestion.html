@@ -320,7 +320,6 @@ function showSection(sectionToShow) {
 }
 
 btnPublicar.addEventListener('click', () => {
-    // Modo nuevo → limpiar formulario
     document.getElementById('editId').value = '';
     document.querySelector('.btn-submit').textContent = 'Publicar Anuncio';
     showSection(formSection);
@@ -352,20 +351,20 @@ const uploadProgress = document.getElementById('uploadProgress');
 const uploadProgressBar = document.getElementById('uploadProgressBar');
 
 let uploadedImageUrls = [];
-let isEditing = false; // Bandera para saber si estamos editando
+let isEditing = false;
 
 // ============================================================================
-// CLOUDINARY (sin cambios importantes)
+// CLOUDINARY CONFIGURACIÓN Y FUNCIONES (resumidas para claridad)
 // ============================================================================
-// ... (todas las funciones de Cloudinary siguen iguales: subirImagenesCloudinary, procesarArchivoIndividual, etc.)
+// ... (pega aquí todas tus funciones de Cloudinary: subirImagenesCloudinary, procesarArchivoIndividual, etc.)
 
 // ============================================================================
-// ENVÍO A GOOGLE SHEETS – ahora soporta edición
+// ENVÍO A GOOGLE SHEETS – soporta tanto crear como editar
 // ============================================================================
 async function enviarPublicacionCompleta(datos, isEdit = false, editId = '') {
     const payload = {
         action: isEdit ? 'editarPublicacion' : 'procesarPublicacionCompleta',
-        id: isEdit ? editId : '',  // Enviamos el ID/fila si es edición
+        id: isEdit ? editId : '',
         titulo: datos.titulo,
         tipo: datos.tipo,
         subtipo: datos.subtipo,
@@ -387,7 +386,7 @@ async function enviarPublicacionCompleta(datos, isEdit = false, editId = '') {
         });
 
         if (res.type === 'opaque') {
-            return { success: true, message: isEdit ? 'Cambios guardados (no-cors)' : 'Publicado (no-cors)' };
+            return { success: true, message: isEdit ? 'Cambios guardados' : 'Publicado' };
         }
 
         res = await fetch(WEB_APP_URL, {
@@ -405,7 +404,7 @@ async function enviarPublicacionCompleta(datos, isEdit = false, editId = '') {
 }
 
 // ============================================================================
-// VALIDACIÓN Y UI FORMULARIO
+// VALIDACIÓN Y UI
 // ============================================================================
 function validateForm() {
     let valid = true;
@@ -431,7 +430,7 @@ function showError(msg) {
 function showLoading() {
     loadingMessage.style.display = 'block';
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Procesando...';
+    submitBtn.textContent = isEditing ? 'Guardando...' : 'Procesando...';
 }
 
 function hideLoading() {
@@ -459,18 +458,32 @@ function resetForm() {
 // ============================================================================
 function loadPropertyForEdit(prop) {
     isEditing = true;
-    document.getElementById('editId').value = prop.id || prop.fila || '';
+
+    const editIdField = document.getElementById('editId');
+    if (!editIdField) {
+        console.error('No se encontró el campo #editId en el DOM');
+        alert('Error interno: campo de edición no encontrado');
+        return;
+    }
+
+    editIdField.value = prop.id || prop.fila || prop.row || '';
+
     document.getElementById('titulo').value = prop.titulo || '';
-    document.getElementById('tipo').value = prop.tipo || '';
-    document.getElementById('subtipo').value = prop.subtipo || '';
+    document.getElementById('tipo').value = prop.tipo || prop.tipoOperacion || '';
+    document.getElementById('subtipo').value = prop.subtipo || prop.tipoPropiedad || '';
     document.getElementById('precio').value = prop.precio || '';
     document.getElementById('pais').value = prop.pais || '';
     document.getElementById('descripcion').value = prop.descripcion || '';
 
-    // Mostrar imágenes actuales (como previsualización)
+    // Previsualizar imágenes actuales
     imagePreview.innerHTML = '';
-    if (prop.imagenes && typeof prop.imagenes === 'string') {
-        const urls = prop.imagenes.split(',').map(u => u.trim()).filter(u => u);
+    if (prop.imagenes) {
+        let urls = [];
+        if (typeof prop.imagenes === 'string') {
+            urls = prop.imagenes.split(',').map(u => u.trim()).filter(u => u);
+        } else if (Array.isArray(prop.imagenes)) {
+            urls = prop.imagenes;
+        }
         urls.forEach(url => {
             const img = document.createElement('img');
             img.src = url;
@@ -479,8 +492,7 @@ function loadPropertyForEdit(prop) {
             img.style.objectFit = 'cover';
             imagePreview.appendChild(img);
         });
-        // Nota: las imágenes actuales NO se suben de nuevo a menos que el usuario suba nuevas
-        uploadedImageUrls = urls; // Mantenemos las existentes
+        uploadedImageUrls = urls; // Conservamos las existentes
     }
 
     submitBtn.textContent = 'Guardar Cambios';
@@ -548,7 +560,7 @@ async function loadMisPropiedades() {
 
             card.querySelector('.btn-delete').onclick = () => {
                 if (confirm(`¿Eliminar "${prop.titulo || 'esta propiedad'}"?`)) {
-                    alert('Función eliminar pendiente de implementar en el backend');
+                    alert('Función eliminar pendiente de implementar');
                 }
             };
 
@@ -561,7 +573,7 @@ async function loadMisPropiedades() {
 }
 
 // ============================================================================
-// EVENTOS FORMULARIO
+// EVENTOS DEL FORMULARIO
 // ============================================================================
 imagenesInput.addEventListener('change', async e => {
     const files = Array.from(e.target.files);
@@ -618,7 +630,6 @@ publicationForm.addEventListener('submit', async e => {
         if (res.success) {
             showSuccess(isEdit);
             resetForm();
-            // Si estábamos editando → recargamos la lista
             if (isEdit) {
                 showSection(misPropiedadesSection);
                 loadMisPropiedades();
