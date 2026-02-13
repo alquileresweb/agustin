@@ -215,22 +215,21 @@
 <div id="form-section">
     <div class="success" id="successMessage"></div>
     <div class="error-message" id="errorMessage"></div>
-    <div class="loading" id="loadingMessage">Procesando publicación...</div>
+    <div class="loading" id="loadingMessage">Procesando...</div>
 
     <form id="publicationForm">
-        <!-- Campo oculto NECESARIO para la edición -->
+        <!-- Campo oculto NECESARIO para identificar qué propiedad se está editando -->
         <input type="hidden" id="editId" name="editId" value="">
 
         <div class="form-group">
             <label for="titulo">Título de la Publicación *</label>
-            <input type="text" id="titulo" name="titulo" required 
-                   placeholder="Ej: Hermoso departamento 3 ambientes en Palermo" maxlength="100">
+            <input type="text" id="titulo" name="titulo" placeholder="Ej: Hermoso departamento 3 ambientes en Palermo" maxlength="100">
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label for="tipo">Tipo de Operación *</label>
-                <select id="tipo" name="tipo" required>
+                <select id="tipo" name="tipo">
                     <option value="">Seleccionar tipo</option>
                     <option value="venta">Venta</option>
                     <option value="alquiler">Alquiler</option>
@@ -238,7 +237,7 @@
             </div>
             <div class="form-group">
                 <label for="subtipo">Tipo de Propiedad *</label>
-                <select id="subtipo" name="subtipo" required>
+                <select id="subtipo" name="subtipo">
                     <option value="">Seleccionar subtipo</option>
                     <option value="departamento">Departamento</option>
                     <option value="casa">Casa</option>
@@ -252,12 +251,11 @@
         <div class="form-row">
             <div class="form-group">
                 <label for="precio">Precio *</label>
-                <input type="number" id="precio" name="precio" required 
-                       placeholder="Ej: 250000" step="1000" min="0">
+                <input type="number" id="precio" name="precio" placeholder="Ej: 250000" step="1000" min="0">
             </div>
             <div class="form-group">
                 <label for="pais">País *</label>
-                <select id="pais" name="pais" required>
+                <select id="pais" name="pais">
                     <option value="">Seleccionar país</option>
                     <option value="Argentina">Argentina</option>
                     <option value="Brasil">Brasil</option>
@@ -266,10 +264,11 @@
         </div>
 
         <div class="form-group">
-            <label for="imagenes">Imágenes * (múltiples permitidas)</label>
-            <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple required>
+            <label for="imagenes">Imágenes (múltiples permitidas)</label>
+            <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple>
             <small style="color:#718096; display:block; margin-top:6px;">
-                Formatos: JPG, PNG, WebP · máx. 10MB por imagen
+                Formatos: JPG, PNG, WebP · máx. 10MB por imagen<br>
+                <strong>Al editar:</strong> deja vacío para mantener las imágenes actuales
             </small>
             <div class="image-preview" id="imagePreview"></div>
             <div class="upload-progress" id="uploadProgress" style="display:none; margin-top:12px;">
@@ -279,7 +278,7 @@
 
         <div class="form-group">
             <label for="descripcion">Descripción Detallada *</label>
-            <textarea id="descripcion" name="descripcion" required rows="6" maxlength="1000"
+            <textarea id="descripcion" name="descripcion" rows="6" maxlength="1000"
                       placeholder="Describe la propiedad, características, ubicación, amenities, etc..."></textarea>
         </div>
 
@@ -413,12 +412,52 @@ async function enviarPublicacionCompleta(datos, isEdit = false, editId = '') {
 // ============================================================================
 function validateForm() {
     let valid = true;
-    ['titulo','tipo','subtipo','precio','pais','descripcion'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el?.value?.trim()) valid = false;
+    const fields = [
+        { id: 'titulo', name: 'Título' },
+        { id: 'tipo', name: 'Tipo de operación' },
+        { id: 'subtipo', name: 'Tipo de propiedad' },
+        { id: 'precio', name: 'Precio' },
+        { id: 'pais', name: 'País' },
+        { id: 'descripcion', name: 'Descripción' }
+    ];
+
+    fields.forEach(field => {
+        const el = document.getElementById(field.id);
+        if (!el) return;
+
+        const value = el.value.trim();
+
+        // Si el campo está vacío Y NO estamos editando (o el campo no tenía valor previo)
+        if (!value && !isEditing) {
+            valid = false;
+            // Opcional: mostrar mensaje visual cerca del campo
+            el.style.borderColor = '#e53e3e';
+            console.warn(`Campo obligatorio vacío (nueva publicación): ${field.name}`);
+        } else if (!value && isEditing) {
+            // En modo edición, permitimos que quede vacío (mantiene el valor anterior)
+            // Pero si querés ser estricto, podés forzar que al menos tenga algo
+            // valid = false;
+        }
     });
-    const precio = parseFloat(document.getElementById('precio')?.value);
-    if (isNaN(precio) || precio < 1000) valid = false;
+
+    // Validación específica para precio (solo si se ingresó algo)
+    const precioEl = document.getElementById('precio');
+    if (precioEl && precioEl.value) {
+        const precio = parseFloat(precioEl.value);
+        if (isNaN(precio) || precio < 1000) {
+            valid = false;
+            precioEl.style.borderColor = '#e53e3e';
+        }
+    }
+
+    // Restaurar bordes normales si todo está OK
+    if (valid) {
+        fields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (el) el.style.borderColor = '#e2e8f0';
+        });
+    }
+
     return valid;
 }
 
