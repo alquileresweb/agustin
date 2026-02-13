@@ -210,78 +210,83 @@
     </div>
 
     <!-- ==================================================
-         FORMULARIO PUBLICAR
-    ================================================== -->
-    <div id="form-section">
-        <div class="success" id="successMessage"></div>
-        <div class="error-message" id="errorMessage"></div>
-        <div class="loading" id="loadingMessage">Procesando publicación...</div>
+     FORMULARIO PUBLICAR / EDITAR
+================================================== -->
+<div id="form-section">
+    <div class="success" id="successMessage"></div>
+    <div class="error-message" id="errorMessage"></div>
+    <div class="loading" id="loadingMessage">Procesando publicación...</div>
 
-        <form id="publicationForm">
+    <form id="publicationForm">
+        <!-- Campo oculto NECESARIO para la edición -->
+        <input type="hidden" id="editId" name="editId" value="">
+
+        <div class="form-group">
+            <label for="titulo">Título de la Publicación *</label>
+            <input type="text" id="titulo" name="titulo" required 
+                   placeholder="Ej: Hermoso departamento 3 ambientes en Palermo" maxlength="100">
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
-                <label for="titulo">Título de la Publicación *</label>
-                <input type="text" id="titulo" name="titulo" required placeholder="Ej: Hermoso departamento 3 ambientes en Palermo" maxlength="100">
+                <label for="tipo">Tipo de Operación *</label>
+                <select id="tipo" name="tipo" required>
+                    <option value="">Seleccionar tipo</option>
+                    <option value="venta">Venta</option>
+                    <option value="alquiler">Alquiler</option>
+                </select>
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="tipo">Tipo de Operación *</label>
-                    <select id="tipo" name="tipo" required>
-                        <option value="">Seleccionar tipo</option>
-                        <option value="venta">Venta</option>
-                        <option value="alquiler">Alquiler</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="subtipo">Tipo de Propiedad *</label>
-                    <select id="subtipo" name="subtipo" required>
-                        <option value="">Seleccionar subtipo</option>
-                        <option value="departamento">Departamento</option>
-                        <option value="casa">Casa</option>
-                        <option value="terreno">Terreno</option>
-                        <option value="local">Local Comercial</option>
-                        <option value="otro">Otro</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="precio">Precio *</label>
-                    <input type="number" id="precio" name="precio" required placeholder="Ej: 250000" step="1000" min="0">
-                </div>
-                <div class="form-group">
-                    <label for="pais">País *</label>
-                    <select id="pais" name="pais" required>
-                        <option value="">Seleccionar país</option>
-                        <option value="Argentina">Argentina</option>
-                        <option value="Brasil">Brasil</option>
-                    </select>
-                </div>
-            </div>
-
             <div class="form-group">
-                <label for="imagenes">Imágenes * (múltiples permitidas)</label>
-                <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple required>
-                <small style="color:#718096; display:block; margin-top:6px;">
-                    Formatos: JPG, PNG, WebP · máx. 10MB por imagen
-                </small>
-                <div class="image-preview" id="imagePreview"></div>
-                <div class="upload-progress" id="uploadProgress" style="display:none; margin-top:12px;">
-                    <div id="uploadProgressBar" style="height:6px; background:#667eea; width:0%; border-radius:3px;"></div>
-                </div>
+                <label for="subtipo">Tipo de Propiedad *</label>
+                <select id="subtipo" name="subtipo" required>
+                    <option value="">Seleccionar subtipo</option>
+                    <option value="departamento">Departamento</option>
+                    <option value="casa">Casa</option>
+                    <option value="terreno">Terreno</option>
+                    <option value="local">Local Comercial</option>
+                    <option value="otro">Otro</option>
+                </select>
             </div>
+        </div>
 
+        <div class="form-row">
             <div class="form-group">
-                <label for="descripcion">Descripción Detallada *</label>
-                <textarea id="descripcion" name="descripcion" required rows="6" maxlength="1000"
-                          placeholder="Describe la propiedad, características, ubicación, amenities, etc..."></textarea>
+                <label for="precio">Precio *</label>
+                <input type="number" id="precio" name="precio" required 
+                       placeholder="Ej: 250000" step="1000" min="0">
             </div>
+            <div class="form-group">
+                <label for="pais">País *</label>
+                <select id="pais" name="pais" required>
+                    <option value="">Seleccionar país</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Brasil">Brasil</option>
+                </select>
+            </div>
+        </div>
 
-            <button type="submit" class="btn btn-primary btn-submit">Publicar Anuncio</button>
-            <button type="button" class="btn btn-back" id="btnVolverForm">← Volver al Panel</button>
-        </form>
-    </div>
+        <div class="form-group">
+            <label for="imagenes">Imágenes * (múltiples permitidas)</label>
+            <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple required>
+            <small style="color:#718096; display:block; margin-top:6px;">
+                Formatos: JPG, PNG, WebP · máx. 10MB por imagen
+            </small>
+            <div class="image-preview" id="imagePreview"></div>
+            <div class="upload-progress" id="uploadProgress" style="display:none; margin-top:12px;">
+                <div id="uploadProgressBar" style="height:6px; background:#667eea; width:0%; border-radius:3px;"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="descripcion">Descripción Detallada *</label>
+            <textarea id="descripcion" name="descripcion" required rows="6" maxlength="1000"
+                      placeholder="Describe la propiedad, características, ubicación, amenities, etc..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-submit">Publicar Anuncio</button>
+        <button type="button" class="btn btn-back" id="btnVolverForm">← Volver al Panel</button>
+    </form>
+</div>
 
     <!-- ==================================================
          MIS PROPIEDADES
