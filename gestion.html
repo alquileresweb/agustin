@@ -368,41 +368,48 @@ let isEditing = false;
 async function enviarPublicacionCompleta(datos, isEdit = false, editId = '') {
     const payload = {
         action: isEdit ? 'editarPublicacion' : 'procesarPublicacionCompleta',
-        id: isEdit ? editId : '',
-        titulo: datos.titulo,
-        tipo: datos.tipo,
-        subtipo: datos.subtipo,
-        precio: datos.precio,
-        pais: datos.pais,
-        descripcion: datos.descripcion,
-        imagenes: uploadedImageUrls.join(','),
+        id: isEdit ? editId : '',  // ¡Este es el campo clave!
+        titulo: datos.titulo || '',
+        tipo: datos.tipo || '',
+        subtipo: datos.subtipo || '',
+        precio: datos.precio || '',
+        pais: datos.pais || '',
+        descripcion: datos.descripcion || '',
+        imagenes: uploadedImageUrls.join(',') || '',
         timestamp: new Date().toISOString(),
         origin: ORIGIN,
         hoja: 'Publicar'
     };
 
+    console.log('=== ENVIANDO AL BACKEND ===');
+    console.log('Payload completo:', JSON.stringify(payload, null, 2));
+    console.log('URL:', WEB_APP_URL);
+
     try {
-        let res = await fetch(WEB_APP_URL, {
+        const res = await fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            mode: 'cors',              // ← Solo cors (necesario para ver el body)
+            cache: 'no-cache',
+            credentials: 'omit',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(payload)
         });
 
-        if (res.type === 'opaque') {
-            return { success: true, message: isEdit ? 'Cambios guardados' : 'Publicado' };
+        console.log('Respuesta status:', res.status, 'ok:', res.ok);
+
+        if (res.ok) {
+            const json = await res.json();
+            console.log('Respuesta JSON del backend:', json);
+            return json;
+        } else {
+            const text = await res.text();
+            console.error('Error HTTP:', res.status, text);
+            throw new Error(`HTTP ${res.status}: ${text}`);
         }
-
-        res = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            mode: 'cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (res.ok) return await res.json();
-        throw new Error('Fallo en envío');
     } catch (err) {
+        console.error('Error completo en fetch:', err);
         return { success: false, error: err.message };
     }
 }
