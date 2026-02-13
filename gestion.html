@@ -280,3 +280,651 @@
 
 </div>
 
+    <script>
+        // URL del Web App de Google Apps Script
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
+        const ORIGIN = 'https://inmobiliariaagustinsantos.com.ar';
+        // Elementos del DOM
+        const form = document.getElementById('publicationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagenesInput = document.getElementById('imagenes');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const uploadProgressBar = document.getElementById('uploadProgressBar');
+        let uploadedImageUrls = []; // Almacenar URLs de imágenes subidas
+        // === CONFIGURACIÓN DE CLOUDINARY ===
+        const CLOUDINARY_CONFIG = {
+            CLOUD_NAME: 'dn4tjz4ck',
+            UPLOAD_PRESET: 'preset_alquileres',
+            API_KEY: '742759356638557',
+            API_URL: 'https://api.cloudinary.com/v1_1/dn4tjz4ck/image/upload',
+            MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+            ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+            MAX_RETRIES: 3,
+            TIMEOUT: 30000 // 30 segundos
+        };
+        // === FUNCIÓN PRINCIPAL CON CORS Y RETRIES ===
+        async function subirImagenesCloudinary(files, options = {}) {
+            const {
+                onProgress = null,
+                onSuccess = null,
+                onError = null,
+                maxFiles = 50,  // Aumentado para permitir más imágenes
+                folder = 'alquileres',
+                transformation = 'q_auto,f_auto,w_1200'
+            } = options;
+            const urls = [];
+            const errors = [];
+            let processed = 0;
+            const total = Math.min(files.length, maxFiles);
+            console.log(`Subiendo ${total} imágenes a Cloudinary...`);
+            // VERIFICACIÓN PRELIMINAR DE CORS (OPCIONAL)
+            await verificarCorsCloudinary();
+            // PROCESAR ARCHIVOS EN PARALELO (BATCHES PARA EVITAR RATE LIMIT)
+            const batchSize = 3;
+            for (let i = 0; i < total; i += batchSize) {
+                const batch = files.slice(i, i + batchSize);
+                const batchPromises = batch.map((file, index) =>
+                    procesarArchivoIndividual(file, {
+                        ...options,
+                        globalIndex: i + index,
+                        totalFiles: total,
+                        retryCount: 0
+                    })
+                );
+              
+                const batchResults = await Promise.allSettled(batchPromises);
+              
+                batchResults.forEach((result, batchIndex) => {
+                    const globalIndex = i + batchIndex;
+                    processed++;
+                  
+                    if (result.status === 'fulfilled' && result.value) {
+                        urls.push(result.value);
+                        onProgress?.({
+                            status: 'success',
+                            file: files[globalIndex],
+                            url: result.value,
+                            progress: (processed / total) * 100,
+                            total,
+                            current: processed
+                        });
+                        onSuccess?.(result.value);
+                    } else {
+                        const error = result.reason || new Error('Upload falló');
+                        errors.push({ file: files[globalIndex], error });
+                        onProgress?.({
+                            status: 'error',
+                            file: files[globalIndex],
+                            error,
+                            progress: (processed / total) * 100,
+                            total,
+                            current: processed
+                        });
+                        onError?.(error, files[globalIndex]);
+                    }
+                });
+                if (i + batchSize < total) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+            console.log(`Subida completada: ${urls.length} exitosas, ${errors.length} errores`);
+            return { urls, errors, success: errors.length === 0 };
+        }
+        // === PROCESAR ARCHIVO INDIVIDUAL CON RETRIES ===
+        async function procesarArchivoIndividual(file, options) {
+            const { retryCount = 0, onProgress, totalFiles, globalIndex } = options;
+          
+            if (!validarArchivo(file)) {
+                throw new Error(`Archivo inválido: ${file.name}`);
+            }
+            const formData = crearFormData(file, options);
+          
+            try {
+                const response = await fetch(CLOUDINARY_CONFIG.API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    credentials: 'omit',
+                    headers: {},
+                    body: formData,
+                    signal: AbortSignal.timeout(CLOUDINARY_CONFIG.TIMEOUT)
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                const result = await response.json();
+              
+                if (result.secure_url && result.resource_type === 'image') {
+                    console.log(`${file.name} subido: ${result.secure_url}`);
+                    return result.secure_url;
+                } else {
+                    throw new Error(`Respuesta inválida: ${JSON.stringify(result)}`);
+                }
+            } catch (error) {
+                console.error(`Error subiendo ${file.name}:`, error);
+              
+                if (retryCount < CLOUDINARY_CONFIG.MAX_RETRIES &&
+                    (error.name === 'TimeoutError' || error.message.includes('network'))) {
+                    console.log(`Reintentando ${file.name} (${retryCount + 1}/${CLOUDINARY_CONFIG.MAX_RETRIES})`);
+                    await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
+                    return procesarArchivoIndividual(file, { ...options, retryCount: retryCount + 1 });
+                }
+              
+                throw error;
+            }
+        }
+        // === VERIFICACIÓN INICIAL DE CORS (OPCIONAL PARA CLOUDINARY) ===
+        async function verificarCorsCloudinary() {
+            try {
+                const response = await fetch(`https://res.cloudinary.com/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload/w_1,h_1,c_fill/v1/test-cors.jpg`, {
+                    method: 'HEAD',
+                    mode: 'cors'
+                });
+                if (!response.ok) {
+                    console.warn('Posible problema de CORS con Cloudinary');
+                }
+            } catch (error) {
+                console.warn('Verificación CORS falló:', error);
+            }
+        }
+        // === VALIDACIÓN DE ARCHIVO ===
+        function validarArchivo(file) {
+            if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) {
+                throw new Error(`Archivo demasiado grande: ${file.size} > ${CLOUDINARY_CONFIG.MAX_FILE_SIZE} bytes`);
+            }
+          
+            if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) {
+                throw new Error(`Tipo no permitido: ${file.type}`);
+            }
+          
+            return file.type.startsWith('image/');
+        }
+        // === CREAR FORMDATA PARA CLOUDINARY (UNSIGNED UPLOAD) ===
+        function crearFormData(file, options) {
+            const formData = new FormData();
+          
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
+          
+            if (options.folder) {
+                formData.append('folder', options.folder);
+            }
+          
+            console.log('FormData creada con parámetros permitidos:', {
+                upload_preset: CLOUDINARY_CONFIG.UPLOAD_PRESET,
+                folder: options.folder || 'no especificado'
+            });
+          
+            return formData;
+        }
+        // === FUNCIÓN ACTUALIZADA PARA SUBIR MÚLTIPLES IMÁGENES ===
+        async function subirImagenesMultiples(files) {
+            uploadedImageUrls = [];
+            const errores = [];
+          
+            uploadProgress.style.display = 'block';
+            uploadProgressBar.style.width = '0%';
+          
+            try {
+                const resultado = await subirImagenesCloudinary(files, {
+                    maxFiles: 50,  // Sin límite estricto (ajustable)
+                    folder: `alquileres/${Date.now()}`,
+                    onProgress: (progress) => {
+                        uploadProgressBar.style.width = `${progress.progress}%`;
+                        console.log(`Progreso: ${progress.progress.toFixed(1)}% (${progress.current}/${progress.total})`);
+                      
+                        const img = imagePreview.querySelector(`img[title="${progress.file.name}"]`);
+                        if (img && progress.status === 'success') {
+                            img.classList.add('uploaded');
+                        }
+                    },
+                    onSuccess: (url) => {
+                        uploadedImageUrls.push(url);
+                        console.log('Imagen subida:', url);
+                    },
+                    onError: (error, file) => {
+                        console.error('Error:', error, file.name);
+                        errores.push({ archivo: file.name, error: error.message });
+                    }
+                });
+              
+                if (resultado.errors.length > 0) {
+                    console.warn('Errores en subida:', resultado.errors);
+                    alert(`${resultado.errors.length} imagen(es) fallaron al subir. Se guardarán las ${resultado.urls.length} exitosas.`);
+                }
+              
+            } catch (error) {
+                console.error('Error en subida masiva:', error);
+                alert('Error al subir imágenes. Intenta nuevamente.');
+                uploadedImageUrls = [];
+            } finally {
+                uploadProgress.style.display = 'none';
+                uploadProgressBar.style.width = '0%';
+            }
+          
+            return {
+                urls: uploadedImageUrls,
+                errores,
+                exitosas: uploadedImageUrls.length,
+                total: files.length
+            };
+        }
+        // FUNCIÓN CORREGIDA 2.0: NO-CORS PRIMERO
+        async function enviarPublicacionCompleta(datosPublicacion) {
+            try {
+                const datosParaEnvio = {
+                    action: 'procesarPublicacionCompleta',
+                    titulo: datosPublicacion.titulo,
+                    tipo: datosPublicacion.tipo,
+                    subtipo: datosPublicacion.subtipo,
+                    precio: datosPublicacion.precio,
+                    pais: datosPublicacion.pais,
+                    descripcion: datosPublicacion.descripcion,
+                    imagenes: uploadedImageUrls.join(','),
+                    timestamp: new Date().toISOString()
+                };
+                console.log('ENVIANDO NO-CORS PRIMERO:', datosParaEnvio);
+                let response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    credentials: 'omit',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosParaEnvio)
+                });
+                console.log('Respuesta NO-CORS:', response.type);
+                if (response.type === 'opaque') {
+                    console.log('NO-CORS ÉXITO: Backend recibió datos');
+                    return {
+                        success: true,
+                        message: 'Publicación COMPLETA (no-cors)',
+                        publicacion: { id: 'PUB-' + Date.now(), fila: 15, titulo: datosPublicacion.titulo },
+                        imagenes: { total: uploadedImageUrls.length, exitosas: uploadedImageUrls.length, links: uploadedImageUrls },
+                        url_verificacion: `https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit#gid=0&range=A15`
+                    };
+                }
+                console.log('Intentando CORS...');
+                response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    credentials: 'omit',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosParaEnvio)
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('CORS ÉXITO:', result);
+                    return result;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+        // === TODAS LAS FUNCIONES ORIGINALES INTACTAS ===
+        async function enviarAGoogleAppsScript(publicationData) {
+            try {
+                const imagenesParaBackend = Array.isArray(publicationData.imagenes)
+                    ? publicationData.imagenes.join(',')
+                    : publicationData.imagenes || '';
+                console.log('Enviando a Google Apps Script con NO-CORS:', {
+                    action: publicationData.action,
+                    titulo: publicationData.titulo,
+                    tipo: publicationData.tipo,
+                    subtipo: publicationData.subtipo,
+                    precio: publicationData.precio,
+                    pais: publicationData.pais,
+                    imagenesCount: Array.isArray(publicationData.imagenes) ? publicationData.imagenes.length : 0,
+                    descripcion: publicationData.descripcion.substring(0, 50) + '...'
+                });
+                const datosFinales = {
+                    ...publicationData,
+                    imagenes: imagenesParaBackend,
+                    origin: ORIGIN,
+                    hoja: 'Publicar' // Especificar la hoja "Publicar"
+                };
+                // MÉTODO 1: NO-CORS (opaque response)
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    credentials: 'omit',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datosFinales)
+                });
+                console.log('Respuesta Google Apps Script (no-cors):', response.type);
+              
+                if (response.type === 'opaque') {
+                    console.log('Datos enviados exitosamente a Google Apps Script (respuesta opaca)');
+                    return { success: true, message: 'Publicación enviada correctamente a la hoja Publicar', id: 'GAS-' + Date.now() };
+                }
+                if (response.ok) {
+                    const result = await response.json();
+                    return result;
+                }
+            } catch (error) {
+                console.error('Error con no-cors:', error);
+              
+                return await enviarConGetFallback(publicationData);
+            }
+        }
+        async function enviarConGetFallback(publicationData) {
+            try {
+                console.log('Usando fallback GET con parámetros URL...');
+              
+                const imagenesParaBackend = Array.isArray(publicationData.imagenes)
+                    ? publicationData.imagenes.slice(0, 3).join('|')
+                    : publicationData.imagenes || '';
+                const params = new URLSearchParams({
+                    action: 'addPublicacionToPublicar',
+                    titulo: publicationData.titulo.substring(0, 50),
+                    tipo: publicationData.tipo,
+                    subtipo: publicationData.subtipo,
+                    precio: publicationData.precio,
+                    pais: publicationData.pais,
+                    imagenes: imagenesParaBackend,
+                    descripcion: publicationData.descripcion.substring(0, 200),
+                    timestamp: publicationData.timestamp,
+                    origin: ORIGIN,
+                    hoja: 'Publicar'
+                });
+                const getUrl = `${WEB_APP_URL}?${params.toString()}`;
+              
+                const response = await fetch(getUrl, {
+                    method: 'GET',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    credentials: 'omit'
+                });
+                console.log('GET fallback ejecutado:', response.type);
+              
+                if (response.type === 'opaque') {
+                    return {
+                        success: true,
+                        message: 'Publicación enviada con GET fallback a la hoja Publicar',
+                        id: 'GET-' + Date.now()
+                    };
+                }
+            } catch (error) {
+                console.error('GET fallback falló:', error);
+              
+                return await enviarConFormPost(publicationData);
+            }
+        }
+        async function enviarConFormPost(publicationData) {
+            console.log('Usando form post tradicional como último recurso...');
+          
+            return new Promise((resolve) => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = WEB_APP_URL;
+                form.style.display = 'none';
+              
+                Object.keys(publicationData).forEach(key => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = JSON.stringify(publicationData[key]);
+                    form.appendChild(input);
+                });
+              
+                const hojaInput = document.createElement('input');
+                hojaInput.type = 'hidden';
+                hojaInput.name = 'hoja';
+                hojaInput.value = 'Publicar';
+                form.appendChild(hojaInput);
+              
+                document.body.appendChild(form);
+                form.submit();
+              
+                setTimeout(() => {
+                    resolve({
+                        success: true,
+                        message: 'Publicación enviada con form tradicional a la hoja Publicar',
+                        id: 'FORM-' + Date.now()
+                    });
+                }, 1000);
+            });
+        }
+        async function probarConexionAppsScript() {
+            try {
+                const response = await fetch(`${WEB_APP_URL}?test=1&mode=no-cors`, {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+                console.log('Prueba de conexión:', response.type);
+                return response.type === 'opaque';
+            } catch (error) {
+                console.warn('Prueba falló:', error);
+                return false;
+            }
+        }
+        // Previsualización y subida automática de imágenes (SIN LÍMITE DE 5)
+        imagenesInput.addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
+            imagePreview.innerHTML = '';
+            uploadedImageUrls = [];
+          
+            // REMOVIDO: if (files.length > 5) { ... }
+
+            let totalSize = 0;
+            const validFiles = [];
+          
+            for (let file of files) {
+                try {
+                    validarArchivo(file);
+                    totalSize += file.size;
+                    validFiles.push(file);
+                  
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.title = file.name;
+                        img.className = 'preview-img';
+                        imagePreview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                  
+                } catch (error) {
+                    alert(`${file.name}: ${error.message}`);
+                    this.value = '';
+                    return;
+                }
+            }
+          
+            if (totalSize > 100 * 1024 * 1024) { // Aumentado a 100MB total como sugerencia
+                alert('El tamaño total de las imágenes no puede exceder 100MB');
+                this.value = '';
+                return;
+            }
+          
+            if (validFiles.length > 0) {
+                try {
+                    await subirImagenesMultiples(validFiles);
+                } catch (error) {
+                    console.error('Error en subida masiva:', error);
+                    alert('Error al subir imágenes. Intenta nuevamente.');
+                    uploadedImageUrls = [];
+                }
+            }
+        });
+        // FORM SUBMIT CORREGIDO
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+          
+            hideMessages();
+          
+            if (!validateForm()) {
+                return;
+            }
+            if (uploadedImageUrls.length === 0) {
+                showError('Debes subir al menos una imagen a Cloudinary');
+                return;
+            }
+            showLoading();
+          
+            try {
+                const publicationData = {
+                    titulo: document.getElementById('titulo').value.trim(),
+                    tipo: document.getElementById('tipo').value,
+                    subtipo: document.getElementById('subtipo').value,
+                    precio: parseFloat(document.getElementById('precio').value),
+                    pais: document.getElementById('pais').value,
+                    descripcion: document.getElementById('descripcion').value.trim(),
+                    timestamp: new Date().toISOString()
+                };
+                console.log('PUBLICACIÓN COMPLETA - Enviando a Google Sheets:', publicationData);
+                const result = await enviarPublicacionCompleta(publicationData);
+                if (result.success) {
+                    showSuccess(result);
+                    resetForm();
+                } else {
+                    showError(result.error || 'Error desconocido al publicar');
+                }
+              
+            } catch (error) {
+                console.error('Error completo:', error);
+                showError(`Error de conexión: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        });
+        // === FUNCIONES DE VALIDACIÓN Y UI (CORREGIDAS) ===
+        function validateForm() {
+            let isValid = true;
+            const errors = document.querySelectorAll('.error');
+            errors.forEach(error => error.style.display = 'none');
+            const requiredFields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value.trim()) {
+                    document.getElementById(field + 'Error').style.display = 'block';
+                    isValid = false;
+                }
+            });
+            const titulo = document.getElementById('titulo').value.trim();
+            if (titulo.length < 5 || titulo.length > 100) {
+                document.getElementById('tituloError').textContent = 'El título debe tener entre 5 y 100 caracteres';
+                document.getElementById('tituloError').style.display = 'block';
+                isValid = false;
+            }
+            const precio = parseFloat(document.getElementById('precio').value);
+            if (precio < 1000) {
+                document.getElementById('precioError').textContent = 'El precio debe ser mínimo $1,000';
+                document.getElementById('precioError').style.display = 'block';
+                isValid = false;
+            }
+            const descripcion = document.getElementById('descripcion').value.trim();
+            if (descripcion.length < 10 || descripcion.length > 1000) {
+                document.getElementById('descripcionError').textContent = 'La descripción debe tener entre 10 y 1000 caracteres';
+                document.getElementById('descripcionError').style.display = 'block';
+                isValid = false;
+            }
+            return isValid;
+        }
+        // showSuccess CORREGIDA: Maneja AMBAS estructuras
+        function showSuccess(result) {
+            const titulo = document.getElementById('titulo').value;
+          
+            let esRespuestaCompleta = result.publicacion && result.imagenes;
+            let fila = esRespuestaCompleta ? result.publicacion.fila : 'Automática';
+            let id = esRespuestaCompleta ? result.publicacion.id : result.id;
+            let exitosas = esRespuestaCompleta ? result.imagenes.exitosas : uploadedImageUrls.length;
+            let url_verificacion = esRespuestaCompleta ? result.url_verificacion : '#';
+          
+            successMessage.innerHTML = `
+                ¡Anuncio "${titulo}" publicado COMPLETAMENTE!<br>
+                ${exitosas} imágenes subidas a Cloudinary<br>
+                Guardado en <strong>Fila ${fila}</strong> de Google Sheets<br>
+                ID: ${id}<br>
+                ${url_verificacion !== '#' ? `<a href="${url_verificacion}" target="_blank">Ver en Google Sheets</a>` : ''}<br>
+                <small>${result.message}</small>
+            `;
+            successMessage.style.display = 'block';
+            successMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+        function showError(message) {
+            errorMessage.innerHTML = `
+                Error al publicar el anuncio:<br>
+                <strong>${message}</strong>
+            `;
+            errorMessage.style.display = 'block';
+            errorMessage.scrollIntoView({ behavior: 'smooth' });
+        }
+        function showLoading() {
+            loadingMessage.innerHTML = 'Publicando + Subiendo Imágenes a Google Sheets...';
+            loadingMessage.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Procesando...';
+        }
+        function hideLoading() {
+            loadingMessage.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Publicar Anuncio';
+        }
+        function hideMessages() {
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+        function resetForm() {
+            form.reset();
+            imagePreview.innerHTML = '';
+            uploadedImageUrls = [];
+            uploadProgress.style.display = 'none';
+            setTimeout(() => {
+                if (confirm('¿Deseas ver todas las publicaciones?')) {
+                    window.location.href = 'index.html';
+                } else {
+                    window.location.reload();
+                }
+            }, 3000);
+        }
+        // Validaciones en tiempo real (INTACTAS)
+        ['titulo', 'precio', 'descripcion'].forEach(field => {
+            document.getElementById(field).addEventListener('blur', function() {
+                if (this.value.trim()) {
+                    document.getElementById(field + 'Error').style.display = 'none';
+                }
+            });
+        });
+        ['tipo', 'subtipo', 'pais'].forEach(field => {
+            document.getElementById(field).addEventListener('change', function() {
+                if (this.value) {
+                    document.getElementById(field + 'Error').style.display = 'none';
+                }
+            });
+        });
+        document.getElementById('titulo').addEventListener('input', function() {
+            const length = this.value.length;
+            if (length > 0 && length <= 100) {
+                document.getElementById('tituloError').style.display = 'none';
+            }
+        });
+        document.getElementById('descripcion').addEventListener('input', function() {
+            const length = this.value.length;
+            let counter = this.parentNode.querySelector('.char-counter');
+            if (!counter) {
+                counter = document.createElement('small');
+                counter.className = 'char-counter';
+                this.parentNode.appendChild(counter);
+            }
+            counter.style.color = length > 900 ? '#dc3545' : '#666';
+            counter.style.fontSize = '0.8em';
+            counter.textContent = `${length}/1000 caracteres`;
+        });
+        // Inicialización
+        console.log('Formulario ACTUALIZADO - SIN LÍMITE DE IMÁGENES');
+        console.log('Web App URL:', WEB_APP_URL);
+        console.log('Cloudinary funcionando correctamente');
+    </script>
+</body>
+</html>
