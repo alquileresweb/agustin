@@ -386,15 +386,14 @@
         </button>
     </div>
 
-    <!-- NUEVA SECCIÓN: INTERESADOS -->
-    <div id="interesados-section" style="display:none;">
-        <h2 class="section-title">Interesados (CRM)</h2>
+    <!-- ==================================================
+         PANEL INTERESADOS - SIEMPRE VISIBLE DEBAJO DE LOS BOTONES
+    ================================================== -->
+    <div id="interesados-panel" class="quick-actions" style="margin-top: 1.5rem;">
+        <h2>Interesados (CRM)</h2>
         <div id="interesados-list" class="interested-grid">
             <div class="loading-msg">Cargando interesados...</div>
         </div>
-        <button class="btn btn-primary" id="btnVolverInteresados" style="display:block; margin: 2.5rem auto; padding:1.1rem 2.5rem;">
-            ← Volver al Panel
-        </button>
     </div>
 
 </div>
@@ -706,16 +705,36 @@ function loadPropertyForEdit(prop) {
 }
 
     // ============================================================================
-// NUEVA FUNCIÓN: CARGAR INTERESADOS desde hoja CRM
+// CARGAR INTERESADOS AL INICIO (o al presionar botón)
 // ============================================================================
+
+// Opción 1: Cargar automáticamente al abrir la página
+window.addEventListener('load', () => {
+    loadInteresados();           // carga inmediata
+    // loadMisPropiedades();     // si también quieres precargar propiedades
+});
+
+// Opción 2: O solo al presionar el botón de refrescar
+const btnRefrescarInteresados = document.getElementById('btnRefrescarInteresados');
+if (btnRefrescarInteresados) {
+    btnRefrescarInteresados.addEventListener('click', () => {
+        loadInteresados();
+    });
+}
+
+// Tu función loadInteresados (ajustada al nuevo contenedor)
 async function loadInteresados() {
     const container = document.getElementById('interesados-list');
-    if (!container) return;
+    if (!container) {
+        console.error('No se encontró #interesados-list');
+        return;
+    }
 
     container.innerHTML = '<div class="loading-msg">Cargando interesados...</div>';
 
     try {
-        const response = await fetch(`${WEB_APP_URL}?action=getCRM&hoja=CRM`);
+        // Nota: quitamos &hoja=CRM si ya lo manejas en el backend como action=getCRM
+        const response = await fetch(`${WEB_APP_URL}?action=getCRM`);
         const data = await response.json();
 
         if (!data.success || !Array.isArray(data.rows) || data.rows.length === 0) {
@@ -725,48 +744,34 @@ async function loadInteresados() {
 
         container.innerHTML = '';
 
-        // Suponemos orden de columnas típico en CRM:
-        // A: Timestamp, B: Nombre, C: Email, D: Teléfono, E: Mensaje, F: Propiedad (opcional), etc.
-        data.rows.forEach(row => {
-            // Saltamos fila de cabecera si viene incluida
-            if (!row[0] || row[0].includes('Timestamp') || row[0].includes('Fecha')) return;
-
-            const timestamp  = row[0] || '—';
-            const nombre     = row[1] || 'Sin nombre';
-            const email      = row[2] || '—';
-            const telefono   = row[3] ? String(row[3]).trim().replace(/\D/g,'') : '';
-            const mensaje    = row[4] || '';
-            const propiedad  = row[5] || '—';
-
-            const whatsappLink = telefono ? `https://wa.me/549${telefono}` : '#';
+        data.rows.forEach(lead => {
+            const telLimpio = (lead.telefono || '').replace(/\D/g, '');
+            const whatsappLink = telLimpio ? `https://wa.me/549${telLimpio}` : '#';
 
             const card = document.createElement('div');
             card.className = 'interested-card';
-
             card.innerHTML = `
-                <div class="interested-name">${nombre}</div>
-                <div class="interested-info"><strong>Teléfono:</strong> ${telefono || '—'}</div>
-                <div class="interested-info"><strong>Email:</strong> ${email}</div>
-                ${propiedad !== '—' ? `<div class="interested-info"><strong>Interesado en:</strong> ${propiedad}</div>` : ''}
-                <div class="interested-info"><strong>Fecha:</strong> ${timestamp}</div>
-                ${mensaje ? `<div class="interested-message">${mensaje}</div>` : ''}
-                ${telefono ? `
-                    <a href="${whatsappLink}" target="_blank" rel="noopener" class="btn-whatsapp">
-                        ✉ Contactar por WhatsApp
+                <div class="interested-name">${lead.nombre || lead['Nombre y Apellido'] || '—'}</div>
+                <div class="interested-info"><strong>Teléfono:</strong> ${lead.telefono || '—'}</div>
+                <div class="interested-info"><strong>Email:</strong> ${lead.email || '—'}</div>
+                <div class="interested-info"><strong>Etapa:</strong> ${lead.etapa || '—'}</div>
+                <div class="interested-info"><strong>Operación:</strong> ${lead.operacion || '—'}</div>
+                <div class="interested-info"><strong>Propiedad:</strong> ${lead.tipoPropiedad || '—'}</div>
+                <div class="interested-info"><strong>Ubicación:</strong> ${lead.ubicacion || '—'}</div>
+                ${lead.notas ? `<div class="interested-message"><strong>Notas:</strong> ${lead.notas}</div>` : ''}
+                ${telLimpio ? `
+                    <a href="${whatsappLink}" target="_blank" class="btn-whatsapp">
+                        Contactar por WhatsApp
                     </a>
-                ` : '<small style="color:#e53e3e;">Número no disponible</small>'}
+                ` : '<small>Sin WhatsApp</small>'}
             `;
-
             container.appendChild(card);
         });
-
     } catch (err) {
-        console.error('Error al cargar interesados:', err);
-        container.innerHTML = '<div class="no-interesados">Error al cargar los datos de interesados.</div>';
+        console.error('Error cargando interesados:', err);
+        container.innerHTML = '<div class="no-interesados">Error al cargar datos</div>';
     }
 }
-
-console.log('Panel de Gestión cargado - con sección Interesados añadida');
 
 // ============================================================================
 // CARGA DE MIS PROPIEDADES
