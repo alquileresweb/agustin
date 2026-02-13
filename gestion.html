@@ -210,427 +210,830 @@
     </div>
 </div>
 
-<script>
-    // ───────────────────────────────────────────────────────────────
-    // CONTROL DE VISIBILIDAD DE SECCIONES
-    // ───────────────────────────────────────────────────────────────
-    const actionsPanel   = document.getElementById('actionsPanel');
-    const formSection    = document.getElementById('form-section');
-    const propsSection   = document.getElementById('mis-propiedades-section');
-
-    const btnPublicar    = document.getElementById('btnPublicar');
-    const btnMisProps    = document.getElementById('btnMisPropiedades');
-    const btnVolverForm  = document.getElementById('btnVolverForm');
-    const btnVolverProps = document.getElementById('btnVolverPropiedades');
-
-    function showSection(sectionToShow) {
-        [actionsPanel, formSection, propsSection].forEach(s => {
-            if (s) s.style.display = 'none';
-        });
-        if (sectionToShow) {
-            sectionToShow.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Gestión - Inmobiliaria</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #2d3748;
+            line-height: 1.6;
         }
-    }
-
-    if (btnPublicar)    btnPublicar.addEventListener('click',     () => showSection(formSection));
-    if (btnMisProps)    btnMisProps.addEventListener('click',     () => {
-        showSection(propsSection);
-        loadMisPropiedades();
-    });
-    if (btnVolverForm)  btnVolverForm.addEventListener('click',   () => showSection(actionsPanel));
-    if (btnVolverProps) btnVolverProps.addEventListener('click',  () => showSection(actionsPanel));
-
-    // ───────────────────────────────────────────────────────────────
-    // VARIABLES GLOBALES
-    // ───────────────────────────────────────────────────────────────
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
-    const ORIGIN = 'https://inmobiliariaagustinsantos.com.ar';
-
-    const form              = document.getElementById('publicationForm');
-    const submitButton      = document.querySelector('.btn-submit');
-    const successMessage    = document.getElementById('successMessage');
-    const errorMessage      = document.getElementById('errorMessage');
-    const loadingMessage    = document.getElementById('loadingMessage');
-    const imagePreview      = document.getElementById('imagePreview');
-    const imagenesInput     = document.getElementById('imagenes');
-    const uploadProgress    = document.getElementById('uploadProgress');
-    const uploadProgressBar = document.getElementById('uploadProgressBar');
-
-    let uploadedImageUrls = [];
-
-    // ───────────────────────────────────────────────────────────────
-    // CARGA DE PROPIEDADES (Mis Propiedades)
-    // ───────────────────────────────────────────────────────────────
-    async function loadMisPropiedades() {
-        const container = document.getElementById('propiedades-list');
-        if (!container) return;
-
-        container.innerHTML = '<div class="loading">Cargando tus propiedades...</div>';
-
-        try {
-            const response = await fetch(`${WEB_APP_URL}?action=getPublicar&hoja=Publicar`);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            const result = await response.json();
-
-            if (!result.success || !Array.isArray(result.publicaciones)) {
-                container.innerHTML = '<div class="no-data">No se encontraron propiedades publicadas aún.</div>';
-                return;
-            }
-
-            container.innerHTML = '';
-            result.publicaciones.forEach(prop => {
-                container.appendChild(createAdminPropertyCard(prop));
-            });
-
-        } catch (err) {
-            console.error('Error cargando propiedades:', err);
-            container.innerHTML = '<div class="no-data">Error al cargar las propiedades. Intenta más tarde.</div>';
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-    }
+        .dashboard-header {
+            background: linear-gradient(135deg, #4c51bf 0%, #667eea 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 20px rgba(76,81,191,0.25);
+        }
+        .logo-container img {
+            height: 70px;
+            width: auto;
+            border-radius: 8px;
+            background: white;
+            padding: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .header-text h1 { font-size: 2.1rem; margin-bottom: 0.25rem; }
+        .header-text p { opacity: 0.9; font-size: 1.05rem; }
 
-    function createAdminPropertyCard(prop) {
-        const card = document.createElement('div');
-        card.className = 'property-card';
+        .quick-actions {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .quick-actions h2 { margin-bottom: 1.5rem; color: #4a5568; }
+        .action-buttons { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
 
-        const primeraImg = prop.imagenes?.split(',')[0]?.trim() || 'https://via.placeholder.com/400x220?text=Sin+Imagen';
-        const precioFmt = prop.precio ? '$' + Number(prop.precio).toLocaleString('es-AR') : 'Consultar';
+        .btn {
+            padding: 1rem 2.2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(102,126,234,0.35);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(102,126,234,0.45); }
 
-        card.innerHTML = `
-            <img src="${primeraImg}" alt="${prop.titulo || 'Propiedad'}"
-                 onerror="this.src='https://via.placeholder.com/400x220?text=Sin+Imagen'" loading="lazy">
-            <div class="property-info">
-                <div class="property-title">${prop.titulo || 'Sin título'}</div>
-                <div class="property-price">${precioFmt}</div>
-                <div class="property-type">
-                    ${prop.subtipo || ''} - ${prop.tipo || ''} (${prop.pais || ''})
+        .btn-secondary {
+            background: linear-gradient(135deg, #38a169, #48bb78);
+            color: white;
+        }
+        .btn-secondary:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(56,161,105,0.4); }
+
+        .btn-back {
+            background: #718096;
+            color: white;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .btn-back:hover { background: #5a7184; }
+
+        /* Secciones ocultas por defecto */
+        #form-section, #mis-propiedades-section { display: none; }
+
+        /* Formulario */
+        #form-section {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .form-group { margin-bottom: 1.6rem; }
+        .form-group label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #4a5568; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .image-preview { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+        .image-preview img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+        .btn-submit { margin-top: 1.5rem; width: 100%; padding: 1.2rem; font-size: 1.15rem; }
+
+        .success, .error-message, .loading {
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .success { background: #e6fffa; color: #0c8599; border: 1px solid #99e9f2; display: none; }
+        .error-message { background: #fff5f5; color: #c92a2a; border: 1px solid #ffcccc; display: none; }
+        .loading { display: none; background: #f8f9fa; color: #495057; }
+
+        /* Mis Propiedades */
+        .section-title { text-align: center; font-size: 1.9rem; margin: 1.5rem 0 2rem; color: #2d3748; }
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        .property-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .property-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+        }
+        .property-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        .property-info { padding: 1.4rem; text-align: center; }
+        .property-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.6rem; }
+        .property-price { font-size: 1.45rem; color: #38a169; font-weight: 700; margin-bottom: 0.5rem; }
+        .property-type { color: #718096; font-size: 1.05rem; margin-bottom: 1.2rem; }
+        .action-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .btn-action {
+            padding: 0.8rem 1.5rem;
+            font-size: 0.98rem;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-edit { background: #3182ce; }
+        .btn-edit:hover { background: #2b6cb0; }
+        .btn-delete { background: #e53e3e; }
+        .btn-delete:hover { background: #c53030; }
+
+        .loading-msg, .no-data-msg {
+            text-align: center;
+            padding: 4rem 1rem;
+            font-size: 1.25rem;
+            color: #718096;
+        }
+
+        @media (max-width: 768px) {
+            .action-buttons { flex-direction: column; gap: 1rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .property-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <div class="dashboard-header">
+        <div class="logo-container">
+            <img src="https://i.postimg.cc/NjpwgWCr/Whats-App-Image-2025-10-02-at-14-31-24.jpg" alt="Logo Inmobiliaria">
+        </div>
+        <div class="header-text">
+            <h1>Panel de Gestión</h1>
+            <p>Administración de anuncios inmobiliarios</p>
+        </div>
+    </div>
+
+    <div class="quick-actions" id="actionsPanel">
+        <h2>¿Qué deseas hacer?</h2>
+        <div class="action-buttons">
+            <button class="btn-primary" id="btnPublicar">Publicar Nuevo Anuncio</button>
+            <button class="btn-secondary" id="btnMisPropiedades">Mis Propiedades</button>
+        </div>
+    </div>
+
+    <!-- ==================================================
+         FORMULARIO PUBLICAR
+    ================================================== -->
+    <div id="form-section">
+        <div class="success" id="successMessage"></div>
+        <div class="error-message" id="errorMessage"></div>
+        <div class="loading" id="loadingMessage">Procesando publicación...</div>
+
+        <form id="publicationForm">
+            <div class="form-group">
+                <label for="titulo">Título de la Publicación *</label>
+                <input type="text" id="titulo" name="titulo" required placeholder="Ej: Hermoso departamento 3 ambientes en Palermo" maxlength="100">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tipo">Tipo de Operación *</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="">Seleccionar tipo</option>
+                        <option value="venta">Venta</option>
+                        <option value="alquiler">Alquiler</option>
+                    </select>
                 </div>
-                <div class="action-row">
-                    <button class="btn-action btn-edit" data-id="${prop.id || ''}">Editar</button>
-                    <button class="btn-action btn-delete" data-id="${prop.id || ''}">Eliminar</button>
+                <div class="form-group">
+                    <label for="subtipo">Tipo de Propiedad *</label>
+                    <select id="subtipo" name="subtipo" required>
+                        <option value="">Seleccionar subtipo</option>
+                        <option value="departamento">Departamento</option>
+                        <option value="casa">Casa</option>
+                        <option value="terreno">Terreno</option>
+                        <option value="local">Local Comercial</option>
+                        <option value="otro">Otro</option>
+                    </select>
                 </div>
             </div>
-        `;
 
-        card.querySelector('.btn-edit').addEventListener('click', () => {
-            alert(`Editar propiedad:\nID: ${prop.id || 'sin-id'}\nTítulo: ${prop.titulo || '?'}\n\n(Función de edición aún no implementada)`);
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="precio">Precio *</label>
+                    <input type="number" id="precio" name="precio" required placeholder="Ej: 250000" step="1000" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="pais">País *</label>
+                    <select id="pais" name="pais" required>
+                        <option value="">Seleccionar país</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Brasil">Brasil</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="imagenes">Imágenes * (múltiples permitidas)</label>
+                <input type="file" id="imagenes" name="imagenes" accept="image/*" multiple required>
+                <small style="color:#718096; display:block; margin-top:6px;">
+                    Formatos: JPG, PNG, WebP · máx. 10MB por imagen
+                </small>
+                <div class="image-preview" id="imagePreview"></div>
+                <div class="upload-progress" id="uploadProgress" style="display:none; margin-top:12px;">
+                    <div id="uploadProgressBar" style="height:6px; background:#667eea; width:0%; border-radius:3px;"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción Detallada *</label>
+                <textarea id="descripcion" name="descripcion" required rows="6" maxlength="1000"
+                          placeholder="Describe la propiedad, características, ubicación, amenities, etc..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">Publicar Anuncio</button>
+            <button type="button" class="btn btn-back" id="btnVolverForm">← Volver al Panel</button>
+        </form>
+    </div>
+
+    <!-- ==================================================
+         MIS PROPIEDADES
+    ================================================== -->
+    <div id="mis-propiedades-section">
+        <h2 class="section-title">Mis Propiedades Publicadas</h2>
+        <div id="propiedades-list" class="property-grid">
+            <div class="loading-msg">Cargando propiedades...</div>
+        </div>
+        <button class="btn btn-primary" id="btnVolverPropiedades" style="display:block; margin: 2.5rem auto; padding:1.1rem 2.5rem;">
+            ← Volver al Panel
+        </button>
+    </div>
+
+</div>
+
+<script>
+// ============================================================================
+//  CONTROL DE VISIBILIDAD DE SECCIONES
+// ============================================================================
+const actionsPanel          = document.getElementById('actionsPanel');
+const formSection           = document.getElementById('form-section');
+const misPropiedadesSection = document.getElementById('mis-propiedades-section');
+
+const btnPublicar           = document.getElementById('btnPublicar');
+const btnMisPropiedades     = document.getElementById('btnMisPropiedades');
+const btnVolverForm         = document.getElementById('btnVolverForm');
+const btnVolverPropiedades  = document.getElementById('btnVolverPropiedades');
+
+function showSection(sectionToShow) {
+    [actionsPanel, formSection, misPropiedadesSection].forEach(s => {
+        if (s) s.style.display = 'none';
+    });
+    if (sectionToShow) sectionToShow.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+btnPublicar.addEventListener('click', () => showSection(formSection));
+btnMisPropiedades.addEventListener('click', () => {
+    showSection(misPropiedadesSection);
+    loadMisPropiedades();   // Carga al entrar en la sección
+});
+btnVolverForm.addEventListener('click', () => showSection(actionsPanel));
+btnVolverPropiedades.addEventListener('click', () => showSection(actionsPanel));
+
+// ============================================================================
+//  CONFIGURACIÓN GLOBAL
+// ============================================================================
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxnHD1WpiGrdXpilPf7yU7wb4OQqTT_dqszP0UblAvbQclpeEdifirPyh1oVGIaF8omlA/exec';
+const ORIGIN = 'https://inmobiliariaagustinsantos.com.ar';
+
+// Elementos del formulario
+const publicationForm       = document.getElementById('publicationForm');
+const submitBtn             = document.querySelector('.btn-submit');
+const successMessage        = document.getElementById('successMessage');
+const errorMessage          = document.getElementById('errorMessage');
+const loadingMessage        = document.getElementById('loadingMessage');
+const imagePreview          = document.getElementById('imagePreview');
+const imagenesInput         = document.getElementById('imagenes');
+const uploadProgress        = document.getElementById('uploadProgress');
+const uploadProgressBar     = document.getElementById('uploadProgressBar');
+
+let uploadedImageUrls = [];
+
+// ============================================================================
+//  CLOUDINARY CONFIGURACIÓN
+// ============================================================================
+const CLOUDINARY_CONFIG = {
+    CLOUD_NAME: 'dn4tjz4ck',
+    UPLOAD_PRESET: 'preset_alquileres',
+    API_KEY: '742759356638557',
+    API_URL: 'https://api.cloudinary.com/v1_1/dn4tjz4ck/image/upload',
+    MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+    ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+    MAX_RETRIES: 3,
+    TIMEOUT: 30000
+};
+
+// ============================================================================
+//  FUNCIONES CLOUDINARY
+// ============================================================================
+
+async function subirImagenesCloudinary(files, options = {}) {
+    const {
+        onProgress = null,
+        onSuccess = null,
+        onError = null,
+        maxFiles = 50,
+        folder = 'alquileres',
+        transformation = 'q_auto,f_auto,w_1200'
+    } = options;
+
+    const urls = [];
+    const errors = [];
+    let processed = 0;
+    const total = Math.min(files.length, maxFiles);
+
+    await verificarCorsCloudinary();
+
+    const batchSize = 3;
+    for (let i = 0; i < total; i += batchSize) {
+        const batch = files.slice(i, i + batchSize);
+        const batchPromises = batch.map((file, idx) =>
+            procesarArchivoIndividual(file, {
+                ...options,
+                globalIndex: i + idx,
+                totalFiles: total,
+                retryCount: 0
+            })
+        );
+
+        const batchResults = await Promise.allSettled(batchPromises);
+
+        batchResults.forEach((result, batchIdx) => {
+            const globalIdx = i + batchIdx;
+            processed++;
+
+            if (result.status === 'fulfilled' && result.value) {
+                urls.push(result.value);
+                onProgress?.({
+                    status: 'success',
+                    file: files[globalIdx],
+                    url: result.value,
+                    progress: (processed / total) * 100,
+                    total,
+                    current: processed
+                });
+                onSuccess?.(result.value);
+            } else {
+                const err = result.reason || new Error('Upload falló');
+                errors.push({ file: files[globalIdx], error: err });
+                onProgress?.({
+                    status: 'error',
+                    file: files[globalIdx],
+                    error: err,
+                    progress: (processed / total) * 100,
+                    total,
+                    current: processed
+                });
+                onError?.(err, files[globalIdx]);
+            }
         });
 
-        card.querySelector('.btn-delete').addEventListener('click', async () => {
-            if (!confirm(`¿Eliminar "${prop.titulo || 'esta propiedad'}" de forma definitiva?`)) return;
-            alert(`Solicitud de eliminación para ID: ${prop.id || 'sin-id'}\n\n(Función de eliminación aún no implementada en el backend)`);
-            console.log('DELETE solicitada para ID:', prop.id);
-            // Futuro: await fetch(`${WEB_APP_URL}?action=delete&id=${prop.id}&hoja=Publicar`);
-            // Luego: loadMisPropiedades();
+        if (i + batchSize < total) await new Promise(r => setTimeout(r, 1000));
+    }
+
+    return { urls, errors, success: errors.length === 0 };
+}
+
+async function procesarArchivoIndividual(file, options) {
+    const { retryCount = 0, totalFiles, globalIndex } = options;
+
+    if (!validarArchivo(file)) throw new Error(`Archivo inválido: ${file.name}`);
+
+    const formData = crearFormData(file, options);
+
+    try {
+        const res = await fetch(CLOUDINARY_CONFIG.API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            body: formData,
+            signal: AbortSignal.timeout(CLOUDINARY_CONFIG.TIMEOUT)
         });
 
-        return card;
-    }
-
-    // ───────────────────────────────────────────────────────────────
-    // CLOUDINARY CONFIG & FUNCTIONS
-    // ───────────────────────────────────────────────────────────────
-    const CLOUDINARY_CONFIG = {
-        CLOUD_NAME: 'dn4tjz4ck',
-        UPLOAD_PRESET: 'preset_alquileres',
-        API_KEY: '742759356638557',
-        API_URL: 'https://api.cloudinary.com/v1_1/dn4tjz4ck/image/upload',
-        MAX_FILE_SIZE: 10 * 1024 * 1024,
-        ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
-        MAX_RETRIES: 3,
-        TIMEOUT: 30000
-    };
-
-    async function verificarCorsCloudinary() {
-        try {
-            const res = await fetch(`https://res.cloudinary.com/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload/w_1,h_1,c_fill/v1/test-cors.jpg`, {
-                method: 'HEAD', mode: 'cors'
-            });
-            if (!res.ok) console.warn('Posible problema CORS con Cloudinary');
-        } catch (e) {
-            console.warn('Verificación CORS falló:', e);
+        if (!res.ok) {
+            const text = await res.text();
+            throw new Error(`HTTP ${res.status}: ${text}`);
         }
-    }
 
-    function validarArchivo(file) {
-        if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) {
-            throw new Error(`Archivo demasiado grande (${(file.size/1024/1024).toFixed(1)} MB)`);
+        const json = await res.json();
+        if (json.secure_url && json.resource_type === 'image') {
+            return json.secure_url;
         }
-        if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) {
-            throw new Error(`Tipo de archivo no permitido: ${file.type}`);
+        throw new Error(`Respuesta inválida: ${JSON.stringify(json)}`);
+    } catch (err) {
+        if (retryCount < CLOUDINARY_CONFIG.MAX_RETRIES &&
+            (err.name === 'TimeoutError' || err.message.includes('network'))) {
+            await new Promise(r => setTimeout(r, 2000 * (retryCount + 1)));
+            return procesarArchivoIndividual(file, { ...options, retryCount: retryCount + 1 });
         }
-        return file.type.startsWith('image/');
+        throw err;
     }
+}
 
-    function crearFormData(file, options) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
-        if (options.folder) formData.append('folder', options.folder);
-        return formData;
+async function verificarCorsCloudinary() {
+    try {
+        await fetch(`https://res.cloudinary.com/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload/w_1,h_1,c_fill/v1/test-cors.jpg`, {
+            method: 'HEAD',
+            mode: 'cors'
+        });
+    } catch (e) {
+        console.warn('Verificación CORS Cloudinary falló:', e);
     }
+}
 
-    async function procesarArchivoIndividual(file, options) {
-        const { retryCount = 0 } = options;
-        if (!validarArchivo(file)) throw new Error(`Archivo inválido: ${file.name}`);
+function validarArchivo(file) {
+    if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) throw new Error('Archivo demasiado grande');
+    if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) throw new Error('Tipo de archivo no permitido');
+    return file.type.startsWith('image/');
+}
 
-        const formData = crearFormData(file, options);
+function crearFormData(file, options) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
+    if (options.folder) fd.append('folder', options.folder);
+    return fd;
+}
 
-        try {
-            const res = await fetch(CLOUDINARY_CONFIG.API_URL, {
-                method: 'POST',
-                mode: 'cors',
-                cache: 'no-cache',
-                credentials: 'omit',
-                body: formData,
-                signal: AbortSignal.timeout(CLOUDINARY_CONFIG.TIMEOUT)
-            });
+async function subirImagenesMultiples(files) {
+    uploadedImageUrls = [];
+    const errores = [];
 
-            if (!res.ok) {
-                const errText = await res.text();
-                throw new Error(`Cloudinary HTTP ${res.status}: ${errText}`);
-            }
+    uploadProgress.style.display = 'block';
+    uploadProgressBar.style.width = '0%';
 
-            const data = await res.json();
-            if (data.secure_url) return data.secure_url;
-            throw new Error('No se recibió secure_url');
-        } catch (err) {
-            if (retryCount < CLOUDINARY_CONFIG.MAX_RETRIES && 
-                (err.name === 'TimeoutError' || err.message.includes('network'))) {
-                await new Promise(r => setTimeout(r, 2000 * (retryCount + 1)));
-                return procesarArchivoIndividual(file, { ...options, retryCount: retryCount + 1 });
-            }
-            throw err;
-        }
-    }
-
-    async function subirImagenesCloudinary(files, options = {}) {
-        const {
-            onProgress = null,
-            onSuccess = null,
-            onError = null,
-            maxFiles = 50,
-            folder = 'alquileres'
-        } = options;
-
-        const urls = [];
-        let processed = 0;
-        const total = Math.min(files.length, maxFiles);
-
-        await verificarCorsCloudinary();
-
-        const batchSize = 3;
-        for (let i = 0; i < total; i += batchSize) {
-            const batch = files.slice(i, i + batchSize);
-            const promises = batch.map((file, idx) =>
-                procesarArchivoIndividual(file, {
-                    ...options,
-                    globalIndex: i + idx,
-                    totalFiles: total,
-                    retryCount: 0
-                })
-            );
-
-            const results = await Promise.allSettled(promises);
-
-            results.forEach((r, batchIdx) => {
-                processed++;
-                const globalIdx = i + batchIdx;
-                if (r.status === 'fulfilled' && r.value) {
-                    urls.push(r.value);
-                    onProgress?.({ status: 'success', progress: (processed/total)*100 });
-                    onSuccess?.(r.value);
-                } else {
-                    onProgress?.({ status: 'error', progress: (processed/total)*100 });
-                    onError?.(r.reason, files[globalIdx]);
+    try {
+        const resultado = await subirImagenesCloudinary(files, {
+            maxFiles: 50,
+            folder: `alquileres/${Date.now()}`,
+            onProgress: (p) => {
+                uploadProgressBar.style.width = `${p.progress}%`;
+                if (p.status === 'success') {
+                    const img = imagePreview.querySelector(`img[title="${p.file.name}"]`);
+                    if (img) img.classList.add('uploaded');
                 }
-            });
+            },
+            onSuccess: url => uploadedImageUrls.push(url),
+            onError: (err, file) => errores.push({ archivo: file.name, error: err.message })
+        });
 
-            if (i + batchSize < total) await new Promise(r => setTimeout(r, 1000));
+        if (errores.length > 0) {
+            alert(`${errores.length} imagen(es) fallaron. Se guardaron ${uploadedImageUrls.length} exitosas.`);
         }
-
-        return urls;
-    }
-
-    async function subirImagenesMultiples(files) {
+    } catch (err) {
+        console.error('Error subida masiva:', err);
+        alert('Error al subir imágenes');
         uploadedImageUrls = [];
-        if (!uploadProgress || !uploadProgressBar) return { urls: [], exitosas: 0 };
-
-        uploadProgress.style.display = 'block';
+    } finally {
+        uploadProgress.style.display = 'none';
         uploadProgressBar.style.width = '0%';
+    }
 
-        try {
-            const urls = await subirImagenesCloudinary(files, {
-                maxFiles: 50,
-                folder: `alquileres/${Date.now()}`,
-                onProgress: p => {
-                    if (uploadProgressBar) uploadProgressBar.style.width = `${p.progress}%`;
-                },
-                onSuccess: url => uploadedImageUrls.push(url)
+    return uploadedImageUrls;
+}
+
+// ============================================================================
+//  ENVÍO A GOOGLE APPS SCRIPT
+// ============================================================================
+
+async function enviarPublicacionCompleta(datosPublicacion) {
+    try {
+        const payload = {
+            action: 'procesarPublicacionCompleta',
+            titulo: datosPublicacion.titulo,
+            tipo: datosPublicacion.tipo,
+            subtipo: datosPublicacion.subtipo,
+            precio: datosPublicacion.precio,
+            pais: datosPublicacion.pais,
+            descripcion: datosPublicacion.descripcion,
+            imagenes: uploadedImageUrls.join(','),
+            timestamp: new Date().toISOString(),
+            origin: ORIGIN,
+            hoja: 'Publicar'
+        };
+
+        // Intento 1: no-cors
+        let response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.type === 'opaque') {
+            return {
+                success: true,
+                message: 'Enviado (respuesta opaca/no-cors)',
+                publicacion: { id: 'PUB-' + Date.now(), fila: 'pendiente' },
+                imagenes: { total: uploadedImageUrls.length, links: uploadedImageUrls }
+            };
+        }
+
+        // Intento 2: cors
+        response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            return await response.json();
+        }
+
+        throw new Error('Fallo en ambos modos');
+    } catch (err) {
+        console.error('Error envío publicación:', err);
+        return { success: false, error: err.message };
+    }
+}
+
+// ============================================================================
+//  VALIDACIÓN Y UI DEL FORMULARIO
+// ============================================================================
+
+function validateForm() {
+    let valid = true;
+    const fields = ['titulo', 'tipo', 'subtipo', 'precio', 'pais', 'descripcion'];
+
+    fields.forEach(f => {
+        const el = document.getElementById(f);
+        const errEl = document.getElementById(f + 'Error');
+        if (errEl) errEl.style.display = 'none';
+
+        if (!el.value.trim()) {
+            if (errEl) errEl.style.display = 'block';
+            valid = false;
+        }
+    });
+
+    const titulo = document.getElementById('titulo')?.value.trim() || '';
+    if (titulo.length < 5 || titulo.length > 100) valid = false;
+
+    const precioVal = parseFloat(document.getElementById('precio')?.value);
+    if (isNaN(precioVal) || precioVal < 1000) valid = false;
+
+    const desc = document.getElementById('descripcion')?.value.trim() || '';
+    if (desc.length < 10 || desc.length > 1000) valid = false;
+
+    return valid;
+}
+
+function showSuccess(result) {
+    const titulo = document.getElementById('titulo')?.value || 'Anuncio';
+    successMessage.innerHTML = `
+        ¡${titulo} publicado exitosamente!<br>
+        Imágenes: ${uploadedImageUrls.length}<br>
+        ${result.message || 'Guardado en Google Sheets'}
+    `;
+    successMessage.style.display = 'block';
+}
+
+function showError(msg) {
+    errorMessage.innerHTML = `Error: ${msg}`;
+    errorMessage.style.display = 'block';
+}
+
+function showLoading() {
+    loadingMessage.style.display = 'block';
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Procesando...';
+    }
+}
+
+function hideLoading() {
+    loadingMessage.style.display = 'none';
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publicar Anuncio';
+    }
+}
+
+function hideMessages() {
+    successMessage.style.display = 'none';
+    errorMessage.style.display = 'none';
+}
+
+function resetForm() {
+    publicationForm.reset();
+    imagePreview.innerHTML = '';
+    uploadedImageUrls = [];
+    uploadProgress.style.display = 'none';
+}
+
+// ============================================================================
+//  MIS PROPIEDADES – CARGA Y RENDER
+// ============================================================================
+
+async function loadMisPropiedades() {
+    const container = document.getElementById('propiedades-list');
+    if (!container) return;
+
+    container.innerHTML = '<div class="loading">Cargando propiedades publicadas...</div>';
+
+    try {
+        const response = await fetch(`${WEB_APP_URL}?action=getPublicar&hoja=Publicar`);
+        const data = await response.json();
+
+        if (!data.success || !Array.isArray(data.publicaciones)) {
+            container.innerHTML = '<div class="no-data">No se encontraron propiedades publicadas.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+
+        data.publicaciones.forEach(prop => {
+            const card = document.createElement('div');
+            card.className = 'property-card';
+
+            const primeraImg = prop.imagenes ? prop.imagenes.split(',')[0].trim() : 'https://via.placeholder.com/400x220?text=Sin+Imagen';
+            const precioFmt = prop.precio ? '$' + Number(prop.precio).toLocaleString('es-AR') : 'Consultar precio';
+
+            card.innerHTML = `
+                <img src="${primeraImg}" alt="${prop.titulo || 'Propiedad'}" loading="lazy"
+                     onerror="this.src='https://via.placeholder.com/400x220?text=Sin+Imagen'">
+                <div class="property-info">
+                    <div class="property-title">${prop.titulo || 'Sin título'}</div>
+                    <div class="property-price">${precioFmt}</div>
+                    <div class="property-type">
+                        ${prop.subtipo || ''} • ${prop.tipo || ''} • ${prop.pais || ''}
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-action btn-edit" data-id="${prop.id || ''}">Editar</button>
+                        <button class="btn-action btn-delete" data-id="${prop.id || ''}">Eliminar</button>
+                    </div>
+                </div>
+            `;
+
+            card.querySelector('.btn-edit').addEventListener('click', () => {
+                alert(`Función editar aún no implementada.\nID: ${prop.id || 'sin-id'}\nTítulo: ${prop.titulo}`);
+                // Futuro: window.location = `editar.html?id=${prop.id}`
             });
 
-            return { urls: uploadedImageUrls, exitosas: uploadedImageUrls.length };
+            card.querySelector('.btn-delete').addEventListener('click', async () => {
+                if (!confirm(`¿Realmente eliminar "${prop.titulo || 'esta propiedad'}"?`)) return;
+
+                alert(`Función eliminar aún no implementada.\nID: ${prop.id || 'sin-id'}`);
+                console.log('Solicitud DELETE para ID:', prop.id);
+                // Futuro: await fetch(`${WEB_APP_URL}?action=deletePublicar&id=${prop.id}&hoja=Publicar`, {method:'POST'})
+                // Luego: loadMisPropiedades();
+            });
+
+            container.appendChild(card);
+        });
+    } catch (err) {
+        console.error('Error al cargar propiedades:', err);
+        container.innerHTML = '<div class="no-data">Error al cargar las propiedades. Intenta nuevamente.</div>';
+    }
+}
+
+// ============================================================================
+//  EVENTOS DEL FORMULARIO
+// ============================================================================
+
+// Subida automática de imágenes al seleccionar
+imagenesInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files);
+    imagePreview.innerHTML = '';
+    uploadedImageUrls = [];
+
+    let totalSize = 0;
+    const validFiles = [];
+
+    for (const file of files) {
+        try {
+            validarArchivo(file);
+            totalSize += file.size;
+            validFiles.push(file);
+
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const img = document.createElement('img');
+                img.src = ev.target.result;
+                img.title = file.name;
+                imagePreview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
         } catch (err) {
-            console.error('Error subida masiva:', err);
-            return { urls: [], exitosas: 0 };
-        } finally {
-            if (uploadProgress) uploadProgress.style.display = 'none';
-            if (uploadProgressBar) uploadProgressBar.style.width = '0%';
+            alert(`${file.name}: ${err.message}`);
+            imagenesInput.value = '';
+            return;
         }
     }
 
-    // ───────────────────────────────────────────────────────────────
-    // ENVÍO DEL FORMULARIO
-    // ───────────────────────────────────────────────────────────────
-    if (form) {
-        form.addEventListener('submit', async e => {
-            e.preventDefault();
-            hideMessages();
-
-            if (!validateForm()) return;
-
-            if (uploadedImageUrls.length === 0) {
-                showError('Debes subir al menos una imagen correctamente');
-                return;
-            }
-
-            showLoading();
-
-            try {
-                const data = {
-                    titulo: document.getElementById('titulo')?.value.trim() || '',
-                    tipo: document.getElementById('tipo')?.value || '',
-                    subtipo: document.getElementById('subtipo')?.value || '',
-                    precio: parseFloat(document.getElementById('precio')?.value) || 0,
-                    pais: document.getElementById('pais')?.value || '',
-                    descripcion: document.getElementById('descripcion')?.value.trim() || '',
-                    timestamp: new Date().toISOString()
-                };
-
-                const result = await enviarPublicacionCompleta(data);
-
-                if (result.success) {
-                    showSuccess(result);
-                    resetForm();
-                } else {
-                    showError(result.error || 'Error al publicar');
-                }
-            } catch (err) {
-                console.error('Error publicación:', err);
-                showError('Error de conexión o procesamiento');
-            } finally {
-                hideLoading();
-            }
-        });
+    if (totalSize > 100 * 1024 * 1024) {
+        alert('Tamaño total excede 100MB');
+        imagenesInput.value = '';
+        return;
     }
 
-    // ───────────────────────────────────────────────────────────────
-    // PREVISUALIZACIÓN Y SUBIDA AUTOMÁTICA DE IMÁGENES
-    // ───────────────────────────────────────────────────────────────
-    if (imagenesInput) {
-        imagenesInput.addEventListener('change', async e => {
-            const files = Array.from(e.target.files);
-            if (imagePreview) imagePreview.innerHTML = '';
-            uploadedImageUrls = [];
+    if (validFiles.length > 0) {
+        await subirImagenesMultiples(validFiles);
+    }
+});
 
-            let totalSize = 0;
-            const validFiles = [];
+// Envío del formulario
+publicationForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideMessages();
 
-            for (const file of files) {
-                try {
-                    validarArchivo(file);
-                    totalSize += file.size;
-                    validFiles.push(file);
+    if (!validateForm()) return;
 
-                    const reader = new FileReader();
-                    reader.onload = ev => {
-                        const img = document.createElement('img');
-                        img.src = ev.target.result;
-                        img.title = file.name;
-                        img.style.cssText = 'width:110px;height:110px;object-fit:cover;border-radius:8px;border:2px solid #e2e8f0;';
-                        if (imagePreview) imagePreview.appendChild(img);
-                    };
-                    reader.readAsDataURL(file);
-                } catch (err) {
-                    alert(`${file.name}: ${err.message}`);
-                    e.target.value = '';
-                    return;
-                }
-            }
-
-            if (totalSize > 100 * 1024 * 1024) {
-                alert('Tamaño total excede 100 MB');
-                e.target.value = '';
-                return;
-            }
-
-            if (validFiles.length > 0) {
-                await subirImagenesMultiples(validFiles);
-            }
-        });
+    if (uploadedImageUrls.length === 0) {
+        showError('Debes subir al menos una imagen correctamente');
+        return;
     }
 
-    // ───────────────────────────────────────────────────────────────
-    // FUNCIONES DE UI Y VALIDACIÓN
-    // ───────────────────────────────────────────────────────────────
-    function hideMessages() {
-        if (successMessage) successMessage.style.display = 'none';
-        if (errorMessage) errorMessage.style.display = 'none';
-    }
+    showLoading();
 
-    function showLoading() {
-        if (loadingMessage) loadingMessage.style.display = 'block';
-        if (submitButton) {
-            submitButton.disabled = true;
-            submitButton.textContent = 'Procesando...';
+    try {
+        const datos = {
+            titulo: document.getElementById('titulo').value.trim(),
+            tipo: document.getElementById('tipo').value,
+            subtipo: document.getElementById('subtipo').value,
+            precio: parseFloat(document.getElementById('precio').value),
+            pais: document.getElementById('pais').value,
+            descripcion: document.getElementById('descripcion').value.trim(),
+            timestamp: new Date().toISOString()
+        };
+
+        const resultado = await enviarPublicacionCompleta(datos);
+
+        if (resultado.success) {
+            showSuccess(resultado);
+            resetForm();
+        } else {
+            showError(resultado.error || 'Error desconocido al publicar');
         }
+    } catch (err) {
+        showError(`Error de conexión: ${err.message}`);
+    } finally {
+        hideLoading();
     }
+});
 
-    function hideLoading() {
-        if (loadingMessage) loadingMessage.style.display = 'none';
-        if (submitButton) {
-            submitButton.disabled = false;
-            submitButton.textContent = 'Publicar Anuncio';
-        }
-    }
-
-    function showSuccess(result) {
-        if (!successMessage) return;
-        successMessage.innerHTML = `
-            ¡Publicación exitosa!<br>
-            <strong>${result.message || 'Guardado correctamente'}</strong><br>
-            <small>ID: ${result.publicacion?.id || '—'}</small>
-        `;
-        successMessage.style.display = 'block';
-    }
-
-    function showError(msg) {
-        if (!errorMessage) return;
-        errorMessage.textContent = msg;
-        errorMessage.style.display = 'block';
-    }
-
-    function validateForm() {
-        let valid = true;
-        // Aquí puedes agregar todas tus validaciones específicas
-        // Por ahora un chequeo básico:
-        ['titulo','tipo','subtipo','precio','pais','descripcion'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el && !el.value.trim()) valid = false;
-        });
-        return valid;
-    }
-
-    function resetForm() {
-        if (form) form.reset();
-        if (imagePreview) imagePreview.innerHTML = '';
-        uploadedImageUrls = [];
-        if (uploadProgress) uploadProgress.style.display = 'none';
-    }
-
-    // Inicialización
-    console.log('Panel de Gestión v2 – inicializado');
+// ============================================================================
+//  INICIALIZACIÓN
+// ============================================================================
+console.log('Panel de Gestión cargado completamente');
+console.log('Web App URL:', WEB_APP_URL);
 </script>
+</body>
+</html>
 </body>
 </html>
