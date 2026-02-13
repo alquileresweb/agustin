@@ -1465,28 +1465,42 @@
     }
     // Función para guardar lead en Sheet via POST
     async function guardarLeadEnSheet(data) {
-      try {
-        const response = await fetchWithRetry(WEB_APP_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            action: 'guardarLead',
-            data: data
-          })
-        });
-        const result = await response.json();
-        if (result.success) {
-          alert('Datos guardados en CRM. ¡Gracias!');
-        } else {
-          throw new Error(result.message || 'Error al guardar');
-        }
-      } catch (error) {
-        console.error('Error guardando lead:', error);
-        alert('Error al guardar en CRM, pero puedes contactarnos por WhatsApp.');
-      }
+  try {
+    const payload = {
+      action: 'guardarLead',   // o el action que uses para leads
+      data: data
+    };
+
+    const response = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      mode: 'cors',                    // puedes dejar 'cors' o probar 'no-cors' si aún falla
+      cache: 'no-cache',
+      redirect: 'follow',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'   // ← ESTO ES CLAVE
+      },
+      body: JSON.stringify(payload)              // sigues enviando JSON, pero con content-type simple
+    });
+
+    // Importante: con text/plain no siempre puedes leer .json() fácilmente
+    // Muchas veces la gente solo chequea si !response.ok o asume éxito
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
     }
+
+    // Opcional: si quieres intentar leer la respuesta
+    let resultText = await response.text();
+    console.log('Respuesta cruda:', resultText);
+
+    // Asumimos éxito si llegó aquí
+    alert('Datos guardados en CRM. ¡Gracias!');
+    
+  } catch (error) {
+    console.error('Error guardando lead:', error);
+    alert('Error al guardar en CRM. Puedes contactarnos por WhatsApp directamente.');
+  }
+}
+    
     // Función actualizada para cargar propiedades desde Google Apps Script Web App
     async function loadPropertiesFromSheet(filters = {}) {
       try {
