@@ -347,7 +347,7 @@ const uploadProgressBar = document.getElementById('uploadProgressBar');
 let uploadedImageUrls = [];
 
 // ============================================================================
-// CLOUDINARY CONFIGURACIÓN Y FUNCIONES
+// CLOUDINARY (funciones sin cambios)
 // ============================================================================
 const CLOUDINARY_CONFIG = {
     CLOUD_NAME: 'dn4tjz4ck',
@@ -361,16 +361,8 @@ const CLOUDINARY_CONFIG = {
 };
 
 async function subirImagenesCloudinary(files, options = {}) {
-    const {
-        onProgress = null,
-        onSuccess = null,
-        onError = null,
-        maxFiles = 50,
-        folder = 'alquileres'
-    } = options;
-
-    const urls = [];
-    const errors = [];
+    const { onProgress = null, onSuccess = null, onError = null, maxFiles = 50, folder = 'alquileres' } = options;
+    const urls = [], errors = [];
     let processed = 0;
     const total = Math.min(files.length, maxFiles);
 
@@ -380,20 +372,13 @@ async function subirImagenesCloudinary(files, options = {}) {
     for (let i = 0; i < total; i += batchSize) {
         const batch = files.slice(i, i + batchSize);
         const batchPromises = batch.map((file, idx) =>
-            procesarArchivoIndividual(file, {
-                ...options,
-                globalIndex: i + idx,
-                totalFiles: total,
-                retryCount: 0
-            })
+            procesarArchivoIndividual(file, { ...options, globalIndex: i + idx, totalFiles: total, retryCount: 0 })
         );
-
         const batchResults = await Promise.allSettled(batchPromises);
 
         batchResults.forEach((result, batchIdx) => {
             const globalIdx = i + batchIdx;
             processed++;
-
             if (result.status === 'fulfilled' && result.value) {
                 urls.push(result.value);
                 onProgress?.({ status: 'success', file: files[globalIdx], url: result.value, progress: (processed / total) * 100 });
@@ -408,30 +393,20 @@ async function subirImagenesCloudinary(files, options = {}) {
 
         if (i + batchSize < total) await new Promise(r => setTimeout(r, 1000));
     }
-
     return { urls, errors, success: errors.length === 0 };
 }
 
 async function procesarArchivoIndividual(file, options) {
     const { retryCount = 0 } = options;
-
     if (!validarArchivo(file)) throw new Error(`Archivo inválido: ${file.name}`);
-
     const formData = crearFormData(file, options);
-
     try {
         const res = await fetch(CLOUDINARY_CONFIG.API_URL, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'omit',
-            body: formData,
-            signal: AbortSignal.timeout(CLOUDINARY_CONFIG.TIMEOUT)
+            method: 'POST', mode: 'cors', cache: 'no-cache', credentials: 'omit',
+            body: formData, signal: AbortSignal.timeout(CLOUDINARY_CONFIG.TIMEOUT)
         });
-
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-
         if (json.secure_url && json.resource_type === 'image') return json.secure_url;
         throw new Error('Respuesta inválida de Cloudinary');
     } catch (err) {
@@ -444,9 +419,7 @@ async function procesarArchivoIndividual(file, options) {
 }
 
 async function verificarCorsCloudinary() {
-    try {
-        await fetch(`https://res.cloudinary.com/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload/w_1,h_1,c_fill/v1/test-cors.jpg`, { method: 'HEAD', mode: 'cors' });
-    } catch (e) {}
+    try { await fetch(`https://res.cloudinary.com/${CLOUDINARY_CONFIG.CLOUD_NAME}/image/upload/w_1,h_1,c_fill/v1/test-cors.jpg`, {method:'HEAD', mode:'cors'}); } catch(e){}
 }
 
 function validarArchivo(file) {
@@ -466,20 +439,14 @@ async function subirImagenesMultiples(files) {
     uploadedImageUrls = [];
     uploadProgress.style.display = 'block';
     uploadProgressBar.style.width = '0%';
-
     try {
         const resultado = await subirImagenesCloudinary(files, {
             maxFiles: 50,
             folder: `alquileres/${Date.now()}`,
-            onProgress: p => {
-                uploadProgressBar.style.width = `${p.progress}%`;
-            },
+            onProgress: p => { uploadProgressBar.style.width = `${p.progress}%`; },
             onSuccess: url => uploadedImageUrls.push(url)
         });
-
-        if (!resultado.success) {
-            alert(`${resultado.errors.length} imágenes fallaron`);
-        }
+        if (!resultado.success) alert(`${resultado.errors.length} imágenes fallaron`);
     } catch (err) {
         alert('Error al subir imágenes');
         uploadedImageUrls = [];
@@ -507,24 +474,10 @@ async function enviarPublicacionCompleta(datos) {
     };
 
     try {
-        let res = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        let res = await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        if (res.type === 'opaque') return { success: true, message: 'Enviado (no-cors)' };
 
-        if (res.type === 'opaque') {
-            return { success: true, message: 'Enviado (no-cors)' };
-        }
-
-        res = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            mode: 'cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
+        res = await fetch(WEB_APP_URL, { method: 'POST', mode: 'cors', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
         if (res.ok) return await res.json();
         throw new Error('Fallo en envío');
     } catch (err) {
@@ -541,10 +494,8 @@ function validateForm() {
         const el = document.getElementById(id);
         if (!el?.value?.trim()) valid = false;
     });
-
     const precio = parseFloat(document.getElementById('precio')?.value);
     if (isNaN(precio) || precio < 1000) valid = false;
-
     return valid;
 }
 
@@ -582,7 +533,7 @@ function resetForm() {
 }
 
 // ============================================================================
-// CARGA DE MIS PROPIEDADES (versión robusta y compatible con index.html)
+// CARGA DE MIS PROPIEDADES – VERSIÓN CORREGIDA Y ROBUSTA
 // ============================================================================
 async function loadMisPropiedades() {
     const container = document.getElementById('propiedades-list');
@@ -605,26 +556,27 @@ async function loadMisPropiedades() {
             const card = document.createElement('div');
             card.className = 'property-card';
 
-            // ────────────────────── Protección ultra robusta contra imagenes inválida ──────────────────────
+            // Protección ultra robusta para la imagen (nunca fallará .split)
             let primeraImagen = 'https://via.placeholder.com/400x220?text=Sin+Imagen';
 
             if (prop.imagenes) {
                 if (typeof prop.imagenes === 'string' && prop.imagenes.trim()) {
                     const partes = prop.imagenes.split(',');
-                    if (partes.length > 0 && partes[0].trim().startsWith('http')) {
-                        primeraImagen = partes[0].trim();
+                    if (partes.length > 0) {
+                        const url = partes[0].trim();
+                        if (url.startsWith('http')) primeraImagen = url;
                     }
                 } else if (Array.isArray(prop.imagenes) && prop.imagenes.length > 0) {
                     primeraImagen = prop.imagenes[0];
                 }
             }
 
-            const precio = prop.precio 
-                ? `$${Number(prop.precio).toLocaleString('es-AR')}` 
+            const precio = prop.precio
+                ? `$${Number(prop.precio).toLocaleString('es-AR')}`
                 : 'Consultar precio';
 
             card.innerHTML = `
-                <img src="$$   {primeraImagen}" alt="   $${prop.titulo || 'Propiedad'}" loading="lazy"
+                <img src="${primeraImagen}" alt="${prop.titulo || 'Propiedad'}" loading="lazy"
                      onerror="this.src='https://via.placeholder.com/400x220?text=Sin+Imagen'">
                 <div class="property-info">
                     <div class="property-title">${prop.titulo || 'Sin título'}</div>
@@ -640,19 +592,17 @@ async function loadMisPropiedades() {
             `;
 
             card.querySelector('.btn-edit').onclick = () => {
-                alert(`Editar (pendiente de implementar)\nID: ${prop.id || prop.fila || '?'}\n${prop.titulo}`);
+                alert(`Editar (pendiente)\nID: ${prop.id || prop.fila || '?'}\n${prop.titulo}`);
             };
 
             card.querySelector('.btn-delete').onclick = () => {
                 if (confirm(`¿Eliminar "${prop.titulo || 'esta propiedad'}"?`)) {
-                    alert('Función eliminar pendiente de implementar en el backend');
-                    // Aquí iría la llamada real a eliminar
+                    alert('Eliminar pendiente de implementar en backend');
                 }
             };
 
             container.appendChild(card);
         });
-
     } catch (err) {
         console.error('Error al cargar propiedades:', err);
         container.innerHTML = '<div class="no-data-msg">Error al cargar propiedades</div>';
@@ -666,7 +616,6 @@ imagenesInput.addEventListener('change', async e => {
     const files = Array.from(e.target.files);
     imagePreview.innerHTML = '';
     uploadedImageUrls = [];
-
     const validFiles = [];
     for (const file of files) {
         try {
@@ -684,22 +633,18 @@ imagenesInput.addEventListener('change', async e => {
             alert(err.message);
         }
     }
-
     if (validFiles.length) await subirImagenesMultiples(validFiles);
 });
 
 publicationForm.addEventListener('submit', async e => {
     e.preventDefault();
     hideMessages();
-
     if (!validateForm()) return;
     if (!uploadedImageUrls.length) {
         showError('Sube al menos una imagen');
         return;
     }
-
     showLoading();
-
     try {
         const datos = {
             titulo: document.getElementById('titulo').value.trim(),
@@ -710,9 +655,7 @@ publicationForm.addEventListener('submit', async e => {
             descripcion: document.getElementById('descripcion').value.trim(),
             timestamp: new Date().toISOString()
         };
-
         const res = await enviarPublicacionCompleta(datos);
-
         if (res.success) {
             showSuccess();
             resetForm();
@@ -727,10 +670,9 @@ publicationForm.addEventListener('submit', async e => {
 });
 
 // ============================================================================
-// INICIO
+// INICIALIZACIÓN
 // ============================================================================
-console.log('Panel de Gestión cargado - versión robusta 2025');
-</script>
+console.log('Panel de Gestión cargado - versión corregida 2025');
 </script>
 </body>
 </html>
