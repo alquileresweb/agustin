@@ -489,9 +489,181 @@ let uploadedImageUrls = [];
 let isEditing = false;
 
 // ============================================================================
-// CLOUDINARY CONFIGURACIÓN Y FUNCIONES (resumidas para claridad)
+// CLOUDINARY CONFIGURACIÓN Y FUNCIONES (IGUAL QUE EN publicar.html)
 // ============================================================================
-// ... (pega aquí todas tus funciones de Cloudinary: subirImagenesCloudinary, procesarArchivoIndividual, etc.)
+const CLOUDINARY_CONFIG = {
+    CLOUD_NAME: 'dn4tjz4ck',
+    UPLOAD_PRESET: 'preset_alquileres',
+    API_URL: 'https://api.cloudinary.com/v1_1/dn4tjz4ck/image/upload',
+    MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+    ALLOWED_TYPES: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+    MAX_RETRIES: 3,
+    TIMEOUT: 30000
+};
+
+// === VALIDACIÓN DE ARCHIVO ===
+function validarArchivo(file) {
+    if (!file) throw new Error("No se recibió ningún archivo");
+
+    if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) {
+        throw new Error(`Archivo demasiado grande: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)} MB). Máximo 10MB`);
+    }
+
+    if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) {
+        throw new Error(`Tipo no permitido: ${file.name} (${file.type}). Solo JPG, PNG y WebP`);
+    }
+
+    return true;
+}
+
+// === CREAR FORMDATA PARA CLOUDINARY ===
+function crearFormData(file, options = {}) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_CONFIG.UPLOAD_PRESET);
+
+    if (options.folder) {
+        formData.append('folder', options.folder);
+    }
+
+    return formData;
+}
+
+// === PROCESAR ARCHIVO INDIVIDUAL (con reintentos) ===
+async function procesarArchivoIndividual(file, options = {}) {
+    const { retryCount = 0 } = options;
+
+    if (!validarArchivo(file)) {
+        throw new Error(`Archivo inválido: ${file.name}`);
+    }
+
+    const formData = crearFormData(file, options);
+
+    try {
+        const response = await fetch(CLOUDINARY_CONFIG.API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            body: formData,
+            signal: AbortSignal.timeout(CLOUDINARY_CONFIG.TIMEOUT)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.secure_url) {
+            return result.secure_url;
+        } else {
+            throw new Error("Respuesta inválida de Cloudinary");
+        }
+    } catch (error) {
+        if (retryCount < CLOUDINARY_CONFIG.MAX_RETRIES &&
+            (error.name === 'TimeoutError' || error.message.includes('network') || error.message.includes('fetch'))) {
+            
+            console.log(`Reintentando subida de ${file.name} (${retryCount + 1}/${CLOUDINARY_CONFIG.MAX_RETRIES})`);
+            await new Promise(r => setTimeout(r, 2000 * (retryCount + 1)));
+            return procesarArchivoIndividual(file, { ...options, retryCount: retryCount + 1 });
+        }
+        throw error;
+    }
+}
+
+// === SUBIR MÚLTIPLES IMÁGENES (función principal) ===
+async function subirImagenesCloudinary(files, options = {}) {
+    const {
+        onProgress = null,
+        onSuccess = null,
+        onError = null,
+        folder = `alquileres/${Date.now()}`
+    } = options;
+
+    const urls = [];
+    const errors = [];
+    let processed = 0;
+    const total = files.length;
+
+    const batchSize = 3; // Subir de a 3 para evitar rate limits
+
+    for (let i = 0; i < total; i += batchSize) {
+        const batch = files.slice(i, i + batchSize);
+        const batchPromises = batch.map((file, index) =>
+            procesarArchivoIndividual(file, { 
+                folder,
+                globalIndex: i + index,
+                totalFiles: total 
+            })
+        );
+
+        const batchResults = await Promise.allSettled(batchPromises);
+
+        batchResults.forEach((result, batchIndex) => {
+            processed++;
+            const file = batch[batchIndex];
+
+            if (result.status === 'fulfilled' && result.value) {
+                urls.push(result.value);
+                onSuccess?.(result.value);
+            } else {
+                const error = result.reason || new Error('Error desconocido');
+                errors.push({ file: file.name, error: error.message });
+                onError?.(error, file);
+            }
+
+            onProgress?.({
+                progress: (processed / total) * 100,
+                current: processed,
+                total: total,
+                status: result.status === 'fulfilled' ? 'success' : 'error',
+                file: file
+            });
+        });
+
+        // Pequeña pausa entre batches
+        if (i + batchSize < total) {
+            await new Promise(resolve => setTimeout(resolve, 800));
+        }
+    }
+
+    return { urls, errors, success: errors.length === 0 };
+}
+
+// === FUNCIÓN QUE SE USA EN EL EVENTO change ===
+async function subirImagenesMultiples(files) {
+    uploadedImageUrls = [];
+    uploadProgress.style.display = 'block';
+    uploadProgressBar.style.width = '0%';
+
+    try {
+        const resultado = await subirImagenesCloudinary(files, {
+            folder: `alquileres/${Date.now()}`,
+            onProgress: (progress) => {
+                uploadProgressBar.style.width = `${progress.progress}%`;
+            },
+            onSuccess: (url) => {
+                uploadedImageUrls.push(url);
+            },
+            onError: (error, file) => {
+                console.error(`Error subiendo ${file.name}:`, error);
+            }
+        });
+
+        if (resultado.errors.length > 0) {
+            alert(`${resultado.errors.length} imagen(es) no pudieron subirse. Se guardarán las que sí funcionaron.`);
+        }
+
+    } catch (error) {
+        console.error('Error en subida masiva:', error);
+        alert('Hubo un error al subir las imágenes. Intenta de nuevo.');
+        uploadedImageUrls = [];
+    } finally {
+        uploadProgress.style.display = 'none';
+        uploadProgressBar.style.width = '0%';
+    }
+}
 
 // ============================================================================
 // ENVÍO A GOOGLE SHEETS – soporta tanto crear como editar
@@ -773,23 +945,6 @@ async function loadInteresados() {
     }
 }
 
-
-    // === FUNCIÓN VALIDAR ARCHIVO (¡ESTA ES LA QUE FALTABA!) ===
-function validarArchivo(file) {
-    if (!file) {
-        throw new Error("No se recibió ningún archivo");
-    }
-
-    if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) {
-        throw new Error(`Archivo demasiado grande: ${file.name} (${(file.size/1024/1024).toFixed(1)}MB). Máximo permitido: 10MB`);
-    }
-
-    if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) {
-        throw new Error(`Tipo de archivo no permitido: ${file.name} (${file.type}). Solo se aceptan JPG, PNG y WebP`);
-    }
-
-    return true;
-}
     
 // ============================================================================
 // CARGA DE MIS PROPIEDADES
