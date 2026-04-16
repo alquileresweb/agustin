@@ -773,6 +773,24 @@ async function loadInteresados() {
     }
 }
 
+
+    // === FUNCIÓN VALIDAR ARCHIVO (¡ESTA ES LA QUE FALTABA!) ===
+function validarArchivo(file) {
+    if (!file) {
+        throw new Error("No se recibió ningún archivo");
+    }
+
+    if (file.size > CLOUDINARY_CONFIG.MAX_FILE_SIZE) {
+        throw new Error(`Archivo demasiado grande: ${file.name} (${(file.size/1024/1024).toFixed(1)}MB). Máximo permitido: 10MB`);
+    }
+
+    if (!CLOUDINARY_CONFIG.ALLOWED_TYPES.includes(file.type)) {
+        throw new Error(`Tipo de archivo no permitido: ${file.name} (${file.type}). Solo se aceptan JPG, PNG y WebP`);
+    }
+
+    return true;
+}
+    
 // ============================================================================
 // CARGA DE MIS PROPIEDADES
 // ============================================================================
