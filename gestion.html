@@ -882,31 +882,58 @@ function loadPropertyForEdit(prop) {
 }
 
 // ============================================================================
-// FUNCIONES DE ELIMINAR (pendiente de implementar completamente)
+// ELIMINAR PROPIEDAD
 // ============================================================================
 async function eliminarPropiedad(id) {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta propiedad?')) {
+    if (!id) {
+        alert("Error: ID de propiedad no válido");
         return;
     }
 
+    // Mostrar feedback al usuario
+    const loadingMsg = document.createElement('div');
+    loadingMsg.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#e53e3e; color:white; padding:12px 20px; border-radius:8px; z-index:9999;';
+    loadingMsg.textContent = 'Eliminando propiedad...';
+    document.body.appendChild(loadingMsg);
+
     try {
+        const payload = {
+            action: 'eliminarPublicacion',
+            id: id.toString(),
+            timestamp: new Date().toISOString(),
+            origin: ORIGIN || 'https://inmobiliariaagustinsantos.com.ar'
+        };
+
         const response = await fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'eliminarPublicacion',
-                id: id,
-                hoja: 'Publicar'
-            })
+            mode: 'no-cors',        // ← Usamos el mismo método que el resto de tu código
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
         });
 
-        // Como usamos no-cors, asumimos éxito si no hay error de red
-        alert('Propiedad eliminada correctamente');
-        loadMisPropiedades();   // Recargar la lista
+        console.log('Eliminación enviada (no-cors):', response.type);
+
+        // Como usamos no-cors, no podemos leer la respuesta, pero asumimos éxito
+        setTimeout(() => {
+            loadingMsg.style.background = '#38a169';
+            loadingMsg.textContent = '✅ Propiedad eliminada correctamente';
+            
+            // Recargar la lista automáticamente
+            setTimeout(() => {
+                loadingMsg.remove();
+                loadMisPropiedades();
+            }, 1500);
+        }, 800);
+
     } catch (err) {
         console.error('Error al eliminar:', err);
-        alert('Error al eliminar la propiedad. Inténtalo nuevamente.');
+        loadingMsg.style.background = '#e53e3e';
+        loadingMsg.textContent = '❌ Error al eliminar. Inténtalo nuevamente.';
+        
+        setTimeout(() => loadingMsg.remove(), 3000);
     }
 }
 
@@ -1039,11 +1066,19 @@ async function loadMisPropiedades() {
 
             card.querySelector('.btn-edit').onclick = () => loadPropertyForEdit(prop);
 
-            card.querySelector('.btn-delete').onclick = () => {
-                if (confirm(`¿Eliminar "${prop.titulo || 'esta propiedad'}"?`)) {
-                    alert('Función eliminar pendiente de implementar');
-                }
-            };
+            // Botón Eliminar - Versión funcional
+card.querySelector('.btn-delete').onclick = () => {
+    const propiedadId = prop.id || prop.fila || prop.row || prop.ID;
+
+    if (!propiedadId) {
+        alert("No se pudo identificar el ID de esta propiedad.");
+        return;
+    }
+
+    if (confirm(`¿Estás seguro de eliminar "${prop.titulo || 'esta propiedad'}"?\n\nEsta acción NO se puede deshacer.`)) {
+        eliminarPropiedad(propiedadId);
+    }
+};
 
             container.appendChild(card);
         });
